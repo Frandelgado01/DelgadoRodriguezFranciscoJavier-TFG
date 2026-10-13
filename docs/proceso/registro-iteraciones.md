@@ -23,7 +23,9 @@ cada sesión.
 | 2026-10-10 | — | Claude Code (app escritorio) | `docs/proceso/forma-de-trabajo.md` | Definir la forma de trabajo (dónde, ciclo, roles, aprendizaje, memoria) | 1 | — | suscripción | | 52519f9 |
 | 2026-10-13 | M | Claude Code (app escritorio) | `docs/conceptos/02-claude-code-y-spec-kit.md` | Explicar skills, Spec Kit, hooks (pruebas y linters) y MCP; guardarlo como módulo 02 con fuentes | 2 | — | suscripción | | d5651e7 |
 | 2026-10-13 | M | Claude Code (app escritorio) | `docs/conceptos/01-paradigmas-desarrollo-con-ia.md` | Módulo 01: vibe coding, SDD y loop engineering con fuentes primarias (base del apartado 2.2) | 1 | — | suscripción | | e11fab7 |
-| 2026-10-13 | M | Claude Code (app escritorio) | `docs/conceptos/03-git-github-y-trazabilidad.md` | Módulo 03: Git, GitHub, estrategia de ramas, trazabilidad REQ → T → commit → prueba (base de 3.4 y 4.4) | 1 | — | suscripción | | |
+| 2026-10-13 | M | Claude Code (app escritorio) | `docs/conceptos/03-git-github-y-trazabilidad.md` | Módulo 03: Git, GitHub, estrategia de ramas, trazabilidad REQ → T → commit → prueba (base de 3.4 y 4.4) | 1 | — | suscripción | | 805541d |
+| 2026-10-13 | 1 | Claude Code (app escritorio) | Instalación de `uv` 0.13.0 y `specify-cli` 1.2.0; `specify init --here --integration claude --script ps` (`.claude/skills/speckit-*`, `.specify/`) | Instalar uv y Spec Kit para preparar la fase 1 | 1 | — | suscripción | | |
+| 2026-10-13 | M | Claude Code (app escritorio) | `docs/proceso/pendientes-tutor.md`; módulos 02 y 03 actualizados con lo verificado | Preparar los temas para la reunión con el tutor | 1 | — | suscripción | | |
 
 ## Decisiones
 
@@ -44,3 +46,5 @@ Decisiones relevantes del alumno (qué se aceptó, qué se rechazó y por qué).
 | 2026-10-13 | M | PROPUESTA pendiente de consultar con el tutor (el alumno la comentará con él): presentar el TFG como SDD *spec-anchored* (especificación viva que guía la evolución) | *Spec-as-source* ("el código se puede regenerar", del índice) | Crítica de Böckeler: no determinismo de los LLM y rigidez histórica del MDD |
 | 2026-10-13 | M | Citar a Andrew Ng por la fuente primaria (The Batch n.º 359) | ADTmag, citado en el índice | No se localizó el artículo de ADTmag |
 | 2026-10-13 | 2 | PROPUESTA pendiente de aprobación: `main` estable + una rama corta por funcionalidad, fusionada por PR cuando converge y el pipeline está en verde; documentación directa a `main` | Todo en `main`; GitFlow con ramas largas | Trunk-based development facilita la CI; la rama por funcionalidad encaja con Spec Kit |
+| 2026-10-13 | 1 | Instalar `uv` con pip (PyPI) y Spec Kit con `uv tool install specify-cli`; añadir sus carpetas al PATH del usuario | Instalador oficial de uv; ejecutar siempre con `python -m uv` | Instalación desde fuentes oficiales; `uv` y `specify` disponibles en cualquier terminal, incluida la de VS Code |
+| 2026-10-13 | 1 | Spec Kit sin la extensión `git`: las ramas por funcionalidad se crearán a mano | `--extension git` | El núcleo solo crea `specs/<NNN-nombre>/`; la estrategia de ramas está pendiente del tutor |

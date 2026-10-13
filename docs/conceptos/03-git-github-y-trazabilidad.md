@@ -69,8 +69,10 @@ integración continua [4].
   `/speckit-converge` da "Converged" y el pipeline está en verde.
 - La documentación y la memoria pueden ir directamente a `main`, como hasta ahora.
 
-Spec Kit [2] trata cada especificación como una petición de cambio con su propia rama [5]. **Pendiente de verificar
-tras `specify init`:** el nombre exacto de la rama y de la carpeta que crea `/speckit-specify`.
+Böckeler describe que Spec Kit [2] trata cada especificación como una petición de cambio con su propia rama
+[5]. **Verificado tras `specify init` (specify-cli 1.2.0):** el núcleo crea la carpeta numerada
+`specs/<NNN-nombre>/`, pero no la rama; la rama se crea a mano (`git switch -c 001-nombre`) o con la extensión
+opcional `git` de Spec Kit. Conviene usar el mismo nombre para la rama y la carpeta.
 
 ## 4. Trazabilidad
 

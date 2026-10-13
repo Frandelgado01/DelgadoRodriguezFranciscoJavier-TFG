@@ -81,8 +81,13 @@ Para funcionalidades pequeñas existe un camino corto: specify → plan → task
 - Las puertas `clarify`, `checklist` y `analyze` atacan el riesgo principal de SDD: una especificación ambigua
   o incoherente produce mal código.
 
-> Pendiente de verificar tras `specify init`: la ruta exacta de `constitution.md` y de la carpeta de cada
-> funcionalidad (`specs/...`). La documentación consultada no las detalla [3].
+**Verificado tras `specify init` (specify-cli 1.2.0, 2026-10-13):**
+
+- La constitución está en `.specify/memory/constitution.md`.
+- Cada funcionalidad va en `specs/<NNN-nombre>/` (`spec.md`, `plan.md`, `tasks.md`…), numerada
+  automáticamente por el script `create-new-feature.ps1`.
+- El núcleo **no crea ramas de Git**; eso lo añade la extensión opcional `git` (`--extension git`).
+- Además de las fases, instala `/speckit-taskstoissues`, que convierte las tareas en issues de GitHub.
 
 ## 3. Hooks
 
