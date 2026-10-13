@@ -19,8 +19,9 @@ cada sesión.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-09 | — | Claude Code (app escritorio) | Repositorio base, registro | Arranque del proyecto a partir del índice v4 | 1 | — | suscripción | | 769fe58 |
 | 2026-10-10 | — | Claude Code (app escritorio) | Ubicación del repositorio y remoto GitHub | Mover el proyecto fuera de OneDrive y conectarlo a GitHub | 1 | — | suscripción | | 769fe58 (push) |
-| 2026-10-10 | — | Claude Code (app escritorio) | `CLAUDE.md`, `.claude/settings.json`, `docs/memoria/indice.md` | Registrar automáticamente cada iteración durante todo el TFG | 1 | — | suscripción | | (este commit) |
-| 2026-10-10 | — | Claude Code (app escritorio) | `docs/proceso/forma-de-trabajo.md` | Definir la forma de trabajo (dónde, ciclo, roles, aprendizaje, memoria) | 1 | — | suscripción | | (este commit) |
+| 2026-10-10 | — | Claude Code (app escritorio) | `CLAUDE.md`, `.claude/settings.json`, `docs/memoria/indice.md` | Registrar automáticamente cada iteración durante todo el TFG | 1 | — | suscripción | | 52519f9 |
+| 2026-10-10 | — | Claude Code (app escritorio) | `docs/proceso/forma-de-trabajo.md` | Definir la forma de trabajo (dónde, ciclo, roles, aprendizaje, memoria) | 1 | — | suscripción | | 52519f9 |
+| 2026-10-13 | M | Claude Code (app escritorio) | `docs/conceptos/02-claude-code-y-spec-kit.md` | Explicar skills, Spec Kit, hooks (pruebas y linters) y MCP; guardarlo como módulo 02 con fuentes | 2 | — | suscripción | | |
 
 ## Decisiones
 
@@ -36,3 +37,5 @@ Decisiones relevantes del alumno (qué se aceptó, qué se rechazó y por qué).
 | 2026-10-10 | M | Memoria en LaTeX con la plantilla de la escuela | Word; Markdown → PDF | Elección del alumno |
 | 2026-10-10 | — | Redactar la memoria en paralelo a la implementación, tras fijar la forma de trabajo y los conceptos | Instalar Spec Kit y empezar ya la fase 1 | El alumno quiere dominar los conceptos antes de construir para poder seguir el desarrollo |
 | 2026-10-10 | — | Fases SDD en Claude Code en VS Code; memoria y conceptos en VS Code o app de escritorio | Todo en la app de escritorio | Coherencia con lo que describe la memoria (4.3): diffs, hooks y revisión en el editor |
+| 2026-10-13 | — | El agente registra cuando lo considere oportuno, avisando antes al alumno (cambio del alumno en `CLAUDE.md`) | Registro automático tras cada iteración sin aviso (decisión del 2026-10-10) | El alumno quiere estar al tanto de cada anotación |
+| 2026-10-13 | 1 | Usar la versión actual de Spec Kit: `uv tool install specify-cli` + `specify init --integration claude`; skills `/speckit-*` en `.claude/skills`, con `clarify`, `checklist`, `analyze` y `converge` | Comandos `/speckit.*` en `.claude/commands` (versión anterior, explicada en el chat por error) | La documentación oficial consultada el 2026-10-13 muestra el formato actual; `converge` aporta el criterio de parada del bucle de implementación |

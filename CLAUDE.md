@@ -14,8 +14,7 @@ el alumno especifica y aprueba, el agente planifica e implementa, el pipeline CI
 
 ## Regla obligatoria: registro del proceso
 
-Tras CADA iteración con el alumno que produzca o cambie algo (artefacto, código, decisión, texto de la
-memoria, configuración), actualiza `docs/proceso/registro-iteraciones.md` sin esperar a que te lo pidan:
+Cuando el agente considere que es oportuno registrar un proceso (artefacto, código, decisión, texto de la memoria, configuración), actualiza `docs/proceso/registro-iteraciones.md` avisando previamente al alumno:
 
 1. Añade una fila en **Sesiones** (fecha, fase, herramienta, artefacto, prompt clave resumido, iteraciones,
    corrección manual, tokens/coste, minutos, commit). Si la iteración continúa una fila del mismo día y

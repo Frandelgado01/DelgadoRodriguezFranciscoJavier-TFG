@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo Recordatorio TFG: si esta iteracion produce o cambia algo, actualiza docs/proceso/registro-iteraciones.md (Sesiones y Decisiones) antes de terminar, segun CLAUDE.md."
+            "command": "echo 'Recordatorio TFG: si esta iteracion produce o cambia algo, actualiza docs/proceso/registro-iteraciones.md (Sesiones y Decisiones) antes de terminar, segun CLAUDE.md.'"
           }
         ]
       }

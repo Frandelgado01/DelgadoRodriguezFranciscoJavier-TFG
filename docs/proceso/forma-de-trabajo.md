@@ -27,7 +27,8 @@ Reglas:
 2. **Explicación.** El agente explica qué va a hacer y por qué, con los conceptos nuevos que aparezcan.
 3. **Revisión.** El alumno aprueba, corrige o rechaza. Toda corrección o rechazo es una decisión registrada.
 4. **Aplicación.** El agente aplica el cambio y lo verifica (pruebas, compilación, lectura del resultado).
-5. **Cierre.** El agente actualiza `registro-iteraciones.md`, hace commit (registro incluido) y push.
+5. **Cierre.** Si procede registrar, el agente avisa al alumno, actualiza `registro-iteraciones.md` y hace
+   commit (registro incluido) y push.
 
 ## Roles
 
