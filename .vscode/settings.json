@@ -1,7 +1,8 @@
 {
   // LaTeX Workshop: compila la memoria con pdflatex + bibtex (como indica la
-  // plantilla ESI) sin necesidad de Perl/latexmk. Salida en docs/memoria/latex/build.
-  "latex-workshop.latex.outDir": "%DIR%/build",
+  // plantilla ESI) sin necesidad de Perl/latexmk. Se compila en la carpeta de
+  // principal.tex: bibtex necesita encontrar los .aux de Caps/ y Anexos/ junto a
+  // sus fuentes. Los auxiliares y el PDF están en .gitignore.
   "latex-workshop.latex.recipes": [
     {
       "name": "pdflatex → bibtex → pdflatex ×2",
@@ -12,13 +13,12 @@
     {
       "name": "pdflatex",
       "command": "pdflatex",
-      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "-output-directory=%OUTDIR%", "%DOC%"]
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
     },
     {
       "name": "bibtex",
       "command": "bibtex",
-      "args": ["%OUTDIR%/%DOCFILE%"],
-      "env": { "BIBINPUTS": "%DIR%", "BSTINPUTS": "%DIR%" }
+      "args": ["%DOCFILE%"]
     }
   ],
   "latex-workshop.latex.rootFile.useSubFile": false,

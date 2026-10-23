@@ -18,6 +18,13 @@ test-results/
 
 # LaTeX (memoria)
 docs/memoria/latex/build/
+docs/memoria/latex/principal.pdf
+*.bcf
+*.run.xml
+*.idx
+*.ilg
+*.ind
+*.loa
 *.aux
 *.bbl
 *.blg

@@ -28,7 +28,8 @@ cada sesión.
 | 2026-10-13 | M | Claude Code (app escritorio) | `docs/proceso/pendientes-tutor.md`; módulos 02 y 03 actualizados con lo verificado | Preparar los temas para la reunión con el tutor | 1 | — | suscripción | | 62bed1b |
 | 2026-10-23 | — | Claude Code (app escritorio) | `pendientes-tutor.md`, `CLAUDE.md`, `indice.md`, `forma-de-trabajo.md` | Recoger las respuestas de la tutoría (13 temas) y propagarlas a las reglas y al índice | 1 | — | suscripción | | 2305729 |
 | 2026-10-23 | 1 | Claude Code (VS Code) | `.specify/memory/constitution.md` v1.0.0 | `/speckit-constitution` a partir de los acuerdos de la tutoría y del índice v4 | 1 | — | suscripción | | 7713869 |
-| 2026-10-23 | M | Claude Code (app escritorio) | `docs/memoria/latex/` (plantilla ESI-UCLM adaptada al índice v4), `bibliografia.bib` (APA), `.vscode/` | Integrar la plantilla LaTeX de Overleaf y preparar la compilación local | 1 | — | suscripción | | |
+| 2026-10-23 | M | Claude Code (app escritorio) | `docs/memoria/latex/` (plantilla ESI-UCLM adaptada al índice v4), `bibliografia.bib` (APA), `.vscode/` | Integrar la plantilla LaTeX de Overleaf y preparar la compilación local | 1 | — | suscripción | | 35aad35 |
+| 2026-10-23 | M | Claude Code (app escritorio) | Primera compilación de la memoria (MiKTeX 25.12): 45 páginas, sin avisos; APA en español (`spanish.apc`) | Comprobar la compilación local tras instalar MiKTeX y LaTeX Workshop | 2 | — | suscripción | | |
 
 ## Decisiones
 
@@ -66,3 +67,4 @@ Decisiones relevantes del alumno (qué se aceptó, qué se rechazó y por qué).
 | 2026-10-23 | M | Datos de portada (título, tutor/a, departamento, intensificación, fecha) marcados como PENDIENTE | Rellenarlos provisionalmente | Se rellenan cuando sean oficiales |
 | 2026-10-23 | M | APA con `apacite` (`natbibapa`) y bibtex; bibliografía inicial con las fuentes de los módulos 01–03 | biblatex-apa con biber | Compatible con la compilación pdflatex + bibtex de la plantilla |
 | 2026-10-23 | — | Borrar el ZIP de la plantilla tras descomprimirlo | Versionarlo en git | 8 MB redundantes; su contenido ya está en `docs/memoria/latex/` |
+| 2026-10-23 | M | Compilar en la carpeta de `principal.tex` (auxiliares y PDF ignorados por git) | Salida en `build/` | Con `build/`, bibtex no encuentra los `.aux` de `Caps/` y `Anexos/` y no vería las citas de los capítulos |
