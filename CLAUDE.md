@@ -48,8 +48,9 @@ No pases de fase sin la aprobación explícita del alumno. Un cambio de requisit
 
 ## Memoria del TFG
 
-- Formato de entrega: LaTeX con la plantilla oficial de la escuela. Borradores en `docs/memoria/`, un fichero
-  por capítulo.
+- Formato de entrega: LaTeX con la plantilla oficial de la ESI-UCLM, en `docs/memoria/latex/` (raíz
+  `principal.tex`, capítulos en `Caps/`, anexos en `Anexos/`, bibliografía en `bibliografia.bib`). Compilación
+  local con pdflatex + bibtex. El contenido pendiente se marca con `\pendiente{...}`.
 - El alumno revisa y reescribe con su voz todo borrador; el uso de IA se declara en el anexo si la UCLM lo exige.
 - Cifras, normas y afirmaciones técnicas siempre con fuente citada en **APA** (acordado con el tutor). Si no hay
   fuente, se marca como pendiente; nunca se inventan datos.

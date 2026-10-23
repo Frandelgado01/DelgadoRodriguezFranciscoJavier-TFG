@@ -16,6 +16,21 @@ dist/
 playwright-report/
 test-results/
 
+# LaTeX (memoria)
+docs/memoria/latex/build/
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.lol
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
 # Entorno y secretos
 .env
 .env.*

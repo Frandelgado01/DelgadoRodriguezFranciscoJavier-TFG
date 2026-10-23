@@ -1,0 +1,94 @@
+% -------------------------------------------------------------------------
+% PORTADA PRAL. (1)
+% -------------------------------------------------------------------------
+\portadaNew
+
+% -------------------------------------------------------------------------
+% PORTADA INTERIOR (2)
+% -------------------------------------------------------------------------
+\portadaInt %Portada interior
+
+
+% -------------------------
+% CRÉDITOS
+% -------------------------
+% PENDIENTE: el autor elige la licencia; por defecto, la de la plantilla.
+\begin{creditos}[\titulo]
+Este documento se distribuye con licencia CC BY-NC-SA 4.0. El texto completo de la licencia se puede obtener en \url{https://creativecommons.org/licenses/by-nc-sa/4.0/}. La copia y distribución de esta obra está permitida en todo el mundo, sin regalías y por cualquier medio, siempre que esta nota sea preservada.
+
+\noindent \includegraphics[width=0.15\linewidth]{by-nc-sa}
+\end{creditos}
+
+
+% -------------------------
+% CALIFICACIÓN DEL TRIBUNAL  (No necesario en versión electrónica)
+% -------------------------
+%\tribunal % Página opcional para calificación
+
+
+% -------------------------
+% DEDICATORIA
+% -------------------------
+\begin{dedicatoria}
+\pendiente{dedicatoria (opcional)}
+\end{dedicatoria}
+
+\pagestyle{plain}	% Páginas sólo con numeración inferior al pie
+
+
+% -------------------------
+% RESÚMENES (máx. 1 pág. cada uno): qué problema resuelve, cómo y principales
+% conclusiones. Se redactan al final.
+% -------------------------
+\begin{resumenPral}[spanish]{\titulo}
+\pendiente{resumen: problema, metodología y conclusiones (máx. 1 página)}
+\end{resumenPral}
+
+\begin{resumenAlt}[english]{\tituloCortoAlt}
+\pendiente{abstract in English}
+\end{resumenAlt}
+
+% Ajuste al idioma pral.
+\ifbool{ESI@spanish}{\selectlanguage{spanish}}{\selectlanguage{english}}
+
+
+% -------------------------
+% AGRADECIMIENTOS (máx. recomendable: 1 pág.)
+% -------------------------
+\auxchapter{Agradecimientos}
+\pendiente{agradecimientos (opcional)}
+
+\firma % Nombre, lugar y año (automático, no cambies)
+
+
+% -------------------------
+% ACRÓNIMOS (ordenados alfabéticamente a mano)
+% -------------------------
+\auxchapter{Acrónimos}
+
+\begin{tabular}{r r p{0.8\linewidth}}
+API  & : & Application Programming Interface (interfaz de programación de aplicaciones) \\
+CI/CD& : & Integración y despliegue continuos (Continuous Integration / Continuous Delivery) \\
+E2E  & : & Extremo a extremo (End-to-End) \\
+IA   & : & Inteligencia Artificial \\
+LLM  & : & Modelo de lenguaje de gran tamaño (Large Language Model) \\
+MAPA & : & Ministerio de Agricultura, Pesca y Alimentación \\
+MCP  & : & Model Context Protocol \\
+PAC  & : & Política Agrícola Común \\
+PWA  & : & Aplicación web progresiva (Progressive Web App) \\
+RAG  & : & Generación aumentada por recuperación (Retrieval-Augmented Generation) \\
+SDD  & : & Desarrollo dirigido por especificaciones (Spec-Driven Development) \\
+SIEX & : & Sistema de Información de Explotaciones Agrícolas y Ganaderas y de la Producción Agraria \\
+TFG  & : & Trabajo Fin de Grado
+\end{tabular}
+
+
+% -------------------------
+% ÍNDICES: Elimina los innecesarios.
+% -------------------------
+\idxGral
+\idxFiguras
+\idxTablas
+\idxListados
+%\idxAlgoritmos
+%---

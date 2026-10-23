@@ -1,0 +1,170 @@
+%%%%%%%%%%%%%%
+% Fichero: principal.tex
+% Autor: Jesús Salido Tercero (https://www.esi.uclm.es/www/jsalido)
+% Fecha (creación): febrero 2010 
+% Rev. : abril 2025
+% Descripción: Plantilla para memoria de TFG 
+% (Escuela Sup. de Informática, UCLM). Creada para el curso 
+% “LaTeX esencial para preparación de TFG, Tesis y otros documentos 
+% académicos” (Esc. Sup. Informática-UCLM)
+%
+%### Compilación 
+%
+% Esta plantilla ha sido preparada para compilarse con `pdflatex`  
+% (bibliografía con `bibtex`). Se recomienda emplear una distribución
+% de LaTeX como MiKTeX o TeXLive.
+%
+% Una versión revisada de esta plantilla está disponible en Overleaf para
+% trabajar online. 
+%
+% Si deseas acceder a la versión de desarrollo puedes encontrarla en GitHub:
+%	https://github.com/JesusSalido/TFG_ESI_UCLM
+%%%%%%%%%%%%%%
+
+% Al llamar a la clase puedes pasarle opciones que indican el idioma pral.
+% del documento (spanish o english), el tipo de dispositivo (normal, para 
+% imprimir en papel y screen para leer en pantalla), y si se desea
+% numeración de páginas en el pie (pageonfooter=true) o en la cabecera
+% (pageonfooter=false).
+\documentclass[final, % final o draft (sin figuras)
+			   spanish, % Idioma pral. (spanish o english)
+			   device=normal, % Tipo de dispositivo (normal o screen)
+			   pageonfooter=false % Paginación en el pie
+]{TFGesi}
+
+% -------------------------
+% EDITA: Los datos del documento con la información de tu trabajo.
+%
+% IMPORTANTE: Todos los campos son obligatorios, 
+% pero \cotutline se puede dejar vacío.
+%
+% Algunos datos deben declararse en el idioma alternativo al pral.
+% del documento. Estos datos se emplean en el resumen en el idioma
+% alternativo.  
+%
+% La clase TFGesi los usa para generar el contenido personalizado.
+% Puedes usarlos en cualquier parte del documento suprimiendo 
+% el carácter '@', p.ej., \titulo
+% -------------------------
+% PENDIENTE: título oficial, tutor/a, departamento, intensificación y fecha de
+% defensa se rellenan cuando sean oficiales (decisión del alumno, 2026-10-23).
+\makeatletter
+\@titulo{[PENDIENTE: título oficial del TFG]} % 1ª Línea
+\@tituloCorto{[PENDIENTE: título corto]} % En idioma pral.
+\@tituloCortoAlt{[PENDING: short title]} % En idioma alt.
+\@autoria{Francisco Javier Delgado Rodríguez}
+\@email{fcojavier.delgado1@alu.uclm.es}
+\@autorline{Autor: \autoria}
+\@tutline{Tutor/a: [PENDIENTE]}
+%\@cotutline{Cotutor/a: Quien cotutoriza}
+\@cotutline{} % Si no procede dejar vacío (NO BORRAR)
+\@instEdu{UNIVERSIDAD DE CASTILLA-LA MANCHA}
+\@centroEdu{ESCUELA SUPERIOR DE INFORMÁTICA}
+\@titulacion{GRADO EN INGENIERÍA INFORMÁTICA} % En idioma pral.
+\@titulacionAlt{BACHELOR IN COMPUTING ENGINEERING} % En idioma alt.
+\@especialidad{[PENDIENTE: intensificación]}
+\@depto{[PENDIENTE: departamento del tutor/a]}
+\@tipoDoc{TRABAJO FIN DE GRADO} % En idioma pral.
+\@tipoDocAlt{BACHELOR DISSERTATION} % En idioma alt.
+\@mesTF{[PENDIENTE]}   	% Mes de defensa
+\@monthTF{[PENDING]}   	% En inglés
+\@yearTF{[PENDIENTE]}  	% Año de defensa
+\@cityTF{Ciudad Real}	% Ciudad de defensa
+\@escudo{esiLogo}       % Logo centro (pdf, png o jpg)
+\makeatother
+% -------------------------
+
+% Palabras clave: Son importantes para facilitar búsqueda en Internet
+% Se añaden como metadatos al PDF final.
+\setkeywords{% (hasta 5 o 6 máx.)
+	Cuaderno de campo, %
+	Spec-Driven Development, %
+	Agentes de IA, %
+	Claude Code, %
+	RAG, %
+	CI/CD %
+}
+
+% -------------------------
+% Bibliografía en estilo APA (acordado con el tutor). natbibapa permite
+% \citet{clave} -> Autor (año) y \citep{clave} -> (Autor, año).
+% -------------------------
+\usepackage[natbibapa]{apacite}
+
+% Marca visible para contenido pendiente de redactar o de verificar.
+\newcommand{\pendiente}[1]{\textcolor{red}{[PENDIENTE: #1]}}
+
+
+% -------------------------
+% CUERPO del documento
+% -------------------------
+% Para pruebas, limita los ficheros incluidos.
+%\includeonly{} 
+\begin{document}
+
+% -------------------------
+% Portadas, créditos, resumen, agradecimiento, notación e índices. 
+\frontmatter
+\input{preambulo} % Contiene portadas y otros elementos preliminares
+% -------------------------
+
+% -------------------------
+% Capítulos
+\mainmatter
+%\onehalfspacing % Ajusta interlineado a 1.5 líneas
+
+% Ubicados en ./Caps por mayor comodidad. 
+% Pueden modificarse los nombres y rutas a conveniencia.
+% No se precisa nombre precedido por número (se hace por claridad).
+% Estructura según el índice v4 aprobado por el tutor (docs/memoria/indice.md).
+\include{./Caps/1_Introduccion}
+\include{./Caps/2_EstadoDelArte}
+\include{./Caps/3_Metodologia}
+\include{./Caps/4_Desarrollo}
+\include{./Caps/5_AnalisisCostes}
+\include{./Caps/6_Conclusiones}
+
+\singlespacing % Resto del documento siempre en espaciado sencillo
+% -------------------------
+
+
+
+% -------------------------
+% --- BIBLIOGRAFÍA (Obligatoria)
+% -------------------------
+\nocite{*} % PROVISIONAL: muestra todas las entradas mientras no haya citas en el texto
+\bibliography{bibliografia} % Nombre del fichero .bib
+\bibliographystyle{apacite} % APA (acordado con el tutor).
+% Estilos nativos incluidos con LaTeX (plain, abbrv, alpha, unsrt).
+%
+% plain: citación en estilo numérico. En la bibliografía las entradas
+%        aparecen en orden alfabético.
+%
+% abbrv: Cita numérica. En la bibliografía los nombres aparecen
+%        sólo con la inicial.
+%
+% unsrt: Cita numérica. La bibliografía por orden de cita en el texto.
+%
+% -------------------------
+%        Estilos incluidos con BibTeX no nativos, pero populares
+%        en ingeniería (no requieren paquetes adicionales).
+%
+% acm:   Cita numérica. En la bibliografía con los nombre de autores 
+%        en mayúsculas y con ordenación alfabética.
+%
+% ieeetr:IEEE Transactions, con citación numérica y ordenación por orden 
+%        de cita.
+% -------------------------
+% (FIN BIBLIOGRAFÍA)
+% -------------------------
+
+
+% -------------------------
+% ANEXOS (si no los necesitas los puedes borrar o comentar)
+% -------------------------
+\appendix
+\include{./Anexos/A_ArtefactosSDD}   % constitution, spec, plan y tasks finales
+\include{./Anexos/B_RegistroProceso} % Registro de prompts e iteraciones
+\include{./Anexos/C_Manual}          % Instalación, despliegue y repositorio
+%--- (FIN DOCUMENTO)
+\end{document}

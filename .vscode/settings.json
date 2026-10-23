@@ -1,0 +1,26 @@
+{
+  // LaTeX Workshop: compila la memoria con pdflatex + bibtex (como indica la
+  // plantilla ESI) sin necesidad de Perl/latexmk. Salida en docs/memoria/latex/build.
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex → bibtex → pdflatex ×2",
+      "tools": ["pdflatex", "bibtex", "pdflatex", "pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "-output-directory=%OUTDIR%", "%DOC%"]
+    },
+    {
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": ["%OUTDIR%/%DOCFILE%"],
+      "env": { "BIBINPUTS": "%DIR%", "BSTINPUTS": "%DIR%" }
+    }
+  ],
+  "latex-workshop.latex.rootFile.useSubFile": false,
+  "latex-workshop.view.pdf.viewer": "tab"
+}
