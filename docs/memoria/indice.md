@@ -1,5 +1,16 @@
 # Índice del TFG: Cuaderno de Campo con SDD (versión 4)
 
+> **Cambios acordados en la tutoría del 2026-10-23** (prevalecen sobre el texto de abajo):
+>
+> - **3.1:** el TFG es SDD *spec-anchored*. La especificación se mantiene viva y todo cambio pasa primero por
+>   ella; no se promete regenerar código idéntico. La conformidad la garantizan las pruebas y `/speckit-converge`.
+> - **3.3:** se incorpora `/speckit-converge` como criterio de parada del bucle de implementación.
+> - **2.2:** Andrew Ng se cita por la fuente primaria (*The Batch* n.º 359) en lugar de ADTmag.
+> - **4.1 y 4.4:** despliegue local con Docker + demo, sin despliegue público.
+> - **Bibliografía:** estilo APA.
+> - **Alcance:** tratamientos fitosanitarios, fertilización, labores y cosechas; formato compatible con el SIEX
+>   (exportable), sin integración real; normativa estatal + Castilla-La Mancha.
+
 Versión 4 del índice (2 oct 2026), adaptada al desarrollo dirigido por especificaciones (SDD) con agentes de IA.
 La especificación versionada en el repositorio es la fuente de verdad: el alumno especifica, la IA planifica e
 implementa, y el pipeline CI/CD valida contra los criterios de aceptación. Bajo cada apartado se indica qué debe

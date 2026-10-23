@@ -54,7 +54,8 @@ módulo explica qué es, para qué se usa en el TFG, alternativas y fuentes, y s
 
 ## Memoria
 
-- Formato: **LaTeX** con la plantilla oficial de la escuela (la proporciona el alumno o el tutor).
+- Formato: **LaTeX** con la plantilla oficial de la escuela (Overleaf; se integra en `docs/memoria/latex/`).
+  Citas en **APA**. Los módulos de `docs/conceptos/` usan IEEE y se convertirán a APA al pasar a la memoria.
 - Se redacta en paralelo a la implementación: capítulos 1–3 desde ya; 4 y 5 a medida que haya datos en el
   registro; 6 al final.
 - El agente propone borradores con fuentes citadas; el alumno los revisa y los reescribe con su voz. El uso

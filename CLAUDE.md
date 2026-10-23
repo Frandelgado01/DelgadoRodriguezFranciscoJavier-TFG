@@ -11,6 +11,10 @@ el alumno especifica y aprueba, el agente planifica e implementa, el pipeline CI
 - Idioma de trabajo, artefactos y memoria: español.
 - Índice de la memoria (v4): ver `docs/memoria/indice.md`.
 - Forma de trabajo acordada (dónde, ciclo de iteración, roles, aprendizaje): `docs/proceso/forma-de-trabajo.md`.
+- Acuerdos con el tutor (2026-10-23): SDD *spec-anchored*; rama corta por funcionalidad; stack PWA React +
+  TypeScript, Python + FastAPI, PostgreSQL + pgvector, Claude API, pytest/Playwright/k6, GitHub Actions + Docker;
+  despliegue local con Docker + demo; alcance: tratamientos, fertilización, labores y cosechas, con formato
+  compatible con el SIEX; normativa estatal + Castilla-La Mancha. Detalle en `docs/proceso/pendientes-tutor.md`.
 
 ## Regla obligatoria: registro del proceso
 
@@ -47,6 +51,6 @@ No pases de fase sin la aprobación explícita del alumno. Un cambio de requisit
 - Formato de entrega: LaTeX con la plantilla oficial de la escuela. Borradores en `docs/memoria/`, un fichero
   por capítulo.
 - El alumno revisa y reescribe con su voz todo borrador; el uso de IA se declara en el anexo si la UCLM lo exige.
-- Cifras, normas y afirmaciones técnicas siempre con fuente citada (estilo único, IEEE o APA). Si no hay
+- Cifras, normas y afirmaciones técnicas siempre con fuente citada en **APA** (acordado con el tutor). Si no hay
   fuente, se marca como pendiente; nunca se inventan datos.
 - Los capítulos 4 y 5 se redactan a partir del registro del proceso, no de memoria.
