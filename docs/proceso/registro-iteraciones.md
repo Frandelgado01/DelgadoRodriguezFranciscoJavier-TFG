@@ -29,7 +29,8 @@ cada sesión.
 | 2026-10-23 | — | Claude Code (app escritorio) | `pendientes-tutor.md`, `CLAUDE.md`, `indice.md`, `forma-de-trabajo.md` | Recoger las respuestas de la tutoría (13 temas) y propagarlas a las reglas y al índice | 1 | — | suscripción | | 2305729 |
 | 2026-10-23 | 1 | Claude Code (VS Code) | `.specify/memory/constitution.md` v1.0.0 | `/speckit-constitution` a partir de los acuerdos de la tutoría y del índice v4 | 1 | — | suscripción | | 7713869 |
 | 2026-10-23 | M | Claude Code (app escritorio) | `docs/memoria/latex/` (plantilla ESI-UCLM adaptada al índice v4), `bibliografia.bib` (APA), `.vscode/` | Integrar la plantilla LaTeX de Overleaf y preparar la compilación local | 1 | — | suscripción | | 35aad35 |
-| 2026-10-23 | M | Claude Code (app escritorio) | Primera compilación de la memoria (MiKTeX 25.12): 45 páginas, sin avisos; APA en español (`spanish.apc`) | Comprobar la compilación local tras instalar MiKTeX y LaTeX Workshop | 2 | — | suscripción | | |
+| 2026-10-23 | M | Claude Code (app escritorio) | Primera compilación de la memoria (MiKTeX 25.12): 45 páginas, sin avisos; APA en español (`spanish.apc`) | Comprobar la compilación local tras instalar MiKTeX y LaTeX Workshop | 2 | — | suscripción | | a2a5a84 |
+| 2026-10-23 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.2 (borrador) | Redactar el 2.2 (vibe coding, SDD, loop engineering, comparativa y enfoque) a partir del módulo 01, con citas APA | 1 | Pendiente de revisión del alumno | suscripción | | |
 
 ## Decisiones
 

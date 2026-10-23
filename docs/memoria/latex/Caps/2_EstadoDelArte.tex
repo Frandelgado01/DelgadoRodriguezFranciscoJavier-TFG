@@ -9,9 +9,83 @@
 
 \section{Paradigmas de desarrollo con IA: vibe coding, SDD y loop engineering}\label{sec:Paradigmas}
 % Base: docs/conceptos/01-paradigmas-desarrollo-con-ia.md
-% Cada paradigma con sus fuentes y cierre con la comparativa. Ng por The Batch
-% n.º 359 (acordado con el tutor).
-\pendiente{vibe coding, SDD, loop engineering y comparativa}
+% BORRADOR del agente (2026-10-23): el alumno lo revisa y lo reescribe con su voz.
+
+Los agentes de código actuales ya no se limitan a completar líneas: leen el repositorio, ejecutan órdenes, escriben código y lo prueban durante periodos prolongados. Este cambio desplaza el trabajo del ingeniero desde la escritura de código hacia la decisión sobre qué construir, la formulación de instrucciones sin ambigüedad y la verificación de lo producido. GitHub lo describe como el paso de tratar el código como fuente de verdad a tratar como tal la \emph{intención} \citep{delimarsky2025sdd}.
+
+En este contexto han surgido tres formas de trabajar con agentes que conviene distinguir: el \emph{vibe coding}, el desarrollo dirigido por especificaciones (\emph{Spec-Driven Development}, SDD) y el \emph{loop engineering}. No compiten entre sí, porque responden a preguntas distintas: el primero sirve para explorar qué probar; el segundo fija qué hay que construir y por qué; y el tercero automatiza cómo iterar hasta que el resultado funcione.
+
+\subsection{Vibe coding}\label{subsec:VibeCoding}
+
+El término fue acuñado por \citet{karpathy2025vibe} para describir una forma de programar en la que el desarrollador se deja llevar por el modelo: describe lo que quiere en lenguaje natural, acepta los cambios sin leerlos y corrige los errores con nuevos \emph{prompts}, hasta <<olvidar que el código existe>> (traducción propia). Karpathy lo planteó para proyectos desechables de fin de semana \citep{willison2025vibe}.
+
+\citet{willison2025vibe} precisa el alcance del término: \emph{vibe coding} es construir software con un modelo de lenguaje \emph{sin revisar} el código que genera. Si el código se revisa, se prueba y se comprende hasta el punto de poder explicarlo a otra persona, ya no se trata de \emph{vibe coding}, sino de desarrollo de software asistido por IA. Esta distinción es central para el presente trabajo, que se sitúa deliberadamente en el segundo caso.
+
+El \emph{vibe coding} resulta útil para prototipos, pruebas de concepto, herramientas personales de bajo riesgo y para explorar ideas o interfaces. Sus límites son igualmente claros. Willison advierte de riesgos concretos: la exposición de secretos en el código, la fuga de datos privados, la carga excesiva sobre servicios externos y los costes de API sin control \citep{willison2025vibe}. A ello se suma que el contexto se pierde entre sesiones, las decisiones quedan implícitas en el historial de conversaciones y el resultado no es trazable ni auditable.
+
+\subsection{Desarrollo dirigido por especificaciones (SDD)}\label{subsec:SDD}
+
+En el SDD, la especificación es un contrato sobre cómo debe comportarse el código y la fuente de verdad que los agentes emplean para generarlo, probarlo y validarlo. Las especificaciones pasan a ser artefactos vivos que evolucionan con el proyecto, y no documentos estáticos \citep{delimarsky2025sdd}. El enfoque parte de un diagnóstico: el problema no es la capacidad del agente para programar, sino que un \emph{prompt} vago le obliga a adivinar numerosos requisitos no expresados, y los errores afloran tarde.
+
+El flujo propuesto por GitHub se organiza en cuatro fases, cada una con un artefacto que el desarrollador revisa antes de continuar \citep{delimarsky2025sdd}:
+\begin{enumerate}
+	\item \textbf{Especificar}: se describe qué se construye y por qué, con recorridos de usuario y criterios de éxito.
+	\item \textbf{Planificar}: se fijan el \emph{stack}, la arquitectura y las restricciones, como las normativas.
+	\item \textbf{Descomponer en tareas}: el plan se divide en tareas pequeñas, comprobables y revisables.
+	\item \textbf{Implementar}: el agente ejecuta las tareas y el desarrollador revisa cambios acotados en lugar de grandes bloques de código.
+\end{enumerate}
+La herramienta GitHub Spec Kit implementa este flujo para distintos agentes de código y añade una \emph{constitución} previa con los principios no negociables del proyecto y fases de control de calidad \citep{github2026speckit,github2026speckitquickstart}.
+
+\citet{bockeler2025sdd} distingue tres niveles de adopción del SDD. En el nivel \emph{spec-first}, la especificación se redacta antes de la tarea y la guía. En el nivel \emph{spec-anchored}, la especificación se conserva una vez terminada la tarea y se usa para mantener y hacer evolucionar la funcionalidad. En el nivel \emph{spec-as-source}, el desarrollador solo edita la especificación y el código se genera a partir de ella.
+
+El SDD es adecuado para productos que deben mantenerse, para dominios con requisitos regulados, para el trabajo en equipo y allí donde la trazabilidad es necesaria. Sus limitaciones también están documentadas. \citet{bockeler2025sdd} señala que el método puede resultar desproporcionado en tareas pequeñas, que los documentos generados son extensos y repetitivos y, por tanto, costosos de revisar, y que puede producir una falsa sensación de control, ya que el agente a veces ignora la especificación y otras la sigue en exceso. Advierte, además, que el nivel \emph{spec-as-source} recuerda al desarrollo dirigido por modelos (MDD), que fracasó en buena medida por su rigidez, con el agravante de que los modelos de lenguaje no son deterministas: una misma especificación produce código distinto en cada generación. Por último, la calidad del resultado depende de la de la especificación: una especificación pobre o desactualizada produce código pobre o desactualizado.
+
+\subsection{Loop engineering}\label{subsec:LoopEngineering}
+
+El \emph{loop engineering} es la práctica de diseñar flujos de trabajo agénticos, o bucles, que guían a los agentes de forma iterativa hacia objetivos definidos por el usuario con una intervención humana mínima. El agente actúa, observa el resultado, decide e itera hasta completar la tarea, y el papel del desarrollador pasa de escribir \emph{prompts} a diseñar los sistemas que instruyen, comprueban y guían al agente \citep{belcic2026loop}.
+
+La práctica adquirió nombre en junio de 2026. \citet{osmani2026loop} recoge las afirmaciones de Peter Steinberger, según el cual no hay que instruir directamente a los agentes sino diseñar los bucles que lo hacen, y de Boris Cherny, responsable de Claude Code en Anthropic, que resume su trabajo actual como <<escribir bucles>> (traducción propia). Poco después, \citet{ng2026batch359} describió tres bucles anidados en el desarrollo con agentes, que operan a escalas temporales distintas:
+\begin{itemize}
+	\item el \textbf{bucle del agente} (minutos), en el que, a partir de una especificación y opcionalmente de evaluaciones, el agente escribe código, lo prueba e itera hasta cumplirla;
+	\item el \textbf{bucle del desarrollador} (de decenas de minutos a horas), en el que una persona revisa el producto y reorienta al agente;
+	\item el \textbf{bucle externo} (días o semanas), que incorpora la opinión de usuarios y probadores y alimenta la visión del producto, que a su vez da forma a la especificación.
+\end{itemize}
+
+Un bucle bien diseñado reúne varios componentes \citep{belcic2026loop,osmani2026loop}: un objetivo con un criterio de parada verificable, como que pasen todas las pruebas; una comprobación del resultado en cada iteración; \emph{hooks} que ejecutan controles de seguridad y calidad ante determinados eventos; conocimiento del proyecto empaquetado en \emph{skills}; subagentes que separan quien produce de quien verifica; acceso a sistemas externos mediante protocolos como MCP; y un estado persistente fuera de la conversación que registra lo hecho y lo pendiente.
+
+Frente a la ingeniería de \emph{prompts}, centrada en obtener la mejor instrucción individual con un humano que escribe y evalúa cada una, el \emph{loop engineering} construye sistemas que generan sus propias instrucciones y evalúan su propio trabajo; lo primero sirve para interacciones puntuales y lo segundo para tareas largas \citep{belcic2026loop}.
+
+Sus riesgos son la contrapartida de la autonomía. \citet{osmani2026loop} advierte que <<un bucle que funciona sin supervisión también comete errores sin supervisión>> (traducción propia) y que la afirmación del agente de haber terminado no constituye una prueba. Tanto IBM como Osmani señalan la \emph{deuda de comprensión}, es decir, la distancia creciente entre el código que existe y el que el desarrollador entiende; la \emph{rendición cognitiva}, o aceptación acrítica de lo que devuelve el bucle; y el coste en \emph{tokens} de bucles mal diseñados o con muchos subagentes \citep{belcic2026loop,osmani2026loop}. La responsabilidad sobre el código entregado, incluidos la seguridad y el cumplimiento normativo, sigue recayendo en la persona \citep{belcic2026loop}.
+
+\subsection{Comparativa y enfoque adoptado}\label{subsec:ComparativaParadigmas}
+
+La tabla~\ref{tab:Paradigmas} resume las diferencias entre los tres paradigmas.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Comparativa entre vibe coding, SDD y loop engineering. Elaboración propia a partir de \citet{willison2025vibe}, \citet{delimarsky2025sdd}, \citet{bockeler2025sdd}, \citet{belcic2026loop} y \citet{osmani2026loop}.}
+	\label{tab:Paradigmas}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Dimensión} & \textbf{Vibe coding} & \textbf{SDD} & \textbf{Loop engineering} \\
+		\midrule
+		Pregunta que responde & ¿Qué pruebo rápido? & ¿Qué hay que construir y por qué? & ¿Cómo itera el agente hasta que funcione? \\
+		Artefacto central & El \emph{prompt} & La especificación & El bucle: pruebas, \emph{hooks} y criterio de parada \\
+		Papel del humano & Pide y acepta & Especifica y aprueba cada fase & Diseña el bucle y vigila sus límites \\
+		Verificación & Manual, a ojo & Criterios de aceptación trazados a pruebas & Automática en cada iteración \\
+		Trazabilidad & Ninguna & Alta, de requisito a prueba & Registro de iteraciones \\
+		Uso adecuado & Prototipos & Productos mantenibles y regulados & Tareas largas y verificables \\
+		Riesgo principal & Código que nadie entiende & Especificación desactualizada & Coste y errores sin supervisión \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Este trabajo combina los tres paradigmas según su ámbito de aplicación. El SDD define \emph{qué} se construye, lo que resulta imprescindible por la carga normativa del dominio: cada obligación legal se recoge como requisito en la especificación y se traza hasta la prueba que la verifica, de modo que un cambio de norma se aplica primero en la especificación y se propaga desde ella. De los tres niveles descritos por \citet{bockeler2025sdd}, se adopta el \emph{spec-anchored}: la especificación se mantiene viva y guía la evolución del sistema, pero no se promete regenerar un código idéntico a partir de ella, dado el carácter no determinista de los modelos. La conformidad con la especificación se demuestra mediante pruebas.
+
+El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada tarea en un bucle de implementar, probar y corregir, con \emph{hooks} como puerta de verificación, un límite de iteraciones y una comprobación final de convergencia entre el código y la especificación como criterio de parada \citep{github2026speckitquickstart}. Los riesgos señalados se controlan con la revisión del alumno en cada fase, un \emph{commit} por tarea y el registro de iteraciones y consumo. El \emph{vibe coding} queda limitado a prototipos desechables durante la ideación, que no se incorporan al producto.
+
+\pendiente{opcional: figura con los tres bucles de Ng aplicados a las fases del TFG}
 
 \section{Herramientas de desarrollo}\label{sec:Herramientas}
 % Base: docs/conceptos/02-claude-code-y-spec-kit.md
