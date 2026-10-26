@@ -182,9 +182,17 @@ obligación legal. Pendiente: verificar las obligaciones de trazabilidad del Reg
 
 1. Fecha exacta del "próximo periodo de programación de la PAC" a efectos del CUE obligatorio (RD 1054/2022, DF
    octava) y norma que lo modificó en enero de 2025.
-2. Circulares de coordinación y especificaciones técnicas del SIEX (catálogo de conceptos, protocolos).
+2. ~~Especificaciones técnicas del SIEX~~ **Localizadas (2026-10-26):** el FEGA publica la [Documentación
+   técnica agrícola SIEX v3.11](https://www.fega.gob.es/es/siex/documentacion-tecnica-agricola-siex): anexo V
+   (definición de variables del REA y del CUE, obligatorias o voluntarias, en Excel), anexo VI (interfaz de
+   servicio web común) y anexo VII (catálogos de códigos). Es la referencia del "formato compatible con el SIEX";
+   revisar el anexo V en la fase 4 (plan). La versión 5.9.0 del SIEX (septiembre de 2027) la sustituirá por la
+   documentación técnica horizontal.
 3. Anexos I y II del Decreto 80/2025 de Castilla-La Mancha.
-4. Aplicación de cuaderno digital de la Junta de Castilla-La Mancha.
+4. ~~Aplicación de la Junta de Castilla-La Mancha~~ **Localizada (2026-10-26):** CUE de la Administración en el
+   Portal del Ciudadano de SGA y app gratuita SGA_CEX (móvil y escritorio); uso voluntario en 2026, obligatorio
+   para fitosanitarios desde el 01/01/2027
+   ([apliagri](https://apliagri.castillalamancha.es/cuaderno-digital-y-registro-de-explotaciones-agricolas)).
 5. Texto del Reglamento de Ejecución (UE) 2023/564 (contenido y formato del registro electrónico).
 6. Qué campos ofrece la base de datos del Registro de Productos Fitosanitarios (usos, dosis, plazo de seguridad) y
    si hay datos descargables.

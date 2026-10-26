@@ -31,7 +31,8 @@ cada sesión.
 | 2026-10-23 | M | Claude Code (app escritorio) | `docs/memoria/latex/` (plantilla ESI-UCLM adaptada al índice v4), `bibliografia.bib` (APA), `.vscode/` | Integrar la plantilla LaTeX de Overleaf y preparar la compilación local | 1 | — | suscripción | | 35aad35 |
 | 2026-10-23 | M | Claude Code (app escritorio) | Primera compilación de la memoria (MiKTeX 25.12): 45 páginas, sin avisos; APA en español (`spanish.apc`) | Comprobar la compilación local tras instalar MiKTeX y LaTeX Workshop | 2 | — | suscripción | | a2a5a84 |
 | 2026-10-23 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.2 (borrador) | Redactar el 2.2 (vibe coding, SDD, loop engineering, comparativa y enfoque) a partir del módulo 01, con citas APA | 1 | Ninguna por ahora: el alumno lo acepta el 2026-10-26 ("me gusta cómo va") | suscripción | | 3f89ff6 |
-| 2026-10-26 | 2 | Claude Code (app escritorio) | `docs/conceptos/04-normativa-cuaderno-de-campo.md`; 8 normas añadidas a `bibliografia.bib` | Investigar la normativa (BOE, DOCM, MAPA) antes de especificar la primera funcionalidad | 1 | — | suscripción | | |
+| 2026-10-26 | 2 | Claude Code (app escritorio) | `docs/conceptos/04-normativa-cuaderno-de-campo.md`; 8 normas añadidas a `bibliografia.bib` | Investigar la normativa (BOE, DOCM, MAPA) antes de especificar la primera funcionalidad | 1 | — | suscripción | | 9d11ae0 |
+| 2026-10-26 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.1 (borrador); módulo 04 (pendientes 2 y 4 resueltos: documentación técnica SIEX del FEGA, app SGA_CEX de la JCCM) | Redactar el 2.1 (marco normativo, soluciones existentes y carencias) mientras la sesión de VS Code ejecuta `/speckit-specify` | 1 | Pendiente de revisión del alumno | suscripción | | |
 
 ## Decisiones
 

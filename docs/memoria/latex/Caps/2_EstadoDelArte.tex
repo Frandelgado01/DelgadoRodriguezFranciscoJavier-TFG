@@ -3,9 +3,44 @@
 % citadas en cada bloque.
 
 \section{Soluciones de cuaderno de campo}\label{sec:SolucionesCuaderno}
-% Marco normativo que obliga a llevar el cuaderno y aplicaciones comerciales y
-% públicas existentes, con sus carencias desde la carga para el agricultor.
-\pendiente{marco normativo y aplicaciones existentes}
+% Base: docs/conceptos/04-normativa-cuaderno-de-campo.md
+% BORRADOR del agente (2026-10-26): el alumno lo revisa y lo reescribe con su voz.
+
+\subsection{Marco normativo}\label{subsec:MarcoNormativo}
+
+La obligación de llevar un cuaderno de explotación no procede de una única norma, sino de varias normas sectoriales que el Real Decreto 1054/2022 integra en el \emph{Cuaderno digital de explotación agrícola} (CUE), conectado con el Sistema de información de explotaciones agrícolas y ganaderas y de la producción agraria (SIEX) \citep{rd1054-2022}. Este real decreto establece que el titular debe llevar el cuaderno cuando lo exija una norma sectorial, en particular las de productos fitosanitarios, nutrición de suelos e intervenciones de la Política Agrícola Común (PAC) (art.~9.1), y que el CUE será obligatorio en el próximo periodo de programación de la PAC para las explotaciones que superen 30~ha de cultivos, 5~ha de regadío o 0,1~ha de invernadero (disposición final octava).
+
+La obligación más exigente es la de los \textbf{tratamientos fitosanitarios}. El artículo~16 del Real Decreto 1311/2012 obliga a mantener actualizado un registro de tratamientos con los datos de la parte~I de su anexo~III: fecha, parcela, plaga, aplicador, cultivo, superficie, producto con su número de registro, equipo, cantidad, valoración de la eficacia y observaciones \citep{rd1311-2012}. Los datos deben registrarse en formato electrónico en el plazo de un mes desde el tratamiento y conservarse al menos tres años. El papel solo se admite hasta el 31 de diciembre de 2026, por lo que \textbf{desde el 1 de enero de 2027 el registro de tratamientos debe ser electrónico}.
+
+A esta obligación se suman otras tres. El Real Decreto 1051/2022 exige anotar cada aporte de nutrientes, materia orgánica y agua de riego en el plazo de un mes, y elaborar un plan de abonado, obligatorio con carácter general desde el 1 de septiembre de 2026 \citep{rd1051-2022}. El Real Decreto 1048/2022 obliga a quienes se acogen a los ecorregímenes de la PAC a anotar en el cuaderno las prácticas comprometidas, como la siega, el pastoreo o el establecimiento de cubiertas, generalmente en el plazo de un mes \citep{rd1048-2022}. Por último, el Real Decreto 1049/2022 incorpora a la condicionalidad reforzada de la PAC los requisitos sobre fitosanitarios, de modo que su incumplimiento reduce las ayudas un 3~\% con carácter general y al menos un 15~\%, hasta el 100~\%, si es intencionado (art.~15) \citep{rd1049-2022}.
+
+En Castilla-La Mancha, el Decreto 80/2025 aprueba el programa de actuación en las zonas vulnerables a la contaminación por nitratos de origen agrario, que añade condiciones a la fertilización en esas zonas \citep{decreto80-2025clm}. \pendiente{detallar las obligaciones de los anexos I y II del Decreto 80/2025}
+
+Las cosechas, en cambio, no tienen una obligación de registro en el cuaderno: el anexo~III del Real Decreto 1311/2012 no incluye campos de cosecha y el Real Decreto 9/2015 solo exige notificar anualmente los datos de la explotación y sus cultivos \citep{rd1311-2012,rd9-2015}. Sin embargo, el agricultor debe respetar el plazo de seguridad que figura en la etiqueta de cada producto entre el último tratamiento y la cosecha, información que recoge el Registro de Productos Fitosanitarios del Ministerio de Agricultura, Pesca y Alimentación \citep{mapa-registro-fitosanitarios}.
+
+En conjunto, el agricultor debe conocer y aplicar al menos cinco normas estatales y una autonómica, con plazos de anotación de un mes, formato electrónico obligatorio para los fitosanitarios desde 2027 y consecuencias económicas directas sobre las ayudas.
+
+\subsection{Soluciones existentes}\label{subsec:SolucionesExistentes}
+
+El Real Decreto 1054/2022 obliga a las administraciones a ofrecer gratuitamente un sistema para llevar el CUE, pero permite al titular usar cualquier otro que cumpla los requisitos técnicos y el contenido mínimo (art.~10) \citep{rd1054-2022}. Esto ha dado lugar a dos tipos de soluciones.
+
+\textbf{Soluciones públicas.} Cada comunidad autónoma ofrece su acceso al REA y al CUE \citep{fega-acceso-rea-cue}. En Castilla-La Mancha, la Junta ofrece el CUE de la Administración a través del Portal del Ciudadano de SGA y la aplicación gratuita SGA\_CEX, para móvil y escritorio, con las que el agricultor registra tratamientos fitosanitarios, fertilizaciones, riegos y actuaciones sobre superficies de ecorregímenes. El uso es voluntario en la campaña 2026, aunque se recomienda, y la Junta remite a una lista de entidades habilitadas que pueden cumplimentar el cuaderno en nombre del titular \citep{jccm-apliagri-cue}. Otras comunidades tienen herramientas propias, como el Quadern Integrat d'Explotació en Cataluña o el sistema XEAGA en Galicia \citep{fega-acceso-rea-cue}.
+
+\textbf{Soluciones comerciales.} Las empresas de software pueden registrarse como desarrolladoras de \emph{CUE-Comerciales} para que sus aplicaciones intercambien datos con la Administración. Para ello, el FEGA publica la documentación técnica del SIEX, que incluye la definición de las variables del REA y del CUE, los catálogos de códigos normalizados y la interfaz de servicio web común \citep{fega-doc-tecnica-siex}. Las comunidades autónomas mantienen registros de estas entidades desarrolladoras, que acceden a los datos con la autorización del titular \citep{fega-acceso-rea-cue,fega-doc-tecnica-siex}. \pendiente{completar con 2-3 aplicaciones comerciales representativas registradas como CUE-Comercial y sus funcionalidades, contrastadas con fuentes del fabricante o pruebas propias}
+
+\subsection{Carencias desde el punto de vista del agricultor}\label{subsec:Carencias}
+
+Las soluciones descritas resuelven la obligación de \emph{guardar} los datos en el formato exigido, pero la documentación consultada no describe que reduzcan las otras fuentes de fricción del agricultor:
+\begin{itemize}
+	\item \textbf{Introducción de datos.} El registro se plantea como cumplimentación de formularios con los campos del anexo~III. Ninguna de las fuentes consultadas menciona la entrada en lenguaje natural o por voz desde el campo.
+	\item \textbf{Conocimiento normativo.} Las herramientas registran lo que el agricultor introduce, pero no se describe que respondan dudas como si puede cosechar tras un tratamiento, citando la etiqueta o el artículo aplicable.
+	\item \textbf{Dependencia de terceros.} La figura de las entidades habilitadas que cumplimentan el cuaderno en nombre del titular \citep{jccm-apliagri-cue} indica que una parte de los agricultores delega esta tarea.
+	\item \textbf{Calendario cambiante.} Las fechas de obligatoriedad se han modificado varias veces, y la propia Junta de Castilla-La Mancha pidió en 2024 aplazar la obligación y eximir a las pequeñas explotaciones \citep{cmmedia2024aplazamiento}.
+\end{itemize}
+
+\pendiente{tabla comparativa de las aplicaciones probadas por el alumno con los criterios: entrada por voz o lenguaje natural, funcionamiento sin conexión, avisos de plazos, consulta normativa con fuente, compatibilidad SIEX y coste}
+
+Este trabajo se sitúa en ese hueco: un cuaderno compatible con el contenido exigido por el SIEX que, además, reduzca la carga del agricultor mediante la entrada en lenguaje natural, los avisos de plazos y la resolución de dudas normativas con cita de la fuente.
 
 \section{Paradigmas de desarrollo con IA: vibe coding, SDD y loop engineering}\label{sec:Paradigmas}
 % Base: docs/conceptos/01-paradigmas-desarrollo-con-ia.md
