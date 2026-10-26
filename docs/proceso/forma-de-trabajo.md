@@ -47,10 +47,11 @@ módulo explica qué es, para qué se usa en el TFG, alternativas y fuentes, y s
 | 01 | Desarrollo con agentes: vibe coding, SDD, loop engineering | Fase 1 |
 | 02 | Claude Code y Spec Kit: `CLAUDE.md`, modo plan, comandos, skills, subagentes, hooks, MCP | Fase 1 |
 | 03 | Git, GitHub y trazabilidad | Fase 1 |
-| 04 | Arquitectura web: PWA, API REST, base de datos | Fase 4 |
-| 05 | RAG: embeddings, fragmentación, búsqueda vectorial, generación y evaluación | Fase 4 |
-| 06 | Pruebas: unitarias, E2E, rendimiento | Fase 6 |
-| 07 | CI/CD, contenedores, DevOps y LLMOps | Fase 7 |
+| 04 | Normativa del cuaderno de campo (SIEX, fitosanitarios, fertilización, PAC, Castilla-La Mancha) | Fase 2 |
+| 05 | Arquitectura web: PWA, API REST, base de datos | Fase 4 |
+| 06 | RAG: embeddings, fragmentación, búsqueda vectorial, generación y evaluación | Fase 4 |
+| 07 | Pruebas: unitarias, E2E, rendimiento | Fase 6 |
+| 08 | CI/CD, contenedores, DevOps y LLMOps | Fase 7 |
 
 ## Memoria
 

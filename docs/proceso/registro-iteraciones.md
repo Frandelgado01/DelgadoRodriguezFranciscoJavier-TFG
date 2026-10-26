@@ -30,7 +30,8 @@ cada sesión.
 | 2026-10-23 | 1 | Claude Code (VS Code) | `.specify/memory/constitution.md` v1.0.0 | `/speckit-constitution` a partir de los acuerdos de la tutoría y del índice v4 | 1 | — | suscripción | | 7713869 |
 | 2026-10-23 | M | Claude Code (app escritorio) | `docs/memoria/latex/` (plantilla ESI-UCLM adaptada al índice v4), `bibliografia.bib` (APA), `.vscode/` | Integrar la plantilla LaTeX de Overleaf y preparar la compilación local | 1 | — | suscripción | | 35aad35 |
 | 2026-10-23 | M | Claude Code (app escritorio) | Primera compilación de la memoria (MiKTeX 25.12): 45 páginas, sin avisos; APA en español (`spanish.apc`) | Comprobar la compilación local tras instalar MiKTeX y LaTeX Workshop | 2 | — | suscripción | | a2a5a84 |
-| 2026-10-23 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.2 (borrador) | Redactar el 2.2 (vibe coding, SDD, loop engineering, comparativa y enfoque) a partir del módulo 01, con citas APA | 1 | Pendiente de revisión del alumno | suscripción | | |
+| 2026-10-23 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.2 (borrador) | Redactar el 2.2 (vibe coding, SDD, loop engineering, comparativa y enfoque) a partir del módulo 01, con citas APA | 1 | Ninguna por ahora: el alumno lo acepta el 2026-10-26 ("me gusta cómo va") | suscripción | | 3f89ff6 |
+| 2026-10-26 | 2 | Claude Code (app escritorio) | `docs/conceptos/04-normativa-cuaderno-de-campo.md`; 8 normas añadidas a `bibliografia.bib` | Investigar la normativa (BOE, DOCM, MAPA) antes de especificar la primera funcionalidad | 1 | — | suscripción | | |
 
 ## Decisiones
 
@@ -69,3 +70,7 @@ Decisiones relevantes del alumno (qué se aceptó, qué se rechazó y por qué).
 | 2026-10-23 | M | APA con `apacite` (`natbibapa`) y bibtex; bibliografía inicial con las fuentes de los módulos 01–03 | biblatex-apa con biber | Compatible con la compilación pdflatex + bibtex de la plantilla |
 | 2026-10-23 | — | Borrar el ZIP de la plantilla tras descomprimirlo | Versionarlo en git | 8 MB redundantes; su contenido ya está en `docs/memoria/latex/` |
 | 2026-10-23 | M | Compilar en la carpeta de `principal.tex` (auxiliares y PDF ignorados por git) | Salida en `build/` | Con `build/`, bibtex no encuentra los `.aux` de `Caps/` y `Anexos/` y no vería las citas de los capítulos |
+| 2026-10-26 | 2 | Investigar la normativa antes de especificar; primera funcionalidad: registro de tratamientos fitosanitarios | Especificar directamente; empezar por otra funcionalidad | El principio IV exige citar la norma de cada requisito; los tratamientos son el registro más regulado (electrónico desde 01/01/2027) |
+| 2026-10-26 | 2 | PROPUESTA pendiente de aprobación: cosechas como registro voluntario de apoyo al cumplimiento (comprobar el plazo de seguridad), no como obligación legal | Presentarlas como registro obligatorio | Ninguna norma consultada exige registrar cosechas (anexo III del RD 1311/2012; RD 9/2015) |
+| 2026-10-26 | 2 | PROPUESTA pendiente de aprobación: labores ligadas a las prácticas de ecorregímenes (RD 1048/2022), con aviso del plazo de un mes | Registro genérico de labores sin base normativa | Solo los ecorregímenes obligan a anotar labores |
+| 2026-10-26 | M | Guía de conceptos renumerada (04 normativa; 05–08 arquitectura, RAG, pruebas y CI/CD); módulos nuevos con referencias en APA | Mantener IEEE en los módulos | Coherencia con la memoria (APA acordado con el tutor) |
