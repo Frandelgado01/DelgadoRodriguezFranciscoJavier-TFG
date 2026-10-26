@@ -123,10 +123,12 @@ comprobar que aparecen como opciones al registrar un tratamiento.
 **Escenarios de aceptación**:
 
 1. **Dado** una explotación sin parcelas, **cuando** el agricultor da de alta una parcela con su referencia
-   SIGPAC, superficie, cultivo (especie y variedad) y sistema (secano o regadío; aire libre o protegido),
-   **entonces** la parcela aparece en la lista de parcelas al registrar un tratamiento.
-2. **Dado** un aplicador dado de alta con su número de carné de usuario profesional, **cuando** el agricultor
-   registra un tratamiento, **entonces** puede elegirlo como aplicador.
+   SIGPAC, superficie, uso SIGPAC y uso del suelo, cultivo (especie y variedad), sistema de cultivo (secano, o
+   regadío con su sistema de riego; aire libre, o protegido con su tipo de protección) y, en su caso, el sistema
+   de certificación y el marco de control de plagas, **entonces** la parcela aparece en la lista de parcelas al
+   registrar un tratamiento.
+2. **Dado** un aplicador dado de alta con su nombre y su número de carné de usuario profesional, **cuando** el
+   agricultor registra un tratamiento, **entonces** puede elegirlo como aplicador.
 3. **Dado** un equipo de aplicación con número ROMA, **cuando** se elige en un tratamiento, **entonces** el
    número ROMA queda asociado al tratamiento.
 4. **Dado** una parcela con tratamientos registrados, **cuando** el agricultor la da de baja, **entonces** deja
@@ -190,6 +192,9 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **REQ-07**: Un tratamiento al que le falte la valoración de la eficacia MUST figurar como "pendiente de
   completar", con su fecha de vencimiento: un mes desde la fecha del tratamiento. Al completarla pasa a
   "completo". *Fuente: RD 1311/2012, art. 16 (plazo de un mes) y anexo III, sección B (j).*
+  *Interpretación:* el art. 16 da un mes para volcar el registro completo. El campo j no lleva "en su caso" ni
+  "si procede", así que es obligatorio; como la eficacia solo se conoce días después, se admite guardarlo sin él,
+  pero el registro no está completo hasta que se añade, y debe completarse dentro del mes.
 - **REQ-08**: El sistema MUST avisar al agricultor, en lenguaje llano, de cada tratamiento pendiente de completar
   cuyo vencimiento esté a 7 días o menos, indicando el tratamiento, el dato que falta y los días restantes; y de
   cada tratamiento vencido sin completar. *Fuente: RD 1311/2012, art. 16; antelación de 7 días: apoyo.*
@@ -214,12 +219,17 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 **Datos de la explotación** (historia 4)
 
 - **REQ-14**: El agricultor MUST poder dar de alta, modificar y dar de baja las parcelas de su explotación con:
-  número o nombre, referencia SIGPAC, superficie (ha), cultivo (especie y variedad), secano o regadío y aire
-  libre o protegido. *Fuente: RD 1311/2012, anexo III, parte I, sección A.*
+  (a) número o nombre; (b) referencia SIGPAC; (c) superficie (ha); (d) uso SIGPAC y uso del suelo (forestal,
+  pasto o cultivo), con especie y variedad en cultivos leñosos y cultivo actual en los demás; (e) sistema de
+  cultivo: secano, o regadío con su sistema de riego; y aire libre, o protegido con su tipo de protección; (f) si
+  la producción está acogida a un sistema de certificación, cuál, y el marco de control de plagas que aplica
+  (art. 10). *Fuente: RD 1311/2012, anexo III, parte I, sección A.2, apartados a–f.*
 - **REQ-15**: El agricultor MUST poder dar de alta, modificar y dar de baja a las personas que aplican o asesoran
-  (nombre, NIF y número de carné de usuario profesional o de asesor) y los equipos de aplicación (descripción,
-  número ROMA si procede y fecha de la última inspección). *Fuente: RD 1311/2012, anexo III, parte I,
-  sección A.*
+  (nombre y número de carné de usuario profesional o de asesor) y los equipos de aplicación (descripción, fecha
+  de adquisición o de la última inspección, y número ROMA o referencia censal si procede). No se piden el NIF ni
+  otros datos personales de aplicadores y asesores, porque la norma solo exige el NIF del titular. *Fuente:
+  RD 1311/2012, anexo III, parte I, secciones A.1 (c, h) y B (d); minimización de datos: constitución,
+  principio VI.*
 - **REQ-16**: El agricultor MUST poder dar de alta un producto fitosanitario (nombre comercial y número de
   registro) desde el propio registro del tratamiento, y reutilizarlo después. *Fuente: RD 1311/2012, anexo III,
   sección B (g).*
@@ -229,10 +239,13 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 ### Entidades clave
 
 - **Explotación**: la del agricultor titular. Agrupa todos los datos de esta funcionalidad.
-- **Parcela**: unidad de terreno de la explotación. Número o nombre, referencia SIGPAC, superficie, cultivo
-  actual (especie y variedad), secano o regadío, aire libre o protegido, y estado (activa o de baja).
-- **Persona**: aplicador o asesor. Nombre, NIF, tipo y número de carné, estado.
-- **Equipo de aplicación**: descripción, número ROMA (si procede), fecha de la última inspección, estado.
+- **Parcela**: unidad de terreno de la explotación. Número o nombre, referencia SIGPAC, superficie, uso SIGPAC y
+  uso del suelo, cultivo actual (especie y variedad), secano o regadío (con sistema de riego), aire libre o
+  protegido (con tipo de protección), sistema de certificación y marco de control de plagas, y estado (activa o
+  de baja).
+- **Persona**: aplicador o asesor. Nombre, tipo y número de carné, estado.
+- **Equipo de aplicación**: descripción, fecha de adquisición o de la última inspección, número ROMA o
+  referencia censal (si procede), estado.
 - **Producto fitosanitario**: nombre comercial y número de registro.
 - **Tratamiento**: fecha, plaga o problema, aplicador, asesor (opcional), equipo, valoración de la eficacia,
   observaciones, estado (completo, pendiente de completar, anulado), marca de "anotado fuera de plazo", fecha de
@@ -270,7 +283,11 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **Una explotación por usuario** en esta versión.
 - **Lenguaje natural**: el registro por texto o voz que pide el principio V de la constitución se especificará
   como una funcionalidad posterior que reutilice este registro; aquí el registro se hace con un formulario
-  pensado para el móvil.
+  pensado para el móvil. Es un **incumplimiento temporal y justificado del principio V** (decisión del alumno del
+  2026-10-26: primera iteración SDD más corta y sin depender del presupuesto de la API), que se resuelve con esa
+  funcionalidad. Por la misma razón, la confirmación del agricultor antes de guardar un registro generado por la
+  IA (principio V) no aplica aquí: todos los datos los introduce el agricultor; se exigirá en la funcionalidad de
+  lenguaje natural.
 - **Ámbito agrario al aire libre o en invernadero**: los tratamientos de locales y medios de transporte
   (volumen en m³, anexo III, sección B, b y f) quedan fuera de alcance.
 - **Productos**: no se comprueba el producto contra el Registro de Productos Fitosanitarios del MAPA (ni su
@@ -279,14 +296,18 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **Plazo de seguridad**: no se registra ni se comprueba en esta funcionalidad; corresponde a la funcionalidad
   de cosechas.
 - **Exportación**: la exportación del cuaderno en formato compatible con el SIEX (RD 1054/2022, anexo II) es una
-  funcionalidad aparte, pendiente de localizar el catálogo de conceptos del SIEX. Esta funcionalidad guarda los
-  datos de forma que puedan exportarse después.
+  funcionalidad aparte. La referencia es la documentación técnica agrícola del SIEX del FEGA (v3.11): anexo V
+  (definición de variables del REA y del CUE) y anexo VII (catálogos de códigos). Esta funcionalidad guarda los
+  datos de forma que puedan exportarse después; el plan revisará el anexo V para que los nombres y valores de
+  los datos sean compatibles.
 - **Justificantes**: adjuntar la documentación justificativa (facturas, recomendaciones del asesor, inspección de
   equipos) queda fuera de alcance; se conserva solo el registro.
-- **Resto de la sección A**: los datos del titular y las características del suelo (pH, P, K, materia orgánica)
-  se especificarán con la fertilización, que es donde se usan.
-- **Inspección de equipos**: se guarda la fecha de la última inspección, pero no se avisa de su caducidad,
-  porque la periodicidad no está en las fuentes consultadas.
+- **Resto de la sección A**: se especificarán con la fertilización: los datos generales de la explotación y del
+  titular (A.1, a y b), la entidad o agrupación de asesoramiento (A.1.d), la ubicación en zonas del art. 35 y las
+  masas de agua y puntos de captación de agua potable de los arts. 33.a y 33.b (A.1, e–g), y las características
+  del suelo (A.3). Quedan **fuera del alcance de esta funcionalidad**.
+- **Inspección de equipos**: se guarda la fecha de adquisición o de la última inspección, pero no se avisa de su
+  caducidad, porque la periodicidad no está en las fuentes consultadas.
 - **Antelación del aviso**: los 7 días de REQ-08 son una propuesta del agente, no una cifra normativa.
 - **Fuente normativa**: se usan los textos consolidados del BOE, que son informativos; se contrastarán con la
   publicación oficial antes de cerrar la especificación.
