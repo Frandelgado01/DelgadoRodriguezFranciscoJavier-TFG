@@ -4,7 +4,7 @@
 
 **Creada**: 2026-10-26
 
-**Estado**: Borrador
+**Estado**: Aprobada (2026-10-27)
 
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
