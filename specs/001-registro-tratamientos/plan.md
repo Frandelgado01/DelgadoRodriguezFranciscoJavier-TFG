@@ -38,8 +38,10 @@ usa hasta la 002). IndexedDB en el dispositivo (R3, R6).
 **Pruebas**: pytest (unitarias, integración con PostgreSQL real, contrato), Vitest (PWA), Playwright (E2E, con
 red simulada), k6 (rendimiento) (R12, R13).
 
-**Plataforma**: navegadores móviles (Chrome para Android y Safari para iOS, sin Background Sync, R3) y de
-escritorio; servidor en Docker Compose local.
+**Plataforma**: **Chrome para Android** como plataforma de referencia para la demo y las pruebas E2E (decisión
+del alumno, 2026-10-27). iOS/Safari es **compatible por diseño, no verificado**: la cola sin Background Sync
+(R3) no depende de nada que Safari no tenga, pero no se prueba; queda como limitación y trabajo futuro.
+Navegadores de escritorio para el desarrollo. Servidor en Docker Compose local.
 
 **Tipo de proyecto**: aplicación web (PWA + API REST + base de datos).
 
@@ -63,7 +65,7 @@ del alumno, frente a la constitución v1.1.0.*
 | II. Humano en el bucle | Spec aprobada (2026-10-27) y modificada solo por decisión del alumno, con nota en la cabecera. Revisión del plan anotada en el registro. `/speckit-tasks` espera su aprobación | ✅ | ✅ (pendiente de aprobar) |
 | III. Pruebas primero y trazabilidad | Cada REQ, incluido REQ-22, tiene criterios Dado/Cuando/Entonces; la tabla de [data-model.md](data-model.md#correspondencia-con-los-requisitos) indica dónde se garantiza cada uno; las pruebas citarán su `REQ-xx`; casos compartidos para las reglas (R8) | ✅ | ✅ |
 | IV. Conformidad normativa con fuente | Campos del anexo III; cómputo del mes según el Código Civil, art. 5.1 (R14); nombres y escala de eficacia contrastados con el anexo V del SIEX (R6). Las cifras técnicas citan su fuente; las de REQ-22 (5 intentos, 15 min) están **marcadas como propuesta del agente** dentro de los márgenes de OWASP y NIST | ✅ | ✅ |
-| V. Centrado en el agricultor | Formulario móvil, sin conexión en Android e iOS (R3), mensajes en lenguaje llano en errores, avisos y espera de acceso (contrato, 429). El registro en lenguaje natural sigue siendo el incumplimiento temporal justificado de la spec (funcionalidad 006) | ⚠️ justificado en la spec | ⚠️ justificado en la spec |
+| V. Centrado en el agricultor | Formulario móvil y sin conexión, verificado en Chrome para Android, la plataforma de referencia; en iOS/Safari es compatible por diseño pero no se verifica (limitación declarada, R3); mensajes en lenguaje llano en errores, avisos y espera de acceso (contrato, 429). El registro en lenguaje natural sigue siendo el incumplimiento temporal justificado de la spec (funcionalidad 006) | ⚠️ justificado en la spec | ⚠️ justificado en la spec |
 | VI. Seguridad y privacidad | Argon2id, token de sesión opaco con hash, cookie `__Host-` `HttpOnly` `Secure` `SameSite=Strict`, recuperación según OWASP y **límite de intentos por correo** sin revelar si la cuenta existe (R9, REQ-22); sin NIF de terceros; solo el correo como dato personal; secretos en `.env`; análisis estático y de dependencias en CI (R13) | ✅ | ✅ |
 | VII. Simplicidad | Una sola vía de sincronización sin Background Sync (R3); idempotencia apoyada en el historial (R4); bucle simple para los avisos (R10); espera fija sin escalado exponencial y sin CAPTCHA (R9). Las piezas añadidas se justifican en "Complejidad justificada" | ✅ | ✅ |
 | Restricciones técnicas (v1.1.0) | Stack de la constitución; pgvector en la imagen; Docker Compose local; **umbrales de k6 de la constitución v1.1.0** = R12 (sin diferencias). TODO(METRICAS_RAG) no afecta a la 001 | ✅ | ✅ |
@@ -76,7 +78,7 @@ resuelto por la funcionalidad 006.
 | # | Pregunta | Respuesta | Detalle |
 | --- | --- | --- | --- |
 | 1 | Estructura del repositorio | Monorrepositorio: `backend/`, `frontend/`, `compartido/`, `e2e/`, `rendimiento/`, `despliegue/`, `compose.yaml` en la raíz | R2 y [Estructura del proyecto](#estructura-del-proyecto) |
-| 2 | Sin conexión e iOS | Dexie/IndexedDB con copias de los datos maestros, los tratamientos y una cola FIFO de operaciones. La cola se vacía al abrir la app, con el evento `online`, al encolar y cada 60 s. Sin Background Sync, así que iOS se comporta igual que Android; `storage.persist()` y aviso de pendientes | R3 |
+| 2 | Sin conexión e iOS | Dexie/IndexedDB con copias de los datos maestros, los tratamientos y una cola FIFO de operaciones. La cola se vacía al abrir la app, con el evento `online`, al encolar y cada 60 s. Sin Background Sync, así que iOS se comportaría igual que Android; `storage.persist()` y aviso de pendientes. Referencia: Chrome para Android; iOS compatible por diseño, no verificado | R3 |
 | 3 | Idempotencia | UUID generados en el cliente para tratamientos, productos y operaciones. Un reintento de creación devuelve 200; `cambio.id = idOperacion` evita aplicar dos veces una modificación y el reintento repite la respuesta original (200 si se aplicó, 409 si quedó en conflicto) | R4 |
 | 4 | Conflictos | `version` en el tratamiento. Si llega un cambio con una versión antigua, se guarda como `conflicto` en el historial, se responde 409 con las dos versiones y el agricultor elige (`resolucion_conflicto`) | R5 |
 | 5 | Modelo de datos | Claves foráneas `RESTRICT`, `CHECK`, bajas lógicas, historial con instantáneas JSONB, disparador que impide borrar antes de 3 años y nombres del anexo V del SIEX | R6, [data-model.md](data-model.md) |
@@ -165,8 +167,7 @@ spec si hiciera falta (principio I). Detalle en R6.
 ## Pendientes
 
 1. Confirmar en T-01 que las dependencias de Python funcionan con 3.14; si no, usar 3.13 (R1).
-2. Probar en un iPhone real `storage.persist()` y la instalación en la pantalla de inicio (R3) y la confianza en
-   la autoridad de Caddy (R11), antes de la demo.
+2. Probar en el móvil Android de referencia la confianza en la autoridad de Caddy (R11), antes de la demo.
 3. Verificar la configuración de `pip-audit`, `npm audit` y las reglas de seguridad de `ruff` con su
    documentación oficial (R13).
 4. Comprobar en la primera migración que PostgreSQL acepta como inmutables las expresiones de las columnas

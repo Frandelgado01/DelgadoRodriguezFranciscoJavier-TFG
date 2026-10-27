@@ -66,8 +66,10 @@ como **pendiente**.
 - **Alternativas**: cola de `workbox-background-sync` (en iOS se reintenta solo al arrancar el service worker,
   así que aporta poco y añade una segunda vía); IndexedDB sin envoltorio o con `idb` (más código propio para los
   índices de filtrado y las migraciones del esquema local).
-- **Pendiente**: comprobar en un iPhone real, antes de la demo, si `persist()` devuelve `true` con la app
-  instalada (pendiente 4 del módulo 05).
+- **Plataforma de referencia (decisión del alumno, 2026-10-27)**: **Chrome para Android** es la plataforma de la
+  demo y de las pruebas E2E. iOS/Safari queda como **compatible por diseño, no verificado**: el mecanismo del
+  punto 2 no depende de nada que Safari no tenga, pero no se prueba en un iPhone. Se declara como limitación y
+  trabajo futuro en la memoria. La cola sin Background Sync se mantiene igual.
 
 ## R4. Identificadores e idempotencia (pregunta 3)
 
@@ -263,8 +265,9 @@ como **pendiente**.
   módulo 05.
 - **Alternativas**: nginx con certificados de `mkcert` (dos piezas en lugar de una); servir la PWA desde FastAPI
   (mezcla responsabilidades y complica la caché del service worker).
-- **Pendiente**: para la demo en un móvil real hay que instalar en el móvil la raíz de la autoridad de Caddy;
-  si no, el navegador muestra errores de seguridad (Caddy, s. f.). Se probará antes de la demo.
+- **Pendiente**: para la demo en el móvil Android de referencia (R3) hay que instalar en él la raíz de la
+  autoridad de Caddy; si no, el navegador muestra errores de seguridad (Caddy, s. f.). Se probará antes de la
+  demo. En iOS no se prueba (compatible por diseño, no verificado).
 
 ## R12. Umbrales iniciales de rendimiento (k6) (TODO de la constitución)
 
