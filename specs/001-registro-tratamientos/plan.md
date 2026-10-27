@@ -4,7 +4,9 @@
 2026-10-27)
 
 **Entrada**: especificación de `specs/001-registro-tratamientos/spec.md` (con REQ-22, añadido tras la revisión
-del plan), módulo 05 (`docs/conceptos/05-arquitectura-web.md`) y constitución v1.1.0.
+del plan, y con las tres correcciones del contraste con el BOE del 2026-10-27: conservación desde la emisión,
+número de orden de la parcela y aprovechamiento), módulo 05 (`docs/conceptos/05-arquitectura-web.md`) y
+constitución v1.1.1.
 
 **Revisión del alumno (2026-10-27)**: se mantiene la contraseña de 15 caracteres como mínimo; el límite de
 intentos de inicio de sesión entra en la 001 (REQ-22); se aceptan los umbrales de k6 (constitución v1.1.0); las
@@ -57,7 +59,8 @@ en `Europe/Madrid`; contexto seguro (HTTPS) para el service worker y la cookie d
 ## Comprobación de la constitución
 
 *Puerta: antes de la fase 0 y de nuevo después del diseño (fase 1). Repetida el 2026-10-27 tras la revisión
-del alumno, frente a la constitución v1.1.0.*
+del alumno, frente a la constitución v1.1.0, y revisada tras `/speckit-analyze` frente a la v1.1.1 (límite de
+3 intentos por tarea, sin efecto sobre el diseño): se mantiene el resultado.*
 
 | Principio | Comprobación | Antes | Después del diseño (revisión, v1.1.0) |
 | --- | --- | --- | --- |
@@ -179,11 +182,13 @@ los umbrales de k6 (v1.1.0).
 
 ## Complejidad justificada
 
-La constitución se cumple. Esta tabla justifica, según el principio VII, las piezas que van más allá del mínimo
-del módulo 05 (tres servicios: `web`, `api` y `db`).
+La constitución se cumple salvo una excepción temporal y justificada, que figura en la primera fila. El resto de
+la tabla justifica, según el principio VII, las piezas que van más allá del mínimo del módulo 05 (tres servicios:
+`web`, `api` y `db`).
 
-| Pieza añadida | Por qué hace falta | Alternativa más simple descartada porque… |
+| Pieza añadida o excepción | Por qué hace falta | Alternativa más simple descartada porque… |
 | --- | --- | --- |
+| **Excepción al principio V**: el registro se hace con un formulario, sin texto ni voz en lenguaje natural (y, por tanto, sin la confirmación de registros generados por la IA) | Decisión del alumno del 2026-10-26: primera iteración SDD más corta y sin depender del presupuesto de la API (pendientes-tutor #14). Se resuelve en la funcionalidad 006, que reutiliza este registro (spec, Supuestos) | Incluir ya el lenguaje natural: alarga la 001 y la hace depender del coste de la API, que aún no está resuelto |
 | Servicio `worker` | Los avisos por correo de REQ-08 tienen que salir aunque nadie abra la app | Dentro de la API: con varios procesos se duplican envíos, y añade la dependencia APScheduler |
 | Servicio `mailpit` | Probar de verdad el correo de REQ-08 y REQ-21 sin cuentas ni secretos externos | Simular el SMTP en las pruebas: no prueba el envío real ni sirve para la demo |
 | Caddy en `web` | Mismo origen (sin CORS, cookie `SameSite=Strict`) y HTTPS local para el service worker y la demo en móvil | nginx + mkcert: dos piezas; servir la PWA desde FastAPI mezcla responsabilidades |

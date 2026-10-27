@@ -1,17 +1,17 @@
 <!--
 Informe de impacto de sincronización
-- Versión: 1.0.0 → 1.1.0 (MINOR: se añaden de forma material los umbrales de rendimiento a las restricciones
-  técnicas).
-- Principios modificados: ninguno.
-- Secciones añadidas: "Umbrales de rendimiento (k6)" y "Métricas del RAG" en Restricciones técnicas.
-- Secciones eliminadas: ninguna.
-- TODO resueltos: TODO(UMBRALES_RENDIMIENTO), solo la parte de k6 (aceptada por el alumno el 2026-10-27, plan
-  001, research R12).
-- TODO pendientes: TODO(PRESUPUESTO_RAG) (pendientes-tutor #14); TODO(METRICAS_RAG), separado del anterior
-  TODO(UMBRALES_RENDIMIENTO), para el plan de la 002.
-- Plantillas: .specify/templates/plan-template.md ✅ sin cambios (la comprobación de constitución es genérica);
-  spec-template.md ✅ sin cambios; tasks-template.md ✅ sin cambios; checklist-template.md ✅ sin cambios.
-- Documentos: specs/001-registro-tratamientos/plan.md ✅ actualizado (comprobación de constitución con v1.1.0).
+- Versión: 1.1.0 → 1.1.1 (PATCH: se concreta una regla existente, el límite de iteraciones del bucle de
+  implementación, sin añadir ni redefinir principios).
+- Principios modificados: ninguno. Sección modificada: "Flujo de desarrollo y puertas de calidad", punto
+  "Bucle de implementación" (límite de 3 intentos de corrección por tarea y definición de intento; propuesta del
+  agente sin fuente, aprobada por el alumno el 2026-10-27 tras /speckit-analyze).
+- Secciones añadidas o eliminadas: ninguna.
+- TODO pendientes: TODO(PRESUPUESTO_RAG) (pendientes-tutor #14); TODO(METRICAS_RAG) (plan de la 002).
+- Plantillas: .specify/templates/plan-template.md ✅ sin cambios; spec-template.md ✅ sin cambios;
+  tasks-template.md ✅ sin cambios; checklist-template.md ✅ sin cambios.
+- Documentos: specs/001-registro-tratamientos/tasks.md ✅ actualizado ("Bucle de implementación" cita el
+  límite); specs/001-registro-tratamientos/plan.md ✅ actualizado (entrada con la constitución v1.1.1).
+- Historial: 1.0.0 → 1.1.0 (2026-10-27, MINOR): umbrales de rendimiento de k6 y TODO(METRICAS_RAG).
 -->
 
 # Constitución del Cuaderno de Campo
@@ -118,9 +118,12 @@ Informe de impacto de sincronización
   ir directa a `main`.
 - **Puertas de fusión:** una PR solo se fusiona si (1) el pipeline está en verde, (2) `/speckit-converge` no
   deja tareas pendientes y (3) el alumno la ha revisado.
-- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de iteraciones por
-  tarea; si lo alcanza, se detiene y consulta al alumno. Si una validación falla por un requisito mal definido,
-  se vuelve a la fase 2.
+- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de **3 intentos de
+  corrección por tarea**. Un intento es cada cambio de código seguido de una ejecución de las pruebas de la tarea
+  que siguen fallando; la primera ejecución en rojo (la esperada al escribir las pruebas primero) no cuenta, y un
+  fallo del CI en esa tarea cuenta como un intento. Si alcanza el límite, se detiene sin hacer commit y consulta
+  al alumno, presentando las pruebas que fallan, lo intentado y si cree que el requisito está mal definido; en
+  ese caso se vuelve a la fase 2. El número es una propuesta del agente, sin fuente.
 - **Commits:** uno por tarea, en español; en implementación empiezan por `T-xx:`.
 - **Registro:** cada iteración relevante se anota en `docs/proceso/registro-iteraciones.md` en el mismo commit
   que el trabajo que registra.
@@ -136,4 +139,4 @@ Informe de impacto de sincronización
 - **Cumplimiento:** cada `plan.md` MUST superar la comprobación de constitución antes de generar tareas, y cada
   PR se revisa contra estos principios.
 
-**Versión**: 1.1.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-27
+**Versión**: 1.1.1 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-27

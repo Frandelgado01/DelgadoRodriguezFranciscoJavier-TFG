@@ -114,7 +114,10 @@ como **pendiente**.
 
 - **Decisión**: modelo relacional en [data-model.md](data-model.md), con claves foráneas `ON DELETE RESTRICT`,
   restricciones `CHECK`, bajas lógicas (`estado`, `fecha_baja`), historial como instantáneas JSONB y un
-  disparador que impide borrar tratamientos de menos de 3 años (REQ-13). Los nombres de columnas siguen los
+  disparador que impide borrar un tratamiento hasta 3 años después de su emisión más reciente (REQ-13, art. 16.3).
+  Los nombres de la parcela siguen el anexo III del RD 1311/2012: `numero_orden` (número de identificación
+  correlativo, A.2.a) y `aprovechamiento` con `cultivo_lenoso` (A.2.d), tras el contraste con el BOE del
+  2026-10-27. Los nombres de columnas siguen los
   campos del anexo V del SIEX (FEGA, 2025a) siempre que existe equivalente: `sigpac_provincia` …
   `sigpac_recinto` (REA, bloque 12, campos 2–8), `sistema_explotacion` (secano/regadío, campo 27),
   `superficie_tratada` en ha con dos decimales (CUE, bloque 8, campo 5), `nombre_comercial` y
@@ -308,7 +311,7 @@ como **pendiente**.
   - `fecha_vencimiento = fecha + 1 mes`, calculada por PostgreSQL como columna generada. La suma de meses de
     PostgreSQL mantiene el día del mes salvo que el mes nuevo no lo tenga, y entonces usa su último día
     (PostgreSQL Global Development Group, s. f.-b). Es exactamente el cómputo "de fecha a fecha" del art. 5.1
-    del Código Civil (Código Civil, 1889) acordado en la clarificación. La PWA y el *worker* usan la misma regla,
+    del Código Civil, en la redacción del Decreto 1836/1974 (Código Civil, 1889/1974), acordado en la clarificación. La PWA y el *worker* usan la misma regla,
     verificada con los casos compartidos de R8.
   - `anotado_fuera_plazo` se calcula con `fecha_registro`, la fecha en `Europe/Madrid` de `registrado_en` (el
     momento en que el agricultor lo guardó en el dispositivo), no con la de llegada al servidor: un tratamiento
@@ -332,8 +335,10 @@ https://caddyserver.com/docs/automatic-https
 Can I use. (s. f.). *Background Sync API*. Recuperado el 27 de octubre de 2026, de
 https://caniuse.com/background-sync
 
-Código Civil. Real Decreto de 24 de julio de 1889, por el que se publica el Código Civil. *Gaceta de Madrid*,
-206, de 25 de julio de 1889 (texto consolidado). https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763
+Código Civil. (1889/1974). Real Decreto de 24 de julio de 1889, por el que se publica el Código Civil
+(art. 5.1 en la redacción del Decreto 1836/1974, de 31 de mayo, por el que se sanciona con fuerza de ley el texto
+articulado del título preliminar del Código Civil, *BOE* de 9 de julio de 1974, BOE-A-1974-1083).
+Texto consolidado: https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763
 
 Dexie. (s. f.). *Version.stores()*. Recuperado el 27 de octubre de 2026, de
 https://dexie.org/docs/Version/Version.stores()

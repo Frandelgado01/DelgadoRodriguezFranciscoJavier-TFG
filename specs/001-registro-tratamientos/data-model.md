@@ -92,6 +92,7 @@ o un restablecimiento de contraseña borran la fila. Las filas no guardan contra
 | --- | --- | --- |
 | `id` | UUID | PK |
 | `usuario_id` | UUID | FK → `usuario`, NOT NULL, UNIQUE (una explotación por usuario) |
+| `ultimo_numero_parcela` | INTEGER | NOT NULL, por defecto 0, CHECK ≥ 0 (contador del número de orden de las parcelas, REQ-14 a) |
 | `creada_en` | TIMESTAMPTZ | NOT NULL |
 
 Se crea con la cuenta. Los datos del titular (sección A.1) son de la funcionalidad 004.
@@ -102,7 +103,8 @@ Se crea con la cuenta. Los datos del titular (sección A.1) son de la funcionali
 | --- | --- | --- | --- |
 | `id` | UUID | PK | |
 | `explotacion_id` | UUID | FK, NOT NULL | |
-| `nombre` | TEXT | NOT NULL, 1–100 car. (número o nombre, A.2.a) | |
+| `numero_orden` | INTEGER | NOT NULL, CHECK ≥ 1; UNIQUE (`explotacion_id`, `numero_orden`), también entre las parcelas de baja, así que nunca se reutiliza. Lo asigna el servidor (A.2.a) | |
+| `nombre` | TEXT | NULL, 1–100 car. (opcional, ayuda para reconocer la parcela) | |
 | `sigpac_provincia` | SMALLINT | NOT NULL, 1–99 | REA 12.2 |
 | `sigpac_municipio` | SMALLINT | NOT NULL, ≥ 1 | REA 12.3 |
 | `sigpac_agregado` | SMALLINT | NOT NULL, ≥ 0 | REA 12.4 |
@@ -112,9 +114,10 @@ Se crea con la cuenta. Los datos del titular (sección A.1) son de la funcionali
 | `sigpac_recinto` | INTEGER | NOT NULL, ≥ 1 | REA 12.8 |
 | `superficie` | NUMERIC(10,4) | NOT NULL, CHECK > 0 (ha) | |
 | `uso_sigpac` | TEXT | NOT NULL (código de uso SIGPAC, texto en la 001) | |
-| `uso_suelo` | TEXT | NOT NULL, CHECK IN (`forestal`, `pasto`, `cultivo`) | |
-| `cultivo_especie` | TEXT | NULL si `uso_suelo <> 'cultivo'` | REA 12.22 (código en 007) |
-| `cultivo_variedad` | TEXT | NULL | REA 12.23 (código en 007) |
+| `aprovechamiento` | TEXT | NOT NULL, CHECK IN (`forestal`, `pastos`, `cultivo`) (A.2.d) | |
+| `cultivo_lenoso` | BOOLEAN | NOT NULL, por defecto falso; CHECK `NOT cultivo_lenoso OR aprovechamiento = 'cultivo'` | |
+| `cultivo_especie` | TEXT | NULL; CHECK `NOT cultivo_lenoso OR cultivo_especie IS NOT NULL` (A.2.d) | REA 12.22 (código en 007) |
+| `cultivo_variedad` | TEXT | NULL; CHECK `NOT cultivo_lenoso OR cultivo_variedad IS NOT NULL` (A.2.d) | REA 12.23 (código en 007) |
 | `sistema_explotacion` | TEXT | NOT NULL, CHECK IN (`secano`, `regadio`) | REA 12.27 |
 | `sistema_riego` | TEXT | CHECK (`sistema_explotacion = 'regadio'`) = (`sistema_riego IS NOT NULL`) | |
 | `protegido` | BOOLEAN | NOT NULL (falso = aire libre) | |
@@ -126,6 +129,13 @@ Se crea con la cuenta. Los datos del titular (sección A.1) son de la funcionali
 
 Índice único parcial: (`explotacion_id`, referencia SIGPAC completa) `WHERE estado = 'activa'`, para evitar dar
 de alta dos veces el mismo recinto.
+
+**Número de orden (REQ-14 a)**: al dar de alta una parcela, el servidor ejecuta en la misma transacción
+`UPDATE explotacion SET ultimo_numero_parcela = ultimo_numero_parcela + 1 … RETURNING ultimo_numero_parcela` y
+usa ese valor. La fila de la explotación queda bloqueada hasta el final de la transacción, así que dos altas
+simultáneas no reciben el mismo número; como el contador nunca baja, un número no se reutiliza aunque la parcela
+se dé de baja. El cliente no puede fijarlo ni cambiarlo. En la parcela, especie y variedad son obligatorias si
+es leñosa (A.2.d); en los demás cultivos son opcionales (apoyo de REQ-05).
 
 **Pendiente (R6)**: la precisión de la superficie de recinto en SIGPAC (4 decimales) se confirmará con el
 anexo VII. La superficie tratada usa 2 decimales, como pide el SIEX.
@@ -201,8 +211,10 @@ Restricciones fuera de la tabla, aplicadas por la API en la misma transacción y
 - `fecha ≤ hoy` (REQ-04). Al menos una fila en `tratamiento_parcela` y otra en `tratamiento_producto` (REQ-02).
 - `aplicador_id` apunta a una persona de `tipo = 'aplicador'` y `asesor_id` a una de `tipo = 'asesor'`, de la
   misma explotación y **activas al registrar** (REQ-17).
-- **REQ-13**: un disparador `BEFORE DELETE` en `tratamiento` rechaza el borrado si
-  `fecha > current_date - interval '3 years'`. `tratamiento_parcela`, `tratamiento_producto` y `cambio` están
+- **REQ-13**: un disparador `BEFORE DELETE` en `tratamiento` calcula la **emisión más reciente** del registro,
+  `greatest(fecha_registro, max((cambio.realizado_en AT TIME ZONE 'Europe/Madrid')::date))` sobre los cambios de ese
+  tratamiento, y rechaza el borrado si es posterior a `current_date - interval '3 years'` (RD 1311/2012,
+  art. 16.3: "3 años siguientes a su fecha de emisión"). Cada corrección cuenta como un asiento emitido. `tratamiento_parcela`, `tratamiento_producto` y `cambio` están
   protegidos por sus claves foráneas `RESTRICT`.
 
 **Columnas generadas y no generadas.** PostgreSQL no permite que una columna generada use otra columna
@@ -317,8 +329,8 @@ sustituye las copias locales, excepto los tratamientos con operaciones pendiente
 | REQ-08 | `aviso_correo`; aviso en la app calculado en el cliente con `fecha_vencimiento` |
 | REQ-10 | Índices (`explotacion_id`, `fecha`), (`parcela_id`) y (`producto_id`) |
 | REQ-11, REQ-12 | `cambio` con instantáneas y motivo; `anulado` |
-| REQ-13 | Disparador `BEFORE DELETE`; claves foráneas `RESTRICT` |
-| REQ-14 a REQ-17 | Tablas maestras con `estado` y `fecha_baja`; validación de "activa al registrar" |
+| REQ-13 | Disparador `BEFORE DELETE` con la emisión más reciente (`fecha_registro` y último `cambio`); claves foráneas `RESTRICT` |
+| REQ-14 a REQ-17 | Tablas maestras con `estado` y `fecha_baja`; `numero_orden` con `explotacion.ultimo_numero_parcela`; `cultivo_lenoso`; validación de "activa al registrar" |
 | REQ-20, REQ-21 | `usuario`, `sesion` y `token_restablecimiento` |
 | REQ-22 | `intento_acceso` |
 

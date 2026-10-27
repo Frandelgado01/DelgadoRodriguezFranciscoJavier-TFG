@@ -24,13 +24,13 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 
 | Hito | Fase | Tareas | Criterio de revisión del alumno |
 | --- | --- | --- | --- |
-| H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca los servicios y el CI está en verde en la PR #1 |
+| H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca `db`, `mailpit`, `api` y `web` (el `worker` llega en T-51) y el CI está en verde en la PR #1 |
 | H2 Cuentas | 2 | T-07 a T-19 | Crear cuenta, entrar, salir, recuperar la contraseña y comprobar el límite de intentos |
 | H3 Datos de la explotación | 3 (US4) | T-20 a T-29 | Dar de alta, modificar y dar de baja parcela, aplicador, equipo y producto |
 | H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 | Registrar con y sin conexión y ver el tratamiento en el cuaderno |
 | H5 Plazos y avisos | 5 (US2) | T-43 a T-52 | Tratamiento pendiente, aviso en la app, correo único en Mailpit, completar la eficacia |
 | H6 Consulta e historial | 6 (US3) | T-53 a T-62 | Filtrar, corregir, anular, ver el historial y resolver un conflicto |
-| H7 Cierre | 7 | T-63 a T-70 | E2E y k6 en verde, quickstart en el Android de la demo, `/speckit-converge` sin pendientes |
+| H7 Cierre | 7 | T-63 a T-71 (T-70 la última) | E2E y k6 en verde, quickstart en el Android de la demo, sesión con agricultores (SC-001, SC-005, SC-007) y `/speckit-converge` sin pendientes |
 
 ## Formato: `- [ ] T-xx [P?] [Historia?] Descripción (trazabilidad)`
 
@@ -58,15 +58,18 @@ borrador #1.
   Pydantic, SQLModel, Alembic, psycopg 3, `pwdlib[argon2]`, pytest); `frontend/package.json` y
   `frontend/package-lock.json` con Node.js 24 (React, Vite, vite-plugin-pwa, Dexie, openapi-typescript, Vitest),
   todas las versiones **exactas** y fijadas por los ficheros de bloqueo; `backend/Dockerfile` (imagen común de
-  `api` y `worker`); `compose.yaml` con los servicios `web`, `api`, `worker`, `db`
-  (`pgvector/pgvector:0.8.7-pg18-trixie`, volumen persistente) y `mailpit` (`axllent/mailpit`, SMTP 1025 e
-  interfaz 8025); `.env.example` con todas las variables documentadas (base de datos, `URL_PUBLICA`,
-  `SMTP_HOST`, `SMTP_PORT`, `CORREO_REMITENTE`, intervalo del worker) y sin secretos; y
+  `api` y `worker`); `compose.yaml` **solo con los servicios `db`** (`pgvector/pgvector:0.8.7-pg18-trixie`,
+  volumen persistente) **y `mailpit`** (`axllent/mailpit`, SMTP 1025 e interfaz 8025): `web` se añade en T-04,
+  `api` en T-05 y `worker` en T-51, cuando existe su código; `.env.example` con las variables documentadas de
+  estos servicios y de la API (base de datos, `URL_PUBLICA`, `SMTP_HOST`, `SMTP_PORT`, `CORREO_REMITENTE`) y sin
+  secretos; una prueba mínima en cada lado para que el CI no falle por no encontrar pruebas (pytest devuelve el
+  código 5 sin pruebas y Vitest falla sin ficheros de prueba): `backend/tests/test_humo.py` comprueba que el
+  paquete `cuaderno` se importa y `frontend/tests/humo.test.ts` que el módulo de entrada se carga; y
   `.github/workflows/ci.yml` mínimo (instalar dependencias desde los ficheros de bloqueo y ejecutar pytest y
-  Vitest, aunque estén vacíos) en `pull_request` y `push`. **Pendiente R1**: comprobar que todas las
+  Vitest) en `pull_request` y `push`. **Pendiente R1**: comprobar que todas las
   dependencias de Python instalan y arrancan con Python 3.14; si alguna no publica ruedas, fijar Python 3.13 en
   `pyproject.toml`, `Dockerfile` y CI y anotarlo en research R1. Criterio de hecho: `docker compose up` levanta
-  los cinco servicios y el pipeline se ejecuta en verde en la PR en borrador #1. (R1, R2, R10, R13; principio VI:
+  `db` y `mailpit` y el pipeline se ejecuta en verde en la PR en borrador #1. (R1, R2, R10, R13; principio VI:
   secretos en `.env`)
 - [ ] T-02 [P] Configurar la calidad del backend en `backend/pyproject.toml` y `.github/workflows/ci.yml`:
   `ruff` (formato y lint, **con las reglas `S` de seguridad**), `mypy` en modo estricto sobre `src/cuaderno`,
@@ -79,12 +82,14 @@ borrador #1.
   configuración de `npm audit` con su documentación oficial. (R13; principio VI)
 - [ ] T-04 Configurar el servicio `web` en `despliegue/Caddyfile` y `frontend/Dockerfile` (construcción de la PWA
   con Vite y Caddy como imagen final): servir la PWA estática, hacer de proxy inverso de `/api/*` hacia `api` (mismo
-  origen) y dar HTTPS con `tls internal` para `localhost`. Documentar en `quickstart.md` cómo confiar en la
-  autoridad local en el portátil. (R11)
+  origen) y dar HTTPS con `tls internal` para `localhost`; añadir el servicio `web` a `compose.yaml`. Documentar
+  en `quickstart.md` cómo confiar en la autoridad local en el portátil. (R11)
 - [ ] T-05 Crear la aplicación FastAPI base en `backend/src/cuaderno/main.py`, `config.py` (lectura de las
   variables de `.env.example`, zona `Europe/Madrid`) y `db.py` (motor y sesión de SQLModel con psycopg 3), con el
   prefijo `/api` y la documentación interactiva en `/api/docs`; e inicializar Alembic en `backend/alembic/`
-  apuntando a los modelos de `backend/src/cuaderno/modelos/`. (R2, R7)
+  apuntando a los modelos de `backend/src/cuaderno/modelos/`; añadir el servicio `api` a `compose.yaml` con la
+  imagen de `backend/Dockerfile`. Criterio: `docker compose up` arranca `db`, `mailpit`, `api` y `web` (H1).
+  (R2, R7)
 - [ ] T-06 Preparar la infraestructura de pruebas del backend en `backend/tests/conftest.py`: base de datos
   PostgreSQL de pruebas aparte (migrada con `alembic upgrade head` y limpiada entre pruebas), cliente HTTP de
   FastAPI, reloj inyectable para fijar "hoy" en `Europe/Madrid` y un cliente de la API REST de Mailpit para leer
@@ -200,19 +205,27 @@ comprobar que aparecen en las listas (spec, historia 4).
 
 - [ ] T-20 [US4] Escribir las pruebas de REQ-14 (deben fallar) en `backend/tests/integration/test_parcelas.py`
   y `backend/tests/contract/test_contrato_parcelas.py`: alta con todos los datos de A.2 (escenario 1: *Vitis
-  vinifera*, Airén, 4,2 ha) → 201 y aparece en `GET /parcelas`; modificar con `PUT`; rechazos 422 con mensaje
-  llano para superficie ≤ 0, `uso_suelo` fuera de (`forestal`, `pasto`, `cultivo`), `sistema_explotacion`
+  vinifera*, Airén, leñoso, 4,2 ha) → 201 y aparece en `GET /parcelas` con su `numeroOrden`; **número de orden**
+  (A.2.a): la primera parcela de la explotación recibe 1 y las siguientes 2, 3…; cada explotación tiene su
+  propia serie; dar de baja la 2 y dar de alta otra → recibe 4 (no se reutiliza); dos altas simultáneas reciben
+  números distintos; el cliente no puede fijarlo ni cambiarlo con `PUT`; `nombre` es opcional; modificar con
+  `PUT`; rechazos 422 con mensaje llano para superficie ≤ 0, `aprovechamiento` fuera de (`forestal`, `pastos`,
+  `cultivo`), **`cultivo_lenoso` activo sin `cultivo_especie` o sin `cultivo_variedad`** (A.2.d),
+  `cultivo_lenoso` activo con un aprovechamiento distinto de `cultivo`, `sistema_explotacion`
   fuera de (`secano`, `regadio`), regadío sin `sistema_riego` o secano con él, `protegido` sin
   `tipo_proteccion` o al revés, y componentes SIGPAC fuera de rango (provincia 1–99; municipio, polígono,
   parcela y recinto ≥ 1; agregado y zona ≥ 0); 409 si ya hay una parcela **activa** con la misma referencia
   SIGPAC completa. Contrato: `GET` y `POST /parcelas`, `PUT /parcelas/{id}`. (REQ-14)
 - [ ] T-21 [US4] Implementar REQ-14: migración y modelo `parcela` en `backend/alembic/versions/` y
-  `backend/src/cuaderno/modelos/parcela.py` con las columnas y restricciones de data-model (`nombre` TEXT NOT
-  NULL, 1–100 car.; `sigpac_provincia` SMALLINT NOT NULL, 1–99; `sigpac_municipio` SMALLINT NOT NULL, ≥ 1;
+  `backend/src/cuaderno/modelos/parcela.py` con las columnas y restricciones de data-model (`numero_orden`
+  INTEGER NOT NULL, CHECK ≥ 1, UNIQUE (`explotacion_id`, `numero_orden`), asignado con
+  `explotacion.ultimo_numero_parcela` (INTEGER NOT NULL, por defecto 0) en la misma transacción del alta;
+  `nombre` TEXT NULL, 1–100 car.; `sigpac_provincia` SMALLINT NOT NULL, 1–99; `sigpac_municipio` SMALLINT NOT NULL, ≥ 1;
   `sigpac_agregado` y `sigpac_zona` SMALLINT NOT NULL, ≥ 0; `sigpac_poligono`, `sigpac_parcela` y
   `sigpac_recinto` INTEGER NOT NULL, ≥ 1; `superficie` NUMERIC(10,4) NOT NULL, CHECK > 0; `uso_sigpac` TEXT NOT
-  NULL; `uso_suelo` CHECK IN (`forestal`, `pasto`, `cultivo`); `cultivo_especie` y `cultivo_variedad` TEXT
-  NULL; `sistema_explotacion` CHECK IN (`secano`, `regadio`); CHECK (`sistema_explotacion = 'regadio'`) =
+  NULL; `aprovechamiento` CHECK IN (`forestal`, `pastos`, `cultivo`); `cultivo_lenoso` BOOLEAN NOT NULL, por
+  defecto falso, CHECK `NOT cultivo_lenoso OR aprovechamiento = 'cultivo'`; `cultivo_especie` y
+  `cultivo_variedad` TEXT NULL, cada una con CHECK `NOT cultivo_lenoso OR <columna> IS NOT NULL`; `sistema_explotacion` CHECK IN (`secano`, `regadio`); CHECK (`sistema_explotacion = 'regadio'`) =
   (`sistema_riego IS NOT NULL`); `protegido` BOOLEAN NOT NULL; CHECK `protegido` = (`tipo_proteccion IS NOT
   NULL`); `sistema_certificacion` y `marco_control_plagas` TEXT NULL; `estado` CHECK IN (`activa`, `baja`);
   CHECK (`estado = 'baja'`) = (`fecha_baja IS NOT NULL`); índice único parcial por explotación y referencia
@@ -251,7 +264,9 @@ comprobar que aparecen en las listas (spec, historia 4).
   locales de `parcelas`, `personas`, `equipos` y `productos` por las activas del servidor. Implementarla después
   en `frontend/src/sync/maestros.ts`. (REQ-14, REQ-15, REQ-16; R3)
 - [ ] T-29 [US4] Implementar las páginas de datos de la explotación en `frontend/src/paginas/explotacion/`
-  (parcelas, personas, equipos y productos): listar, dar de alta, modificar y dar de baja, con conexión; los
+  (parcelas, personas, equipos y productos): listar, dar de alta, modificar y dar de baja, con conexión; las
+  parcelas se listan y se identifican por su número de orden, con el nombre si lo tienen, y el formulario pide
+  aprovechamiento y "cultivo leñoso" (especie y variedad obligatorias si se marca); los
   rechazos de la API se muestran con su mensaje llano junto al campo. Pruebas de componentes en
   `frontend/tests/paginas/explotacion.test.tsx`, escritas antes. (REQ-14, REQ-15, REQ-16, REQ-17)
 
@@ -299,7 +314,8 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
 - [ ] T-35 [US1] Escribir las pruebas de registro (deben fallar) en
   `backend/tests/integration/test_registrar_tratamiento.py` y `backend/tests/contract/test_contrato_tratamientos.py`
   con los escenarios de la historia 1: escenario 1 (viñedo Airén de 4,2 ha, mildiu, 3,5 ha, 2 kg, equipo con
-  ROMA) → 201 y `GET /tratamientos/{id}` devuelve todos los datos introducidos; escenario 2 (sin producto o sin
+  ROMA) → 201 y `GET /tratamientos/{id}` devuelve todos los datos introducidos, con el `numeroOrden` de cada
+  parcela tratada (B.b); escenario 2 (sin producto o sin
   cantidad) → 422 con el dato que falta; escenario 3 (5 ha en una parcela de 4,2) → 422 con la superficie
   máxima; escenario 4 (dos productos en mezcla sobre dos parcelas) → cada producto con su cantidad y cada parcela
   con su superficie; el cultivo se guarda como copia y no cambia si después se modifica el de la parcela; una
@@ -334,14 +350,14 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   `frontend/tests/paginas/tratamiento.test.tsx` y después implementarlo en
   `frontend/src/paginas/tratamiento/`: fecha, parcelas con superficie tratada, problema, aplicador y asesor,
   productos con cantidad y unidad, equipo, eficacia (buena, regular, mala) y observaciones; elección de
-  parcelas, personas, equipos y productos activos desde Dexie; propone el cultivo actual de cada parcela, que se
+  parcelas (identificadas por su número de orden), personas, equipos y productos activos desde Dexie; propone el cultivo actual de cada parcela, que se
   puede cambiar; producto de la semilla opcional; alta de un producto nuevo (nombre comercial y número de
   registro) sin salir del formulario y sin conexión, con aviso si ya hay uno con el mismo número de registro;
   mensajes llanos de `validacion.ts` antes de guardar; guarda en local y encola. (REQ-01, REQ-02, REQ-03,
   REQ-04, REQ-05, REQ-06, REQ-16)
 - [ ] T-42 [US1] Implementar la vista básica del cuaderno en `frontend/src/paginas/cuaderno/` (lista de
   tratamientos locales y sincronizados, ordenados por fecha, con su estado de sincronización y el detalle con
-  todos los campos de la sección B), con pruebas de componentes escritas antes en
+  todos los campos de la sección B; cada parcela tratada se muestra por su número de orden), con pruebas de componentes escritas antes en
   `frontend/tests/paginas/cuaderno.test.tsx`. (REQ-01, REQ-06)
 
 **Punto de control (MVP)**: con la historia 4 hecha, el agricultor registra tratamientos con y sin conexión y
@@ -397,15 +413,17 @@ un aviso al acercarse el vencimiento y que deja de estar pendiente al completar 
   ampliar el contrato con `GET /avisos`: `GET /avisos` devuelve los pendientes que vencen en 7 días o menos y
   los vencidos, con el dato que falta (`eficacia`), los días restantes y un mensaje llano (escenario 2); con
   "hoy" fijo en `Europe/Madrid`, `revisar_plazos(hoy)` envía a Mailpit **un** correo `proximo` al entrar en los
-  7 días y **un** `vencido` al vencer sin completar, y no repite ninguno aunque se ejecute dos veces (escenario
+  7 días y **un** `vencido` al vencer sin completar, cuyo contenido es el mismo que el del aviso (el tratamiento,
+  el dato que falta y los días que quedan, igual que `GET /avisos`), y no repite ninguno aunque se ejecute dos veces (escenario
   3); no avisa de tratamientos anulados ni completos; un tratamiento sincronizado tarde, ya dentro de los 7 días,
   recibe su correo en la siguiente revisión; al completar la eficacia desaparece de `GET /avisos`. (REQ-08)
 - [ ] T-51 [US2] Implementar los avisos: migración y modelo `aviso_correo` (PK compuesta `tratamiento_id` y
   `tipo`; `tipo` CHECK IN (`proximo`, `vencido`); `enviado_en` TIMESTAMPTZ NOT NULL) en
   `backend/src/cuaderno/modelos/aviso.py`; `GET /avisos` en `api/avisos.py`; la revisión de plazos en
   `backend/src/cuaderno/avisos.py` (`python -m cuaderno.avisos`, bucle cada hora con intervalo configurable,
-  envío con `servicios/correo.py` y registro en `aviso_correo` en la misma transacción); y el comando del
-  servicio `worker` en `compose.yaml`. Pasan las pruebas de T-50. (REQ-08; R10)
+  envío con `servicios/correo.py` y registro en `aviso_correo` en la misma transacción); el servicio `worker` en
+  `compose.yaml` (misma imagen que `api`, comando `python -m cuaderno.avisos`) y la variable del intervalo de
+  revisión en `.env.example`. Pasan las pruebas de T-50. (REQ-08; R10)
 - [ ] T-52 [US2] Escribir las pruebas de componentes (deben fallar) en `frontend/tests/paginas/avisos.test.tsx` y
   después implementar en `frontend/src/paginas/cuaderno/` y `frontend/src/componentes/`: aviso al abrir la app
   con el tratamiento, el dato que falta y los días que quedan, calculado sin conexión con `avisos.ts`; estados
@@ -459,12 +477,16 @@ otro, y comprobar que ambos cambios quedan en el historial (spec, historia 3).
   repite la respuesta según el `tipo` del cambio guardado (200 si se aplicó; 409 con el mismo `conflictoId` si
   quedó como conflicto). Pasan las pruebas de T-57. (REQ-06, REQ-11; R4, R5)
 - [ ] T-59 [US3] Escribir las pruebas de conservación (deben fallar) en
-  `backend/tests/integration/test_conservacion.py`: un `DELETE` directo en la base de un tratamiento de menos de
-  3 años se rechaza; los de `tratamiento_parcela`, `tratamiento_producto` y `cambio` se rechazan por las claves
+  `backend/tests/integration/test_conservacion.py`, según la emisión más reciente del registro (RD 1311/2012,
+  art. 16.3): un `DELETE` directo en la base se rechaza si la mayor entre `fecha_registro` y la fecha del último
+  cambio del historial es de hace menos de 3 años; casos: tratamiento de hace 4 años anotado entonces y sin
+  cambios → se permite; de hace 4 años anotado tarde, hace 2 años y 11 meses → se rechaza; de hace 4 años con una
+  corrección de hace 1 año → se rechaza; los de `tratamiento_parcela`, `tratamiento_producto` y `cambio` se rechazan por las claves
   foráneas `RESTRICT`; la API no tiene ninguna operación `DELETE` sobre tratamientos (escenario 4). (REQ-13)
 - [ ] T-60 [US3] Escribir la migración en `backend/alembic/versions/` con el disparador `BEFORE DELETE` sobre
-  `tratamiento` que rechaza el borrado si `fecha > current_date - interval '3 years'`. Pasan las pruebas de
-  T-59. (REQ-13)
+  `tratamiento` que calcula la emisión más reciente,
+  `greatest(fecha_registro, max((cambio.realizado_en AT TIME ZONE 'Europe/Madrid')::date))`, y rechaza el borrado
+  si es posterior a `current_date - interval '3 years'`. Pasan las pruebas de T-59. (REQ-13)
 - [ ] T-61 [US3] Escribir las pruebas (deben fallar) de las operaciones de corrección, anulación y resolución en
   la cola, en `frontend/tests/sync/cola-cambios.test.ts`: `corregir_tratamiento`, `anular_tratamiento` y
   `resolver_conflicto` llevan `idOperacion` y `versionBase`; un 409 marca el tratamiento como `conflicto` y
@@ -482,14 +504,24 @@ otro, y comprobar que ambos cambios quedan en el historial (spec, historia 3).
 
 ## Fase 7 (H7): Cierre (E2E, rendimiento y validación)
 
-**Objetivo**: comprobar el sistema completo en la plataforma de referencia, los umbrales de la constitución
-v1.1.0 y la guía de validación.
+**Objetivo**: comprobar el sistema completo en la plataforma de referencia, los umbrales de rendimiento de la
+constitución (v1.1.1) y la guía de validación, y medir con agricultores los criterios de éxito que dependen de
+ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
 
 - [ ] T-63 Configurar Playwright en `e2e/playwright.config.ts` con el perfil de **Chrome para Android** (emulación
-  de un dispositivo Android con Chromium), contra el entorno de Compose (`https://localhost`, confiando en la
-  autoridad de Caddy en el contenedor de pruebas), y añadir el trabajo E2E a `.github/workflows/ci.yml`. iOS no
-  se prueba (compatible por diseño, no verificado). (Decisión del 2026-10-27; R3, R11, R13)
-- [ ] T-64 [P] Escribir el E2E de cuenta y datos de la explotación en `e2e/cuenta-explotacion.spec.ts`: crear
+  de un dispositivo Android con Chromium) contra el entorno de Compose (`https://localhost`), y añadir el
+  trabajo E2E a `.github/workflows/ci.yml`. **Confianza en HTTPS**: tras `docker compose up`, el CI copia la raíz
+  de la autoridad local de Caddy del volumen de datos (`/data/caddy/pki/authorities/local/root.crt`) y la añade
+  al almacén NSS del usuario del runner con
+  `certutil -d sql:<nssdb> -A -t "C,," -n caddy-local -i root.crt` (procedimiento de la documentación de
+  Chromium para Linux). `<nssdb>` es `$HOME/.local/share/pki/nssdb` desde Chromium M146 y `$HOME/.pki/nssdb` en
+  versiones anteriores: comprobar cuál corresponde a la versión que instala Playwright. No usar
+  `ignoreHTTPSErrors`, porque su documentación no garantiza el registro del service worker. **Prueba de humo**
+  `e2e/humo.spec.ts`, que debe pasar en el CI **antes de escribir T-64 a T-66**: con el perfil de Android carga
+  `https://localhost` sin error de certificado, el service worker queda activo, al iniciar sesión se guarda la
+  cookie `__Host-sesion` y, con la red cortada, la carcasa de la app sigue cargando. iOS no se prueba
+  (compatible por diseño, no verificado). (Decisión del 2026-10-27; R3, R11, R13)
+- [ ] T-64 [P] Tras pasar la prueba de humo de T-63, escribir el E2E de cuenta y datos de la explotación en `e2e/cuenta-explotacion.spec.ts`: crear
   cuenta, cerrar y abrir sesión, recuperar la contraseña con el correo de Mailpit, límite de intentos, alta de
   parcela, aplicador, equipo y producto, y baja de una parcela (escenarios de la historia 4). (REQ-14, REQ-15,
   REQ-16, REQ-17, REQ-20, REQ-21, REQ-22)
@@ -503,7 +535,7 @@ v1.1.0 y la guía de validación.
   eligiendo una versión. (REQ-07 a REQ-12)
 - [ ] T-67 Escribir la siembra y el escenario de k6 en `rendimiento/sembrar.py` (50 explotaciones con 30
   parcelas y 1 000 tratamientos cada una) y `rendimiento/carga.js` (20 usuarios virtuales durante 2 minutos)
-  con los umbrales de la **constitución v1.1.0**: `http_req_failed: rate<0.01`; p95 < 500 ms en
+  con los umbrales de la **constitución** (fijados en la v1.1.0, vigentes en la v1.1.1): `http_req_failed: rate<0.01`; p95 < 500 ms en
   `POST /api/tratamientos`; p95 < 300 ms en `GET /api/tratamientos` filtrado por parcela y periodo y en el resto.
   Añadir el trabajo al CI, que falla si no se cumplen. (R12; constitución v1.1.0)
 - [ ] T-68 Completar la prueba de contrato en `backend/tests/contract/test_contrato_completo.py`: **todas** las
@@ -513,10 +545,19 @@ v1.1.0 y la guía de validación.
   la raíz de la autoridad de Caddy y comprobar que la PWA carga por HTTPS sin errores de seguridad y se instala
   (**pendiente R11**); recorrer los 8 escenarios de validación manual y anotar el resultado de cada uno en
   `quickstart.md`. Corregir la guía si algún paso no coincide con la implementación. (R11; quickstart)
-- [ ] T-70 Comprobar la trazabilidad final: cada `REQ-01` a `REQ-17` y `REQ-20` a `REQ-22` tiene al menos una
-  prueba que lo cita y pasa (búsqueda de `REQ-xx` en `backend/tests`, `frontend/tests` y `e2e`); el pipeline
-  está en verde; ejecutar `/speckit-converge` y dejar el resultado en la PR #1. (Principio III; puertas de fusión
-  de la constitución)
+- [ ] T-71 Sesión con agricultores, sin código (va antes de T-70): preparar el guion de tareas (registrar un
+  tratamiento completo de una parcela y un producto; obtener el listado de tratamientos de una parcela en un
+  periodo, como ante una inspección), las cuentas y los datos de ejemplo en el móvil Android de la demo y el
+  consentimiento informado de los participantes; medir **SC-001** (tiempo de registro de un tratamiento completo,
+  objetivo < 2 minutos), **SC-005** (tiempo hasta obtener el listado de una parcela en un periodo, objetivo
+  < 1 minuto) y **SC-007** (proporción de agricultores que registran su primer tratamiento sin ayuda, objetivo
+  ≥ 4 de cada 5); anotar los resultados, sin datos personales, en `docs/proceso/validacion-001.md` y en
+  `docs/proceso/registro-iteraciones.md`. Si algún criterio no se cumple, se presenta al alumno antes de T-70.
+  (SC-001, SC-005, SC-007; principio V)
+- [ ] T-70 Comprobar la trazabilidad final (la **última** tarea, después de T-71): cada `REQ-01` a `REQ-17` y
+  `REQ-20` a `REQ-22` tiene al menos una prueba que lo cita y pasa (búsqueda de `REQ-xx` en `backend/tests`,
+  `frontend/tests` y `e2e`); T-71 está hecha y sus resultados anotados; el pipeline está en verde; ejecutar
+  `/speckit-converge` y dejar el resultado en la PR #1. (Principio III; puertas de fusión de la constitución)
 
 ---
 
@@ -531,7 +572,9 @@ v1.1.0 y la guía de validación.
 - **US1 (T-30 a T-42)**: depende de US4 (parcelas, personas, equipos y productos).
 - **US2 (T-43 a T-52)**: depende de US1 (tabla `tratamiento` y registro).
 - **US3 (T-53 a T-62)**: depende de US1. T-57 y T-58 amplían el `PATCH` de T-49 (US2).
-- **Cierre (T-63 a T-70)**: depende de las historias que se quieran validar; T-70 va el último.
+- **Cierre (T-63 a T-71)**: depende de las historias que se quieran validar. T-63, con su prueba de humo, va
+  antes de T-64 a T-66; T-71 va después de T-69, y T-70 es la última. T-71 lleva un número mayor que T-70 porque
+  se añadió después del análisis; el orden de ejecución es el indicado.
 
 ### Dentro de cada historia
 
@@ -545,7 +588,7 @@ pruebas de cada REQ van siempre antes de su implementación.
 - US4: las pruebas T-22 y T-24 mientras se implementa T-21.
 - US1: T-31 y T-32 (Python y TypeScript de las mismas reglas) tras T-30.
 - US2: T-44 y T-45 tras T-43.
-- Cierre: T-64, T-65 y T-66 tras T-63.
+- Cierre: T-64, T-65 y T-66 tras T-63 (con la prueba de humo en verde).
 
 ### Ejemplo de paralelo: historia 1
 
@@ -573,8 +616,11 @@ termina con su punto de control y deja el pipeline en verde en la PR #1.
 
 ### Bucle de implementación
 
-Por tarea: implementar → probar → corregir, con el límite de iteraciones de la constitución. Si se alcanza,
-el agente se detiene y consulta al alumno. Un commit por tarea (`T-xx: ...`), con el registro del proceso
+Por tarea: implementar → probar → corregir, con el límite de la constitución v1.1.1: **3 intentos de corrección
+por tarea**. Un intento es cada cambio de código seguido de una ejecución de las pruebas de la tarea que siguen
+fallando; la primera ejecución en rojo (la esperada) no cuenta, y un fallo del CI en la tarea cuenta como uno.
+Al llegar a 3, el agente se detiene sin hacer commit y presenta al alumno las pruebas que fallan, lo intentado y
+si cree que el requisito está mal definido (en ese caso se vuelve a la fase 2). Un commit por tarea (`T-xx: ...`), con el registro del proceso
 actualizado en el mismo commit cuando proceda.
 
 ---
@@ -604,10 +650,13 @@ actualizado en el mismo commit cuando proceda.
 | REQ-21 | T-11 | T-12, T-19 | T-64 |
 | REQ-22 | T-13 | T-14, T-19 | T-64 |
 
+Criterios de éxito: SC-002 → T-30 y T-35; SC-003 → T-39 y T-65; SC-004 → T-50 y T-66; SC-006 → T-55 y T-59;
+SC-001, SC-005 y SC-007 → T-71 (sesión con agricultores).
+
 Tareas de infraestructura y su motivo: T-01 (R1, R2, R10, R13, principio VI), T-02 y T-03 (R13, principio VI),
 T-04 (R11), T-05 (R2, R7), T-06 (R10, R13, principio III), T-07 (R8), T-08 y T-68 (R7, principio I), T-15 (R7,
 R8), T-16 (R3), T-18 (R3, R11), T-63 (decisión de plataforma, R3, R11), T-67 (R12, constitución v1.1.0), T-69 (R11) y
-T-70 (principio III).
+T-70 (principio III) y T-71 (SC-001, SC-005, SC-007; principio V).
 
 Pendientes del plan convertidos en tareas: Python 3.14 o 3.13 → T-01; `pip-audit`, `npm audit` y reglas `S`
 de `ruff` → T-02 y T-03; columnas generadas aceptadas por PostgreSQL → T-47; confianza en la autoridad de Caddy
@@ -619,7 +668,7 @@ en el móvil Android → T-69. El anexo VII y las diferencias con el SIEX quedan
   incluyen sus pruebas de componentes o de Vitest, que se escriben primero dentro de la misma tarea. La prueba
   de API de cada REQ que cubren va siempre en una tarea anterior (tabla de trazabilidad).
 
-- SC-001 (registrar en menos de 2 minutos) y SC-007 (4 de cada 5 agricultores sin ayuda) se miden en la prueba
-  con usuarios de la fase 7 de validación; no generan tareas de código.
+- SC-001, SC-005 y SC-007 se miden con agricultores en T-71, una tarea sin código; `/speckit-converge` no puede
+  dar la 001 por terminada sin ella, porque T-70 comprueba que está hecha.
 - Las tareas de prueba de la PWA usan Vitest; las de la API, pytest con PostgreSQL y Mailpit reales; las E2E,
   Playwright contra Compose.

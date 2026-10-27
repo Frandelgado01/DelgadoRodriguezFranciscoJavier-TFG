@@ -552,13 +552,14 @@ components:
 
     ParcelaEntrada:
       type: object
-      required: [nombre, sigpac, superficie, usoSigpac, usoSuelo, sistemaExplotacion, protegido]
+      required: [sigpac, superficie, usoSigpac, aprovechamiento, cultivoLenoso, sistemaExplotacion, protegido]
       properties:
-        nombre: { type: string, minLength: 1, maxLength: 100 }
+        nombre: { type: [string, 'null'], minLength: 1, maxLength: 100, description: 'Opcional; la parcela se identifica por su numeroOrden (A.2.a)' }
         sigpac: { $ref: '#/components/schemas/ReferenciaSigpac' }
         superficie: { type: number, exclusiveMinimum: 0, description: 'ha' }
         usoSigpac: { type: string, minLength: 1, maxLength: 10 }
-        usoSuelo: { type: string, enum: [forestal, pasto, cultivo] }
+        aprovechamiento: { type: string, enum: [forestal, pastos, cultivo], description: 'Anexo III, A.2.d' }
+        cultivoLenoso: { type: boolean, description: 'Solo si aprovechamiento es cultivo; si es true, cultivoEspecie y cultivoVariedad son obligatorias (A.2.d)' }
         cultivoEspecie: { type: [string, 'null'], maxLength: 100 }
         cultivoVariedad: { type: [string, 'null'], maxLength: 100 }
         sistemaExplotacion: { type: string, enum: [secano, regadio] }
@@ -571,9 +572,14 @@ components:
       allOf:
         - $ref: '#/components/schemas/ParcelaEntrada'
         - type: object
-          required: [id, estado]
+          required: [id, numeroOrden, estado]
           properties:
             id: { type: string, format: uuid }
+            numeroOrden:
+              type: integer
+              minimum: 1
+              readOnly: true
+              description: Número de orden correlativo en la explotación; lo asigna el servidor y no se reutiliza tras una baja (REQ-14 a)
             estado: { $ref: '#/components/schemas/EstadoMaestro' }
             fechaBaja: { type: [string, 'null'], format: date }
     ReferenciaSigpac:
@@ -647,6 +653,7 @@ components:
       required: [parcelaId, superficieTratada, cultivoEspecie, cultivoVariedad]
       properties:
         parcelaId: { type: string, format: uuid }
+        numeroOrden: { type: integer, minimum: 1, readOnly: true, description: 'Número de orden de la parcela (REQ-01 b); solo en las respuestas' }
         superficieTratada: { type: number, exclusiveMinimum: 0, multipleOf: 0.01, description: 'ha; ≤ superficie de la parcela (REQ-04)' }
         cultivoEspecie: { type: string, minLength: 1, maxLength: 100 }
         cultivoVariedad: { type: string, minLength: 1, maxLength: 100 }

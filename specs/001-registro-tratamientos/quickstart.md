@@ -55,8 +55,10 @@ vinifera*, Airén, 4,2 ha.
    contraseña correcta, muestra "Has fallado la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña."
    La recuperación por correo sigue funcionando y, tras restablecer, se entra enseguida. Repetir con un correo
    sin cuenta → el mensaje es el mismo.
-2. **Datos de la explotación (historia 4)**: dar de alta la parcela con su referencia SIGPAC, un aplicador con
-   número de carné y un equipo con número ROMA → aparecen en las listas del formulario de tratamiento.
+2. **Datos de la explotación (historia 4)**: dar de alta la parcela (aprovechamiento cultivo, leñoso, con especie
+   y variedad) con su referencia SIGPAC, un aplicador con número de carné y un equipo con número ROMA → la parcela
+   recibe el número de orden 1 y todo aparece en las listas del formulario de tratamiento. Dar de alta otra
+   parcela, darla de baja y dar de alta una tercera → recibe el 3 (los números no se reutilizan).
 3. **Registrar (historia 1, escenarios 1–4)**: registrar con fecha de hoy contra mildiu, 3,5 ha y 2 kg de un
    producto nuevo dado de alta desde el propio formulario → aparece en el cuaderno con todos los datos. Probar
    5 ha (se rechaza indicando el máximo de 4,2 ha) y guardar sin producto (indica qué falta). Registrar una

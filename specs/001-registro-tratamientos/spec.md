@@ -6,20 +6,34 @@
 
 **Estado**: Aprobada (2026-10-27)
 
-**Modificación tras la aprobación** (2026-10-27, decisión del alumno en la revisión del plan): se añade REQ-22
-(límite de intentos de inicio de sesión). El resto de la especificación aprobada no cambia.
+**Modificaciones tras la aprobación** (decisiones del alumno; el resto de la especificación aprobada no cambia):
+
+- 2026-10-27, revisión del plan: se añade REQ-22 (límite de intentos de inicio de sesión).
+- 2026-10-27, contraste con la publicación oficial del BOE (tras `/speckit-analyze`). Normas cotejadas: RD
+  1311/2012, art. 16 (ap. 1 en la redacción del RD 1050/2022, BOE-A-2022-23051, con el párrafo añadido por el
+  RD 34/2025, BOE-A-2025-998, en la redacción del RD 1039/2025, BOE-A-2025-23421; ap. 3 del texto original,
+  BOE-A-2012-11605; ap. 5 añadido por el RD 1054/2022, BOE-A-2022-23054) y anexo III, parte I, secciones A y B
+  (texto original de 2012, sin modificaciones; el RD 1051/2022 solo añadió A.3 y C, fuera de alcance); Código
+  Civil, art. 5.1 (redacción del Decreto 1836/1974, BOE-A-1974-1083). El texto consolidado coincide con el
+  publicado. Se corrigen tres diferencias de la spec con la norma:
+  1. **Conservación** (REQ-13, contexto): los 3 años cuentan desde la **fecha de emisión** del registro (art. 16.3),
+     no desde la fecha del tratamiento.
+  2. **Número de identificación de la parcela** (REQ-14 a, historia 4): número de orden correlativo dentro de
+     la explotación (anexo III, A.2.a); el nombre pasa a ser opcional.
+  3. **Aprovechamiento** (REQ-14 d): se usa el término de la norma en lugar de "uso del suelo"; especie y
+     variedad obligatorias en cultivos leñosos (A.2.d); "cultivo actual en los demás" pasa a ser apoyo de REQ-05.
 
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
 
 **Base normativa**: Real Decreto 1311/2012, art. 16 y anexo III, parte I, secciones A y B (texto consolidado
-de 20/11/2025); Real Decreto 1054/2022, art. 9 y anexo II; Código Civil, art. 5.1 (cómputo del plazo de un
-mes). Resumen en `docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
+de 20/11/2025, contrastado con la publicación oficial el 2026-10-27); Real Decreto 1054/2022, art. 9 y anexo II;
+Código Civil, art. 5.1, en la redacción del Decreto 1836/1974 (cómputo del plazo de un mes). Resumen en `docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
 
 ## Contexto
 
 Toda explotación agraria debe mantener actualizado un registro de los tratamientos fitosanitarios que realiza,
-anotando cada uno en el plazo de un mes, y conservarlo al menos tres años (RD 1311/2012, art. 16). Desde el
+anotando cada uno en el plazo de un mes, y conservarlo al menos durante los tres años siguientes a su fecha de emisión (RD 1311/2012, art. 16). Desde el
 1 de enero de 2027 ese registro debe llevarse en formato electrónico. Esta funcionalidad permite al agricultor
 cumplir esa obligación desde el móvil, en el campo y aunque no tenga cobertura.
 
@@ -125,8 +139,9 @@ anular otro, y comprobar que ambos cambios quedan en el historial.
 3. **Dado** un tratamiento registrado por error, **cuando** el agricultor lo anula indicando el motivo,
    **entonces** deja de aparecer en el cuaderno vigente pero sigue disponible, marcado como anulado, en el
    historial.
-4. **Dado** un tratamiento con menos de tres años de antigüedad, **cuando** alguien intenta eliminarlo de forma
-   definitiva, **entonces** el sistema no lo permite.
+4. **Dado** un tratamiento cuya emisión más reciente (su anotación o el último cambio de su historial) es de hace
+   menos de tres años, **cuando** alguien intenta eliminarlo de forma definitiva, **entonces** el sistema no lo
+   permite.
 
 ---
 
@@ -146,10 +161,11 @@ comprobar que aparecen como opciones al registrar un tratamiento.
 **Escenarios de aceptación**:
 
 1. **Dado** una explotación sin parcelas, **cuando** el agricultor da de alta una parcela con su referencia
-   SIGPAC, superficie, uso SIGPAC y uso del suelo, cultivo (especie y variedad), sistema de cultivo (secano, o
-   regadío con su sistema de riego; aire libre, o protegido con su tipo de protección) y, en su caso, el sistema
-   de certificación y el marco de control de plagas, **entonces** la parcela aparece en la lista de parcelas al
-   registrar un tratamiento.
+   SIGPAC, superficie, uso SIGPAC y aprovechamiento, cultivo (especie y variedad, obligatorias si es leñoso),
+   sistema de cultivo (secano, o regadío con su sistema de riego; aire libre, o protegido con su tipo de
+   protección) y, en su caso, el sistema de certificación y el marco de control de plagas, **entonces** el
+   sistema le asigna el siguiente número de orden de la explotación y la parcela aparece, con ese número, en la
+   lista de parcelas al registrar un tratamiento.
 2. **Dado** un aplicador dado de alta con su nombre y su número de carné de usuario profesional, **cuando** el
    agricultor registra un tratamiento, **entonces** puede elegirlo como aplicador.
 3. **Dado** un equipo de aplicación con número ROMA, **cuando** se elige en un tratamiento, **entonces** el
@@ -193,7 +209,7 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 **Registro del tratamiento** (historia 1)
 
 - **REQ-01**: El sistema MUST permitir registrar un tratamiento fitosanitario con los datos de la sección B de
-  la parte I del anexo III del RD 1311/2012: (a) fecha; (b) parcela o parcelas tratadas; (c) plaga o problema a
+  la parte I del anexo III del RD 1311/2012: (a) fecha; (b) parcela o parcelas tratadas, identificadas por su número de orden; (c) plaga o problema a
   controlar; (d) aplicador y, en su caso, asesor; (e) cultivo, con especie y variedad, y, en herbáceos con
   semilla tratada, el producto de tratamiento de la semilla; (f) superficie tratada en hectáreas; (g) producto
   fitosanitario, con nombre comercial y número de registro; (h) equipo de aplicación, con su número ROMA si
@@ -251,14 +267,20 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **REQ-12**: El agricultor MUST poder anular un tratamiento registrado por error indicando el motivo. Un
   tratamiento anulado deja de contar en el cuaderno vigente, pero se conserva y se puede consultar. *Apoyo:
   trazabilidad del registro.*
-- **REQ-13**: El sistema MUST conservar cada tratamiento, con su historial, al menos 3 años desde su fecha, y
-  MUST impedir su eliminación definitiva antes de ese plazo. *Fuente: RD 1311/2012, art. 16.*
+- **REQ-13**: El sistema MUST conservar cada tratamiento, con su historial, al menos durante los 3 años siguientes
+  a su emisión más reciente, que es la mayor entre la fecha en que se anotó y la fecha del último cambio de su
+  historial (cada corrección es también un asiento emitido), y MUST impedir su eliminación definitiva antes de ese
+  plazo. *Fuente: RD 1311/2012, art. 16.3 ("Los registros y documentos se conservarán al menos durante los 3 años
+  siguientes a su fecha de emisión").*
 
 **Datos de la explotación** (historia 4)
 
 - **REQ-14**: El agricultor MUST poder dar de alta, modificar y dar de baja las parcelas de su explotación con:
-  (a) número o nombre; (b) referencia SIGPAC; (c) superficie (ha); (d) uso SIGPAC y uso del suelo (forestal,
-  pasto o cultivo), con especie y variedad en cultivos leñosos y cultivo actual en los demás; (e) sistema de
+  (a) número de identificación: número de orden correlativo dentro de la explotación, que asigna el sistema, es
+  único y no se reutiliza tras una baja, y, opcionalmente, un nombre; (b) referencia SIGPAC; (c) superficie (ha);
+  (d) uso SIGPAC y aprovechamiento (forestal, pastos o cultivo), indicando si el cultivo es leñoso, con especie y
+  variedad obligatorias en los cultivos leñosos y, en los demás, el cultivo actual (este último, *apoyo de
+  REQ-05*: permite proponer el cultivo al registrar); (e) sistema de
   cultivo: secano, o regadío con su sistema de riego; y aire libre, o protegido con su tipo de protección; (f) si
   la producción está acogida a un sistema de certificación, cuál, y el marco de control de plagas que aplica
   (art. 10). *Fuente: RD 1311/2012, anexo III, parte I, sección A.2, apartados a–f.*
@@ -313,8 +335,9 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **Intentos de acceso**: por correo, número de fallos consecutivos y, en su caso, hasta cuándo dura la espera
   (REQ-22).
 - **Explotación**: la del agricultor titular. Agrupa todos los datos de esta funcionalidad.
-- **Parcela**: unidad de terreno de la explotación. Número o nombre, referencia SIGPAC, superficie, uso SIGPAC y
-  uso del suelo, cultivo actual (especie y variedad), secano o regadío (con sistema de riego), aire libre o
+- **Parcela**: unidad de terreno de la explotación. Número de orden (asignado por el sistema) y nombre opcional,
+  referencia SIGPAC, superficie, uso SIGPAC y aprovechamiento, si el cultivo es leñoso, cultivo actual (especie y
+  variedad), secano o regadío (con sistema de riego), aire libre o
   protegido (con tipo de protección), sistema de certificación y marco de control de plagas, y estado (activa o
   de baja).
 - **Persona**: aplicador o asesor. Nombre, tipo y número de carné, estado.
@@ -385,5 +408,5 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **Inspección de equipos**: se guarda la fecha de adquisición o de la última inspección, pero no se avisa de su
   caducidad, porque la periodicidad no está en las fuentes consultadas.
 - **Antelación del aviso**: los 7 días de REQ-08 son una propuesta del agente, no una cifra normativa.
-- **Fuente normativa**: se usan los textos consolidados del BOE, que son informativos; se contrastarán con la
-  publicación oficial antes de cerrar la especificación.
+- **Fuente normativa**: se usan los textos consolidados del BOE, que son informativos. Se contrastaron con la
+  publicación oficial el 2026-10-27 (normas y resultado en la cabecera, "Modificaciones tras la aprobación").
