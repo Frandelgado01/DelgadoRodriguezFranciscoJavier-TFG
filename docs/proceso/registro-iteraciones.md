@@ -35,6 +35,7 @@ cada sesión.
 | 2026-10-26 | M | Claude Code (app escritorio) | `Caps/2_EstadoDelArte.tex`, apartado 2.1 (borrador); módulo 04 (pendientes 2 y 4 resueltos: documentación técnica SIEX del FEGA, app SGA_CEX de la JCCM) | Redactar el 2.1 (marco normativo, soluciones existentes y carencias) mientras la sesión de VS Code ejecuta `/speckit-specify` | 1 | Pendiente de revisión del alumno | suscripción | | 871d995 |
 | 2026-10-26 | M | Claude Code (app escritorio) | `CLAUDE.md`, `Caps/2_EstadoDelArte.tex` | Limitar el ámbito a normativa estatal y de Castilla-La Mancha; quitar la mención a herramientas de otras comunidades del 2.1 | 1 | — | suscripción | | 38bf903 |
 | 2026-10-26 | — | Claude Code (app escritorio) | `docs/proceso/hoja-de-ruta.md` | Explicar cuándo llega la implementación y el RAG; proponer el orden de las funcionalidades 001–007 | 1 | — | suscripción | | |
+| 2026-10-27 | 4 | Claude Code (app escritorio) | `docs/conceptos/05-arquitectura-web.md` | Módulo 05 (PWA, sin conexión y sincronización, API REST y OpenAPI con FastAPI, PostgreSQL y pgvector, Docker Compose) antes del plan de la 001, mientras la sesión de VS Code ejecuta `/speckit-clarify` | 1 | Pendiente de revisión del alumno | suscripción | | (este commit, main) |
 
 ## Decisiones
 
