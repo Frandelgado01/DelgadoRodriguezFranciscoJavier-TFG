@@ -10,8 +10,8 @@
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
 
 **Base normativa**: Real Decreto 1311/2012, art. 16 y anexo III, parte I, secciones A y B (texto consolidado
-de 20/11/2025); Real Decreto 1054/2022, art. 9 y anexo II. Resumen en
-`docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
+de 20/11/2025); Real Decreto 1054/2022, art. 9 y anexo II; Código Civil, art. 5.1 (cómputo del plazo de un
+mes). Resumen en `docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
 
 ## Contexto
 
@@ -19,6 +19,22 @@ Toda explotación agraria debe mantener actualizado un registro de los tratamien
 anotando cada uno en el plazo de un mes, y conservarlo al menos tres años (RD 1311/2012, art. 16). Desde el
 1 de enero de 2027 ese registro debe llevarse en formato electrónico. Esta funcionalidad permite al agricultor
 cumplir esa obligación desde el móvil, en el campo y aunque no tenga cobertura.
+
+## Clarifications
+
+### Session 2026-10-27
+
+- Q: ¿Cómo accede el agricultor a su cuaderno: con una cuenta propia protegida por contraseña o sin
+  identificarse? → A: Cuenta con correo y contraseña, con recuperación de contraseña por correo electrónico
+  (REQ-20, REQ-21).
+- Q: ¿Por qué medio avisa el sistema de que vence el plazo de un mes? → A: Dentro de la aplicación y, además,
+  por correo electrónico al agricultor (REQ-08).
+- Q: ¿Cómo anota el agricultor la valoración de la eficacia: escala cerrada o texto libre? → A: Escala cerrada
+  (buena, regular, mala); los matices van en observaciones (REQ-01 j).
+- Q: Si la eficacia se añade cuando ya ha vencido el plazo de un mes, ¿cómo queda el tratamiento? → A: Pasa a
+  "completo" y queda marcado como "completado fuera de plazo", con la fecha en que se completó (REQ-07).
+- Q: ¿Cómo se calcula la fecha en que vence "un mes" desde el tratamiento? → A: De fecha a fecha; si en el mes
+  del vencimiento no hay día equivalente, el último día de ese mes (Código Civil, art. 5.1) (REQ-07, REQ-09).
 
 ## Escenarios de usuario y pruebas *(obligatorio)*
 
@@ -73,9 +89,13 @@ un aviso al acercarse el vencimiento y que deja de estar pendiente al completar 
 2. **Dado** un tratamiento pendiente cuya fecha de vencimiento está a 7 días o menos, **cuando** el agricultor
    abre la aplicación, **entonces** ve un aviso en lenguaje llano con el tratamiento, el dato que falta y los
    días que quedan.
-3. **Dado** un tratamiento pendiente, **cuando** el agricultor añade la valoración de eficacia, **entonces** el
-   tratamiento pasa a "completo" y el aviso desaparece.
-4. **Dado** un tratamiento con fecha de hace más de un mes, **cuando** el agricultor lo registra por primera vez,
+3. **Dado** un tratamiento pendiente y sincronizado que entra en los 7 días previos al vencimiento, **cuando**
+   pasa ese día, **entonces** el agricultor recibe un único correo con el mismo contenido que el aviso; y si el
+   plazo vence sin completarlo, recibe un segundo y último correo.
+4. **Dado** un tratamiento pendiente, **cuando** el agricultor añade la valoración de eficacia, **entonces** el
+   tratamiento pasa a "completo" y el aviso desaparece; si el plazo ya había vencido, queda además marcado como
+   "completado fuera de plazo", con la fecha en que se completó.
+5. **Dado** un tratamiento con fecha de hace más de un mes, **cuando** el agricultor lo registra por primera vez,
    **entonces** el sistema lo guarda, le informa de que se ha anotado fuera del plazo de un mes y lo marca como
    "anotado fuera de plazo".
 
@@ -151,6 +171,11 @@ comprobar que aparecen como opciones al registrar un tratamiento.
 - **Sincronización con conflicto**: si un tratamiento se modificó sin conexión en un dispositivo y también en
   otro, el sistema no pierde ninguna versión: conserva ambas en el historial y pide al agricultor que elija la
   vigente.
+- **Plazo que acaba en un mes más corto**: un tratamiento del 31 de enero vence el 28 de febrero (29 en año
+  bisiesto); uno del 30 de marzo vence el 30 de abril (REQ-07).
+- **Aviso por correo de un tratamiento sin sincronizar**: el servidor solo conoce los tratamientos
+  sincronizados; uno que siga solo en el dispositivo no genera correo, pero sí el aviso dentro de la aplicación.
+  Si se sincroniza ya dentro de los 7 días o vencido, el correo correspondiente se envía tras la sincronización.
 - **Equipo sin número ROMA**: se admite, porque el ROMA solo se exige "si procede" (anexo III, sección B, h).
 - **Cantidad con unidad incoherente**: la cantidad se expresa en kg o en l; el sistema no admite otras unidades
   ni cantidades nulas o negativas.
@@ -170,7 +195,9 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
   semilla tratada, el producto de tratamiento de la semilla; (f) superficie tratada en hectáreas; (g) producto
   fitosanitario, con nombre comercial y número de registro; (h) equipo de aplicación, con su número ROMA si
   procede; (i) cantidad de producto en kg o l; (j) valoración de la eficacia; (k) observaciones.
-  *Fuente: RD 1311/2012, art. 16 y anexo III, parte I, sección B.*
+  La valoración de la eficacia se elige de una escala cerrada (buena, regular, mala); los matices se escriben en
+  observaciones, que es texto libre. *Fuente: RD 1311/2012, art. 16 y anexo III, parte I, sección B; escala de
+  la eficacia: apoyo, a contrastar en el plan con los catálogos del SIEX (anexo VII).*
 - **REQ-02**: El sistema MUST exigir para guardar un tratamiento los datos a, b, c, d (aplicador), e (especie y
   variedad), f, g, h (equipo) e i. El asesor, el número ROMA, el producto de la semilla, la eficacia y las
   observaciones son opcionales al guardar. *Fuente: RD 1311/2012, anexo III, parte I, sección B ("en su caso",
@@ -190,14 +217,21 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 **Plazo de un mes y eficacia** (historia 2)
 
 - **REQ-07**: Un tratamiento al que le falte la valoración de la eficacia MUST figurar como "pendiente de
-  completar", con su fecha de vencimiento: un mes desde la fecha del tratamiento. Al completarla pasa a
-  "completo". *Fuente: RD 1311/2012, art. 16 (plazo de un mes) y anexo III, sección B (j).*
+  completar", con su fecha de vencimiento: un mes desde la fecha del tratamiento, contado de fecha a fecha
+  (15 de marzo → 15 de abril); si en el mes del vencimiento no hay día equivalente, vence el último día de ese
+  mes (31 de enero → 28 o 29 de febrero). El mismo cómputo se aplica a REQ-08 y REQ-09 (Código Civil, art. 5.1).
+  Al completarla pasa a
+  "completo"; si se completa después del vencimiento, queda además marcado como "completado fuera de plazo",
+  con la fecha en que se completó. *Fuente: RD 1311/2012, art. 16 (plazo de un mes) y anexo III, sección B (j).*
   *Interpretación:* el art. 16 da un mes para volcar el registro completo. El campo j no lleva "en su caso" ni
   "si procede", así que es obligatorio; como la eficacia solo se conoce días después, se admite guardarlo sin él,
   pero el registro no está completo hasta que se añade, y debe completarse dentro del mes.
 - **REQ-08**: El sistema MUST avisar al agricultor, en lenguaje llano, de cada tratamiento pendiente de completar
   cuyo vencimiento esté a 7 días o menos, indicando el tratamiento, el dato que falta y los días restantes; y de
-  cada tratamiento vencido sin completar. *Fuente: RD 1311/2012, art. 16; antelación de 7 días: apoyo.*
+  cada tratamiento vencido sin completar. El aviso MUST mostrarse dentro de la aplicación y, además, enviarse por
+  correo electrónico a la dirección de la cuenta: un correo cuando el tratamiento entra en los 7 días previos al
+  vencimiento y otro cuando vence sin completar, sin repetirlos. *Fuente: RD 1311/2012, art. 16; antelación de
+  7 días y canal de correo: apoyo.*
 - **REQ-09**: Si la fecha de un tratamiento es anterior en más de un mes al día en que se registra, el sistema
   MUST guardarlo, informar al agricultor de que se anota fuera del plazo de un mes y marcarlo como "anotado
   fuera de plazo". *Fuente: RD 1311/2012, art. 16.*
@@ -205,7 +239,8 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 **Consulta, corrección y conservación** (historia 3)
 
 - **REQ-10**: El agricultor MUST poder consultar sus tratamientos ordenados por fecha y filtrarlos por periodo,
-  parcela, producto y estado (completo, pendiente de completar, anotado fuera de plazo, anulado). *Fuente:
+  parcela, producto y estado (completo, pendiente de completar, anotado fuera de plazo, completado fuera de
+  plazo, anulado). *Fuente:
   RD 1311/2012, art. 16 (registro actualizado y disponible).*
 - **REQ-11**: El agricultor MUST poder corregir cualquier dato de un tratamiento indicando el motivo. El sistema
   MUST conservar en un historial el valor anterior, el nuevo, la fecha del cambio y el motivo. *Apoyo:
@@ -236,8 +271,21 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **REQ-17**: Dar de baja una parcela, persona, equipo o producto MUST impedir su uso en tratamientos nuevos sin
   alterar los tratamientos ya registrados. *Apoyo: trazabilidad del registro.*
 
+**Acceso al cuaderno** (transversal)
+
+- **REQ-20**: El agricultor MUST crear una cuenta con su correo electrónico y una contraseña, e identificarse
+  con ellos para acceder a su cuaderno. Solo el titular de la cuenta MUST poder ver o modificar los datos de su
+  explotación. La sesión MUST conservarse en el dispositivo para poder registrar sin conexión (REQ-06) hasta que
+  el agricultor la cierre. *Apoyo: constitución, principios V y VI (RGPD).*
+- **REQ-21**: El agricultor que olvide su contraseña MUST poder restablecerla mediante un enlace enviado a su
+  correo electrónico. El correo es el único dato personal que se pide para la cuenta. *Apoyo: constitución,
+  principio VI (minimización de datos).*
+
+(REQ-18 y REQ-19 se reservaron para el registro en lenguaje natural, que pasó a la funcionalidad 006.)
+
 ### Entidades clave
 
+- **Cuenta**: correo electrónico y contraseña del agricultor titular; da acceso a una única explotación.
 - **Explotación**: la del agricultor titular. Agrupa todos los datos de esta funcionalidad.
 - **Parcela**: unidad de terreno de la explotación. Número o nombre, referencia SIGPAC, superficie, uso SIGPAC y
   uso del suelo, cultivo actual (especie y variedad), secano o regadío (con sistema de riego), aire libre o
@@ -247,8 +295,9 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **Equipo de aplicación**: descripción, fecha de adquisición o de la última inspección, número ROMA o
   referencia censal (si procede), estado.
 - **Producto fitosanitario**: nombre comercial y número de registro.
-- **Tratamiento**: fecha, plaga o problema, aplicador, asesor (opcional), equipo, valoración de la eficacia,
-  observaciones, estado (completo, pendiente de completar, anulado), marca de "anotado fuera de plazo", fecha de
+- **Tratamiento**: fecha, plaga o problema, aplicador, asesor (opcional), equipo, valoración de la eficacia
+  (buena, regular o mala), observaciones (texto libre), estado (completo, pendiente de completar, anulado),
+  marcas de "anotado fuera de plazo" y "completado fuera de plazo", fecha en que se completó, fecha de
   vencimiento del plazo y estado de sincronización.
 - **Parcela tratada**: une un tratamiento con una parcela; superficie tratada y cultivo (especie, variedad y
   producto de la semilla, si procede) en el momento del tratamiento.
@@ -266,8 +315,9 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
   tratamiento incompleto en esos datos llega a guardarse.
 - **SC-003**: En una prueba de 20 tratamientos registrados sin conexión, el 100 % se sincroniza sin pérdida ni
   duplicados al recuperarla.
-- **SC-004**: El 100 % de los tratamientos pendientes de completar genera un aviso al menos 7 días antes del
-  vencimiento del plazo de un mes.
+- **SC-004**: El 100 % de los tratamientos pendientes de completar genera un aviso en la aplicación al menos
+  7 días antes del vencimiento del plazo de un mes, y el 100 % de los sincronizados genera además un único correo
+  en ese momento.
 - **SC-005**: Ante una petición de inspección, el agricultor obtiene el listado de tratamientos de una parcela en
   un periodo dado en menos de 1 minuto.
 - **SC-006**: El 100 % de las correcciones y anulaciones queda en el historial con valor anterior, fecha y
@@ -278,8 +328,8 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 ## Supuestos
 
 - **Usuario**: el titular de la explotación es el único usuario y registra también los tratamientos que hacen
-  otras personas (aplicadores). El acceso con varios usuarios o roles (asesor, aplicador con cuenta propia)
-  queda fuera de alcance.
+  otras personas (aplicadores). Accede con su cuenta (REQ-20). El acceso con varios usuarios o roles (asesor,
+  aplicador con cuenta propia) queda fuera de alcance.
 - **Una explotación por usuario** en esta versión.
 - **Lenguaje natural**: el registro por texto o voz que pide el principio V de la constitución se especificará
   como una funcionalidad posterior que reutilice este registro; aquí el registro se hace con un formulario
