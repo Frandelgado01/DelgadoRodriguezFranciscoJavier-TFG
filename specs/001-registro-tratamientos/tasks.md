@@ -14,6 +14,24 @@ pasa después. Cada prueba cita su `REQ-xx` en el nombre o en el docstring.
 
 **Commits**: uno por tarea, en español, empezando por el identificador: `T-07: ...` (CLAUDE.md).
 
+## Hitos de seguimiento
+
+El alumno sigue la implementación por **hitos**, no tarea a tarea (decisión del 2026-10-27). Cada hito es una
+fase de este fichero y termina en su punto de control. El agente implementa las tareas de **un hito** (un commit
+por tarea, pruebas primero, marcando `[X]` en este fichero), se **detiene en el punto de control** y presenta un
+resumen: tareas hechas, pruebas, estado del CI y cualquier desviación. El alumno comprueba el criterio del hito y
+lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la descripción de la PR #1.
+
+| Hito | Fase | Tareas | Criterio de revisión del alumno |
+| --- | --- | --- | --- |
+| H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca los servicios y el CI está en verde en la PR #1 |
+| H2 Cuentas | 2 | T-07 a T-19 | Crear cuenta, entrar, salir, recuperar la contraseña y comprobar el límite de intentos |
+| H3 Datos de la explotación | 3 (US4) | T-20 a T-29 | Dar de alta, modificar y dar de baja parcela, aplicador, equipo y producto |
+| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 | Registrar con y sin conexión y ver el tratamiento en el cuaderno |
+| H5 Plazos y avisos | 5 (US2) | T-43 a T-52 | Tratamiento pendiente, aviso en la app, correo único en Mailpit, completar la eficacia |
+| H6 Consulta e historial | 6 (US3) | T-53 a T-62 | Filtrar, corregir, anular, ver el historial y resolver un conflicto |
+| H7 Cierre | 7 | T-63 a T-70 | E2E y k6 en verde, quickstart en el Android de la demo, `/speckit-converge` sin pendientes |
+
 ## Formato: `- [ ] T-xx [P?] [Historia?] Descripción (trazabilidad)`
 
 - **[P]**: se puede hacer en paralelo (ficheros distintos y sin dependencias de tareas incompletas).
@@ -30,7 +48,7 @@ tratamiento (spec, historia 4: "sin parcelas, aplicadores y equipos no se puede 
 
 ---
 
-## Fase 1: Setup (esqueleto del proyecto)
+## Fase 1 (H1): Setup (esqueleto del proyecto)
 
 **Objetivo**: repositorio con la estructura del plan, entorno de Compose arrancable y pipeline mínimo en la PR en
 borrador #1.
@@ -77,7 +95,7 @@ borrador #1.
 
 ---
 
-## Fase 2: Base común (cuentas, sesión y piezas compartidas)
+## Fase 2 (H2): Base común (cuentas, sesión y piezas compartidas)
 
 **Objetivo**: acceso seguro al cuaderno (REQ-20 a REQ-22) y piezas que usan todas las historias: casos de
 validación compartidos, prueba de contrato, cliente de API tipado y almacenamiento local de la PWA.
@@ -172,7 +190,7 @@ funciona; el CI comprueba el contrato y que los tipos están al día.
 
 ---
 
-## Fase 3: Historia 4 — Mantener los datos de la explotación (P1)
+## Fase 3 (H3): Historia 4 — Mantener los datos de la explotación (P1)
 
 **Objetivo**: dar de alta, modificar y dar de baja parcelas, personas, equipos y productos, y tenerlos
 disponibles en el móvil.
@@ -241,7 +259,7 @@ comprobar que aparecen en las listas (spec, historia 4).
 
 ---
 
-## Fase 4: Historia 1 — Registrar un tratamiento (P1) 🎯 MVP
+## Fase 4 (H4): Historia 1 — Registrar un tratamiento (P1) 🎯 MVP
 
 **Objetivo**: registrar un tratamiento con todos los datos de la sección B del anexo III, desde el móvil y sin
 conexión.
@@ -331,7 +349,7 @@ los ve en el cuaderno.
 
 ---
 
-## Fase 5: Historia 2 — Completar la eficacia y respetar el plazo de un mes (P2)
+## Fase 5 (H5): Historia 2 — Completar la eficacia y respetar el plazo de un mes (P2)
 
 **Objetivo**: estados "pendiente de completar" y "completo", marcas de fuera de plazo y avisos en la app y por
 correo.
@@ -399,7 +417,7 @@ un aviso al acercarse el vencimiento y que deja de estar pendiente al completar 
 
 ---
 
-## Fase 6: Historia 3 — Consultar, corregir y conservar el registro (P2)
+## Fase 6 (H6): Historia 3 — Consultar, corregir y conservar el registro (P2)
 
 **Objetivo**: filtros, corrección y anulación con historial, conflictos de sincronización resueltos por el
 agricultor y conservación de 3 años.
@@ -462,7 +480,7 @@ otro, y comprobar que ambos cambios quedan en el historial (spec, historia 3).
 
 ---
 
-## Fase 7: Cierre (E2E, rendimiento y validación)
+## Fase 7 (H7): Cierre (E2E, rendimiento y validación)
 
 **Objetivo**: comprobar el sistema completo en la plataforma de referencia, los umbrales de la constitución
 v1.1.0 y la guía de validación.
