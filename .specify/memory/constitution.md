@@ -1,3 +1,19 @@
+<!--
+Informe de impacto de sincronización
+- Versión: 1.0.0 → 1.1.0 (MINOR: se añaden de forma material los umbrales de rendimiento a las restricciones
+  técnicas).
+- Principios modificados: ninguno.
+- Secciones añadidas: "Umbrales de rendimiento (k6)" y "Métricas del RAG" en Restricciones técnicas.
+- Secciones eliminadas: ninguna.
+- TODO resueltos: TODO(UMBRALES_RENDIMIENTO), solo la parte de k6 (aceptada por el alumno el 2026-10-27, plan
+  001, research R12).
+- TODO pendientes: TODO(PRESUPUESTO_RAG) (pendientes-tutor #14); TODO(METRICAS_RAG), separado del anterior
+  TODO(UMBRALES_RENDIMIENTO), para el plan de la 002.
+- Plantillas: .specify/templates/plan-template.md ✅ sin cambios (la comprobación de constitución es genérica);
+  spec-template.md ✅ sin cambios; tasks-template.md ✅ sin cambios; checklist-template.md ✅ sin cambios.
+- Documentos: specs/001-registro-tratamientos/plan.md ✅ actualizado (comprobación de constitución con v1.1.0).
+-->
+
 # Constitución del Cuaderno de Campo
 
 ## Principios fundamentales
@@ -82,9 +98,14 @@
 - **Datos:** PostgreSQL con pgvector (una sola base de datos para datos y vectores).
 - **IA del producto:** Claude API para el módulo RAG. TODO(PRESUPUESTO_RAG): pendiente de cómo se financian las
   llamadas (pendientes-tutor #14).
-- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento). TODO(UMBRALES_RENDIMIENTO):
-  los umbrales de k6 y las métricas mínimas del RAG (fidelidad, relevancia) se fijan en la fase 4 y se incorporan
-  aquí por enmienda.
+- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento).
+- **Umbrales de rendimiento (k6):** con 20 usuarios virtuales durante 2 minutos sobre una base sembrada con
+  50 explotaciones (30 parcelas y 1 000 tratamientos cada una), el pipeline MUST fallar si no se cumple:
+  menos del 1 % de peticiones fallidas (`http_req_failed: rate<0.01`); p95 < 500 ms al registrar un tratamiento;
+  p95 < 300 ms en consultas y resto de peticiones. Son **umbrales iniciales** (plan 001, research R12) y se
+  revisarán con las mediciones de la fase 7.
+- **Métricas del RAG:** TODO(METRICAS_RAG): las métricas mínimas de fidelidad y relevancia se fijan en el plan de
+  la funcionalidad 002 y se incorporan aquí por enmienda.
 - **CI/CD:** GitHub Actions; contenedores Docker.
 - **Despliegue:** local con Docker Compose y demo; sin despliegue público.
 - **Idioma:** artefactos, interfaz, commits y documentación en español.
@@ -115,4 +136,4 @@
 - **Cumplimiento:** cada `plan.md` MUST superar la comprobación de constitución antes de generar tareas, y cada
   PR se revisa contra estos principios.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-23
+**Versión**: 1.1.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-27

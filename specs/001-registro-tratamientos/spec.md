@@ -6,6 +6,9 @@
 
 **Estado**: Aprobada (2026-10-27)
 
+**Modificación tras la aprobación** (2026-10-27, decisión del alumno en la revisión del plan): se añade REQ-22
+(límite de intentos de inicio de sesión). El resto de la especificación aprobada no cambia.
+
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
 
@@ -280,12 +283,35 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **REQ-21**: El agricultor que olvide su contraseña MUST poder restablecerla mediante un enlace enviado a su
   correo electrónico. El correo es el único dato personal que se pide para la cuenta. *Apoyo: constitución,
   principio VI (minimización de datos).*
+- **REQ-22**: Tras **5 intentos fallidos consecutivos** de inicio de sesión con un mismo correo, sin que pasen
+  más de 15 minutos desde el primero (los fallos más antiguos dejan de contar), el sistema MUST
+  rechazar durante **15 minutos** los nuevos intentos con ese correo, aunque la contraseña sea correcta, y
+  explicarlo en lenguaje llano indicando cuánto falta y que puede recuperar la contraseña (REQ-21). La
+  recuperación de contraseña MUST seguir disponible durante la espera. Un inicio de sesión correcto o un
+  restablecimiento de contraseña ponen el contador a cero. El comportamiento MUST ser el mismo exista o no una
+  cuenta con ese correo, para no revelar qué correos están registrados.
+  *Fuente: OWASP, Authentication Cheat Sheet ("Login Throttling": contador asociado a la cuenta y no a la IP;
+  recuperación de contraseña disponible durante el bloqueo para evitar la denegación de servicio; respuestas que
+  no revelen si la cuenta existe); NIST SP 800-63B-4, apdo. 3.2.2 (como máximo 100 fallos consecutivos; esperas
+  crecientes de ejemplo entre 30 s y 1 h). Cifras de 5 intentos, 15 minutos de ventana y 15 minutos de espera:
+  propuesta del agente, dentro de esos márgenes.*
+  - **Dado** una cuenta con 4 intentos fallidos consecutivos, **cuando** el agricultor falla el quinto,
+    **entonces** el sistema rechaza los intentos siguientes durante 15 minutos con un mensaje como "Has fallado
+    la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña.", aunque la contraseña sea correcta.
+  - **Dado** un correo en espera, **cuando** pasan los 15 minutos e inicia sesión con la contraseña correcta,
+    **entonces** entra y el contador vuelve a cero.
+  - **Dado** un correo en espera, **cuando** el agricultor restablece la contraseña con el enlace del correo,
+    **entonces** puede iniciar sesión enseguida con la contraseña nueva.
+  - **Dado** un correo sin cuenta, **cuando** se falla 5 veces, **entonces** el sistema responde igual que con
+    una cuenta existente.
 
 (REQ-18 y REQ-19 se reservaron para el registro en lenguaje natural, que pasó a la funcionalidad 006.)
 
 ### Entidades clave
 
 - **Cuenta**: correo electrónico y contraseña del agricultor titular; da acceso a una única explotación.
+- **Intentos de acceso**: por correo, número de fallos consecutivos y, en su caso, hasta cuándo dura la espera
+  (REQ-22).
 - **Explotación**: la del agricultor titular. Agrupa todos los datos de esta funcionalidad.
 - **Parcela**: unidad de terreno de la explotación. Número o nombre, referencia SIGPAC, superficie, uso SIGPAC y
   uso del suelo, cultivo actual (especie y variedad), secano o regadío (con sistema de riego), aire libre o

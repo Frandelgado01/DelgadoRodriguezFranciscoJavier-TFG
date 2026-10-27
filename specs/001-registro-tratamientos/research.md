@@ -15,7 +15,7 @@ como **pendiente**.
   (imagen `pgvector/pgvector:0.8.7-pg18-trixie`). Las versiones exactas de React, Vite y el resto de
   dependencias se fijan (con fichero de bloqueo) en la primera tarea de implementación.
 - **Motivo**: son las series con soporte activo en la fecha del plan (Python Software Foundation, s. f.;
-  OpenJS Foundation, s. f.; PostgreSQL Global Development Group, s. f.). La imagen de pgvector trae la extensión
+  OpenJS Foundation, s. f.; PostgreSQL Global Development Group, s. f.-a). La imagen de pgvector trae la extensión
   ya compilada sobre PostgreSQL 18, así que la 002 (RAG) no tendrá que cambiar de imagen (pgvector, s. f.-b).
 - **Alternativas**: Python 3.15 (más reciente, pero algunas dependencias podrían no tener todavía ruedas
   publicadas); Node 22 (en mantenimiento); imagen oficial `postgres:18` instalando pgvector a mano (más trabajo
@@ -77,8 +77,11 @@ como **pendiente**.
     recurso con ese `id` en la explotación y el contenido es idéntico, la API responde `200` con el recurso
     (reintento). Si el contenido es distinto, responde `409`.
   - **Modificar** (corregir, anular, resolver conflicto) lleva un `idOperacion`. La API guarda cada cambio en el
-    historial con `id = idOperacion` (clave primaria), así que un reintento encuentra el cambio ya aplicado y
-    devuelve el estado actual con `200`, sin aplicarlo dos veces. No hace falta una tabla de idempotencia aparte.
+    historial con `id = idOperacion` (clave primaria), así que un reintento encuentra el cambio ya registrado y
+    no lo aplica dos veces. La respuesta repite la del primer intento según el `tipo` del cambio guardado: `200`
+    con el estado actual si se aplicó (`correccion`, `anulacion`, `resolucion_conflicto`), o **`409` con el
+    mismo `conflictoId`** si quedó como `conflicto` (R5). Así un reintento nunca hace creer a la PWA que un
+    cambio en conflicto se aplicó. No hace falta una tabla de idempotencia aparte.
 - **Motivo**: es la técnica del módulo 05 (§ 1.2). Al aprovechar el propio historial (REQ-11) para la
   idempotencia, no hay que añadir ninguna estructura más. Es lo que permite cumplir "sin pérdida ni duplicados"
   (SC-003).
@@ -199,10 +202,27 @@ como **pendiente**.
   sin una lista de revocación (principio VI, con la solución más simple: principio VII).
 - **Alternativas**: JWT en `localStorage` (expuesto a XSS y difícil de revocar); `passlib` (FastAPI lo
   reserva para hashes antiguos); OAuth con un proveedor externo (envía datos a terceros, principio VI).
-- **Decisión para el alumno**: el mínimo de 15 caracteres es la cifra de OWASP sin segundo factor. Si resulta
-  incómodo en la prueba con usuarios (SC-007), se puede bajar con justificación.
-- **Pendiente**: limitar los intentos de inicio de sesión por cuenta (OWASP lo recomienda). Se propone dejarlo
-  para la fase de validación salvo que el alumno lo quiera en la 001.
+- **Contraseña**: el alumno mantiene el mínimo de 15 caracteres, sin reglas de composición y sugiriendo una
+  frase (decisión del 2026-10-27).
+- **Límite de intentos (REQ-22, decisión del alumno del 2026-10-27)**:
+  - Contador **por correo normalizado** (`lower(trim(correo))`), no por IP ni por `usuario_id`, para que la
+    respuesta sea la misma exista o no la cuenta (OWASP, s. f.-a).
+  - **5 fallos consecutivos dentro de una ventana de 15 minutos** → **espera de 15 minutos**. Las cifras son
+    **propuesta del agente**: OWASP pide ajustar umbral, ventana y duración, pero no da valores (OWASP, s. f.-a),
+    y NIST fija un máximo de 100 fallos consecutivos y pone como ejemplo esperas crecientes de 30 s a 1 h
+    (National Institute of Standards and Technology [NIST], 2025, apdo. 3.2.2). 5 y 15 minutos están dentro de
+    esos márgenes y no estorban a quien se equivoca un par de veces.
+  - Espera **fija**, sin escalado exponencial (principio VII). Se revisará en la fase 7 si hiciera falta.
+  - Durante la espera, `POST /api/sesion` responde **`429`** con `Retry-After` (segundos) y un mensaje en
+    lenguaje llano. Se comprueba **antes** de verificar la contraseña, así que el ataque no gasta cómputo de
+    Argon2.
+  - La **recuperación de contraseña sigue disponible**, para que un atacante no pueda bloquear a un agricultor
+    (OWASP, s. f.-a). Un inicio de sesión correcto o un restablecimiento ponen el contador a cero.
+  - Implementación en la tabla `intento_acceso` (data-model), actualizada en la misma transacción que la
+    verificación (`SELECT … FOR UPDATE`), para que dos peticiones simultáneas no se salten el límite.
+- **Alternativas al límite**: contador por IP (se esquiva cambiando de IP y bloquea a quien comparte red);
+  CAPTCHA (servicio externo, contrario al principio VI); esperas exponenciales (más complejas de explicar y
+  probar).
 
 ## R10. Correo: avisos de plazo y recuperación (pregunta 9, REQ-08 y REQ-21)
 
@@ -287,11 +307,15 @@ como **pendiente**.
     (PostgreSQL Global Development Group, s. f.-b). Es exactamente el cómputo "de fecha a fecha" del art. 5.1
     del Código Civil (Código Civil, 1889) acordado en la clarificación. La PWA y el *worker* usan la misma regla,
     verificada con los casos compartidos de R8.
-  - `anotado_fuera_plazo` se calcula con `registrado_en` (el momento en que el agricultor lo guardó en el
-    dispositivo), no con el de llegada al servidor: un tratamiento anotado a tiempo sin conexión no debe salir
-    como fuera de plazo por sincronizarse tarde. La API rechaza un `registrado_en` futuro o anterior a la fecha
-    del tratamiento.
-  - `completado_fuera_plazo` se calcula igual con `completado_en`.
+  - `anotado_fuera_plazo` se calcula con `fecha_registro`, la fecha en `Europe/Madrid` de `registrado_en` (el
+    momento en que el agricultor lo guardó en el dispositivo), no con la de llegada al servidor: un tratamiento
+    anotado a tiempo sin conexión no debe salir como fuera de plazo por sincronizarse tarde. La API rechaza un
+    `registrado_en` futuro o anterior a la fecha del tratamiento.
+  - `completado_fuera_plazo` se calcula igual con `fecha_completado`, que procede de `completado_en`.
+  - Las dos marcas son columnas generadas, pero **no usan `fecha_vencimiento`**, porque PostgreSQL no permite que
+    una columna generada use otra. Repiten la expresión del vencimiento a partir de `fecha`. `fecha_registro` y
+    `fecha_completado` las calcula la API, porque pasar un `TIMESTAMPTZ` a fecha depende de la zona horaria y no
+    es inmutable. Detalle en [data-model.md](data-model.md#tratamiento).
 - **Motivo**: una sola regla, en la base de datos y probada con los mismos casos en las dos capas.
 - **Alternativas**: calcular el vencimiento solo en la aplicación (dos implementaciones sin garantía en la base).
 
@@ -342,6 +366,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/persist
 
 MDN Web Docs. (s. f.-c). *412 Precondition Failed*. Mozilla. Recuperado el 27 de octubre de 2026, de
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/412
+
+National Institute of Standards and Technology [NIST]. (2025). *Digital identity guidelines: Authentication and
+authenticator management* (NIST Special Publication 800-63B-4). https://pages.nist.gov/800-63-4/sp800-63b.html
 
 Nielsen, J. (1993). *Response times: The 3 important limits*. Nielsen Norman Group.
 https://www.nngroup.com/articles/response-times-3-important-limits/

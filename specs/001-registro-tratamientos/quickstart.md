@@ -48,9 +48,13 @@ Todas las pruebas indican en su nombre o docstring el `REQ-xx` que verifican.
 Cada escenario corresponde a uno de aceptación de la spec. Datos de ejemplo: parcela "Viña Grande", *Vitis
 vinifera*, Airén, 4,2 ha.
 
-1. **Cuenta (REQ-20, REQ-21)**: crear una cuenta con correo y una frase de 15 caracteres o más → se entra en la
+1. **Cuenta (REQ-20 a REQ-22)**: crear una cuenta con correo y una frase de 15 caracteres o más → se entra en la
    app. Cerrar sesión, pedir "He olvidado mi contraseña" → en Mailpit aparece un correo con el enlace; usarlo →
    la contraseña cambia, el enlace ya no vale una segunda vez y hay que iniciar sesión de nuevo.
+   **Límite de intentos (REQ-22)**: fallar la contraseña 5 veces seguidas → el sexto intento, aunque sea con la
+   contraseña correcta, muestra "Has fallado la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña."
+   La recuperación por correo sigue funcionando y, tras restablecer, se entra enseguida. Repetir con un correo
+   sin cuenta → el mensaje es el mismo.
 2. **Datos de la explotación (historia 4)**: dar de alta la parcela con su referencia SIGPAC, un aplicador con
    número de carné y un equipo con número ROMA → aparecen en las listas del formulario de tratamiento.
 3. **Registrar (historia 1, escenarios 1–4)**: registrar con fecha de hoy contra mildiu, 3,5 ha y 2 kg de un
@@ -62,7 +66,7 @@ vinifera*, Airén, 4,2 ha.
    marca 3. Recuperar la red → se sincronizan y el contador vuelve a 0. Comprobar en la API que no hay
    duplicados.
 5. **Plazo (historia 2)**: registrar un tratamiento sin eficacia con fecha de hace 25 días → "pendiente de
-   completar", vence en 5 días y aparece el aviso en la app. Ejecutar la revisión de plazos → Mailpit recibe un
+   completar", vence dentro de los 7 días del aviso y aparece el aviso en la app con los días que quedan. Ejecutar la revisión de plazos → Mailpit recibe un
    correo; ejecutarla otra vez → no llega un segundo. Añadir la eficacia "buena" → pasa a "completo" y el aviso
    desaparece. Registrar otro con fecha de hace 40 días → "anotado fuera de plazo".
 6. **Consulta y corrección (historia 3)**: filtrar por parcela y periodo → solo esos tratamientos, ordenados por
@@ -77,5 +81,5 @@ vinifera*, Airén, 4,2 ha.
 ## Resultado esperado para cerrar la fase 7
 
 - Todas las pruebas en verde en el pipeline, incluidos los umbrales de k6.
-- Cada `REQ-01` a `REQ-17`, `REQ-20` y `REQ-21` con al menos una prueba que lo cita y pasa.
+- Cada `REQ-01` a `REQ-17` y `REQ-20` a `REQ-22` con al menos una prueba que lo cita y pasa.
 - `/speckit-converge` sin tareas pendientes.

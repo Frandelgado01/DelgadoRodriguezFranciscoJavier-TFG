@@ -3,8 +3,12 @@
 **Rama**: `001-registro-tratamientos` | **Fecha**: 2026-10-27 | **Spec**: [spec.md](spec.md) (aprobada el
 2026-10-27)
 
-**Entrada**: especificación de `specs/001-registro-tratamientos/spec.md`, módulo 05
-(`docs/conceptos/05-arquitectura-web.md`) y constitución v1.0.0.
+**Entrada**: especificación de `specs/001-registro-tratamientos/spec.md` (con REQ-22, añadido tras la revisión
+del plan), módulo 05 (`docs/conceptos/05-arquitectura-web.md`) y constitución v1.1.0.
+
+**Revisión del alumno (2026-10-27)**: se mantiene la contraseña de 15 caracteres como mínimo; el límite de
+intentos de inicio de sesión entra en la 001 (REQ-22); se aceptan los umbrales de k6 (constitución v1.1.0); las
+diferencias con el SIEX se aplazan a la 007.
 
 **Artefactos de esta fase**: [research.md](research.md) (decisiones R1–R14 con fuentes) ·
 [data-model.md](data-model.md) · [contracts/openapi.yaml](contracts/openapi.yaml) ·
@@ -50,18 +54,19 @@ en `Europe/Madrid`; contexto seguro (HTTPS) para el service worker y la cookie d
 
 ## Comprobación de la constitución
 
-*Puerta: antes de la fase 0 y de nuevo después del diseño (fase 1).*
+*Puerta: antes de la fase 0 y de nuevo después del diseño (fase 1). Repetida el 2026-10-27 tras la revisión
+del alumno, frente a la constitución v1.1.0.*
 
-| Principio | Comprobación | Antes | Después del diseño |
+| Principio | Comprobación | Antes | Después del diseño (revisión, v1.1.0) |
 | --- | --- | --- | --- |
-| I. La spec es la fuente de verdad | El plan solo implementa REQ de la spec. Las diferencias con el SIEX que exigirían cambiar requisitos no se aplican aquí: quedan anotadas para la 007 (R6). El contrato OpenAPI se verifica con una prueba (R7) | ✅ | ✅ |
-| II. Humano en el bucle | Spec aprobada por el alumno (2026-10-27). Este plan espera su aprobación antes de `/speckit-tasks` | ✅ | ✅ (pendiente de aprobar) |
-| III. Pruebas primero y trazabilidad | Cada REQ tiene casos de aceptación; la tabla de [data-model.md](data-model.md#correspondencia-con-los-requisitos) indica dónde se garantiza cada uno; las pruebas citarán su `REQ-xx`; casos compartidos para las reglas (R8) | ✅ | ✅ |
-| IV. Conformidad normativa con fuente | Campos del anexo III; cómputo del mes según el Código Civil, art. 5.1 (R14); nombres y escala de eficacia contrastados con el anexo V del SIEX (R6). No se inventan cifras: las técnicas (umbrales, caducidades) se justifican con su fuente | ✅ | ✅ |
-| V. Centrado en el agricultor | Formulario móvil, sin conexión en Android e iOS (R3), mensajes en lenguaje llano en errores y avisos (contrato). El registro en lenguaje natural sigue siendo el incumplimiento temporal justificado de la spec (funcionalidad 006) | ⚠️ justificado en la spec | ⚠️ justificado en la spec |
-| VI. Seguridad y privacidad | Argon2id, token de sesión opaco con hash, cookie `__Host-` `HttpOnly` `Secure` `SameSite=Strict`, recuperación según OWASP (R9); sin NIF de terceros; solo el correo como dato personal; secretos en `.env`; análisis estático y de dependencias en CI (R13) | ✅ | ✅ |
-| VII. Simplicidad | Una sola vía de sincronización sin Background Sync (R3); idempotencia apoyada en el historial (R4); bucle simple para los avisos (R10). Las piezas añadidas se justifican en "Complejidad justificada" | ✅ | ✅ |
-| Restricciones técnicas | Stack de la constitución; pgvector incluido en la imagen; Docker Compose local; TODO(UMBRALES_RENDIMIENTO): propuesta de umbrales de k6 en R12 para incorporarla por enmienda | ✅ | ✅ |
+| I. La spec es la fuente de verdad | El plan solo implementa REQ de la spec. El límite de intentos se añadió **primero** a la spec (REQ-22) y después a research, data-model, contrato y quickstart. Las diferencias con el SIEX se aplazan a la 007 por decisión del alumno, sin cambiar la spec (R6). El contrato OpenAPI se verifica con una prueba (R7) | ✅ | ✅ |
+| II. Humano en el bucle | Spec aprobada (2026-10-27) y modificada solo por decisión del alumno, con nota en la cabecera. Revisión del plan anotada en el registro. `/speckit-tasks` espera su aprobación | ✅ | ✅ (pendiente de aprobar) |
+| III. Pruebas primero y trazabilidad | Cada REQ, incluido REQ-22, tiene criterios Dado/Cuando/Entonces; la tabla de [data-model.md](data-model.md#correspondencia-con-los-requisitos) indica dónde se garantiza cada uno; las pruebas citarán su `REQ-xx`; casos compartidos para las reglas (R8) | ✅ | ✅ |
+| IV. Conformidad normativa con fuente | Campos del anexo III; cómputo del mes según el Código Civil, art. 5.1 (R14); nombres y escala de eficacia contrastados con el anexo V del SIEX (R6). Las cifras técnicas citan su fuente; las de REQ-22 (5 intentos, 15 min) están **marcadas como propuesta del agente** dentro de los márgenes de OWASP y NIST | ✅ | ✅ |
+| V. Centrado en el agricultor | Formulario móvil, sin conexión en Android e iOS (R3), mensajes en lenguaje llano en errores, avisos y espera de acceso (contrato, 429). El registro en lenguaje natural sigue siendo el incumplimiento temporal justificado de la spec (funcionalidad 006) | ⚠️ justificado en la spec | ⚠️ justificado en la spec |
+| VI. Seguridad y privacidad | Argon2id, token de sesión opaco con hash, cookie `__Host-` `HttpOnly` `Secure` `SameSite=Strict`, recuperación según OWASP y **límite de intentos por correo** sin revelar si la cuenta existe (R9, REQ-22); sin NIF de terceros; solo el correo como dato personal; secretos en `.env`; análisis estático y de dependencias en CI (R13) | ✅ | ✅ |
+| VII. Simplicidad | Una sola vía de sincronización sin Background Sync (R3); idempotencia apoyada en el historial (R4); bucle simple para los avisos (R10); espera fija sin escalado exponencial y sin CAPTCHA (R9). Las piezas añadidas se justifican en "Complejidad justificada" | ✅ | ✅ |
+| Restricciones técnicas (v1.1.0) | Stack de la constitución; pgvector en la imagen; Docker Compose local; **umbrales de k6 de la constitución v1.1.0** = R12 (sin diferencias). TODO(METRICAS_RAG) no afecta a la 001 | ✅ | ✅ |
 
 **Resultado**: se supera la puerta. Única excepción: el principio V, ya declarado y justificado en la spec y
 resuelto por la funcionalidad 006.
@@ -72,12 +77,12 @@ resuelto por la funcionalidad 006.
 | --- | --- | --- | --- |
 | 1 | Estructura del repositorio | Monorrepositorio: `backend/`, `frontend/`, `compartido/`, `e2e/`, `rendimiento/`, `despliegue/`, `compose.yaml` en la raíz | R2 y [Estructura del proyecto](#estructura-del-proyecto) |
 | 2 | Sin conexión e iOS | Dexie/IndexedDB con copias de los datos maestros, los tratamientos y una cola FIFO de operaciones. La cola se vacía al abrir la app, con el evento `online`, al encolar y cada 60 s. Sin Background Sync, así que iOS se comporta igual que Android; `storage.persist()` y aviso de pendientes | R3 |
-| 3 | Idempotencia | UUID generados en el cliente para tratamientos, productos y operaciones. Un reintento de creación devuelve 200; `cambio.id = idOperacion` evita aplicar dos veces una modificación | R4 |
+| 3 | Idempotencia | UUID generados en el cliente para tratamientos, productos y operaciones. Un reintento de creación devuelve 200; `cambio.id = idOperacion` evita aplicar dos veces una modificación y el reintento repite la respuesta original (200 si se aplicó, 409 si quedó en conflicto) | R4 |
 | 4 | Conflictos | `version` en el tratamiento. Si llega un cambio con una versión antigua, se guarda como `conflicto` en el historial, se responde 409 con las dos versiones y el agricultor elige (`resolucion_conflicto`) | R5 |
 | 5 | Modelo de datos | Claves foráneas `RESTRICT`, `CHECK`, bajas lógicas, historial con instantáneas JSONB, disparador que impide borrar antes de 3 años y nombres del anexo V del SIEX | R6, [data-model.md](data-model.md) |
 | 6 | Contrato de API | OpenAPI 3.1 validado con Redocly (sin errores). Prueba de contrato en pytest | R7, [contracts/openapi.yaml](contracts/openapi.yaml) |
 | 7 | Validaciones sin divergencias | Tipos generados desde el OpenAPI (el CI falla si difieren) y reglas implementadas en las dos capas, probadas con el mismo fichero de casos en pytest y Vitest | R8 |
-| 8 | Cuentas y sesión | Argon2id (pwdlib); token opaco con hash en la base de datos y cookie `__Host-sesion`; 30 días de inactividad y 90 absolutos; recuperación con token de un solo uso de 1 hora | R9 |
+| 8 | Cuentas y sesión | Argon2id (pwdlib), mínimo de 15 caracteres; token opaco con hash en la base de datos y cookie `__Host-sesion`; 30 días de inactividad y 90 absolutos; recuperación con token de un solo uso de 1 hora; límite de 5 fallos en 15 minutos → espera de 15 minutos y 429 (REQ-22) | R9 |
 | 9 | Correo y plazos | SMTP con `smtplib`; Mailpit en Compose con API REST para las pruebas; `worker` cada hora; `aviso_correo` con clave primaria para enviar un solo correo de cada tipo | R10 |
 ## Estructura del proyecto
 
@@ -153,7 +158,7 @@ rendimiento) (R2).
 
 El anexo V del SIEX (FEGA, v3.11) pide datos que la spec aprobada no recoge: NIF, apellidos y nº ROPO del
 aplicador y del asesor; problemática por categorías de catálogo y justificación de la actuación; cultivo y
-variedad como códigos del catálogo; "Aplicación manual (S/N)". **No se cambian ahora**: no son exigencias del
+variedad como códigos del catálogo; "Aplicación manual (S/N)". **El alumno las aplaza a la 007 a sabiendas (2026-10-27)**: no son exigencias del
 RD 1311/2012 para el registro y afectan a la exportación. Se decidirán al especificar la 007, empezando por la
 spec si hiciera falta (principio I). Detalle en R6.
 
@@ -162,12 +167,14 @@ spec si hiciera falta (principio I). Detalle en R6.
 1. Confirmar en T-01 que las dependencias de Python funcionan con 3.14; si no, usar 3.13 (R1).
 2. Probar en un iPhone real `storage.persist()` y la instalación en la pantalla de inicio (R3) y la confianza en
    la autoridad de Caddy (R11), antes de la demo.
-3. Limitar los intentos de inicio de sesión: propuesto para la fase de validación (R9).
-4. Verificar la configuración de `pip-audit`, `npm audit` y las reglas de seguridad de `ruff` con su
+3. Verificar la configuración de `pip-audit`, `npm audit` y las reglas de seguridad de `ruff` con su
    documentación oficial (R13).
-5. Comprobar que `fecha_vencimiento` se puede declarar como columna generada (data-model).
-6. Anexo VII (catálogos) y diferencias con el SIEX: en la 007 (R6).
-7. Enmienda de la constitución con los umbrales de k6 (R12) cuando el alumno apruebe el plan.
+4. Comprobar en la primera migración que PostgreSQL acepta como inmutables las expresiones de las columnas
+   generadas (`fecha_vencimiento` y marcas de plazo); si no, se calculan en la API (data-model).
+5. Anexo VII (catálogos) y diferencias con el SIEX: aplazados a la 007 por decisión del alumno (R6).
+
+Resueltos en la revisión del 2026-10-27: límite de intentos (ahora REQ-22) y enmienda de la constitución con
+los umbrales de k6 (v1.1.0).
 
 ## Complejidad justificada
 

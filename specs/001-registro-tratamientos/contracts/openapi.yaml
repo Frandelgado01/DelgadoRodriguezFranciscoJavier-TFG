@@ -50,7 +50,7 @@ paths:
   /sesion:
     post:
       tags: [cuenta]
-      summary: Iniciar sesión (REQ-20)
+      summary: Iniciar sesión (REQ-20, REQ-22)
       security: []
       requestBody:
         required: true
@@ -60,6 +60,18 @@ paths:
       responses:
         '204': { description: 'Sesión iniciada (Set-Cookie __Host-sesion; HttpOnly; Secure; SameSite=Strict; Path=/)' }
         '401': { description: '"Correo o contraseña incorrectos" (mensaje genérico)' }
+        '429':
+          description: |
+            Demasiados intentos fallidos con este correo (REQ-22): 5 fallos en 15 minutos → espera de 15 minutos.
+            Se responde antes de verificar la contraseña e igual exista o no la cuenta. La recuperación de
+            contraseña sigue disponible.
+          headers:
+            Retry-After:
+              description: Segundos que faltan para poder intentarlo de nuevo
+              schema: { type: integer, minimum: 1 }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EsperaAcceso' }
     delete:
       tags: [cuenta]
       summary: Cerrar sesión; invalida el token en el servidor (REQ-20)
@@ -392,7 +404,8 @@ paths:
       description: |
         Aplica los campos de `cambios` sobre la versión `versionBase`. Idempotente por `idOperacion`.
         Si `versionBase` no es la vigente, no se sobrescribe: se guarda el cambio como conflicto y se
-        responde 409 (R5).
+        responde 409 (R5). Un reintento con el mismo `idOperacion` repite la respuesta del primer intento:
+        200 si se aplicó, o 409 con el mismo `conflictoId` si quedó como conflicto (R4).
       requestBody:
         required: true
         content:
@@ -400,13 +413,13 @@ paths:
             schema: { $ref: '#/components/schemas/Correccion' }
       responses:
         '200':
-          description: Aplicado (o ya aplicado antes con el mismo idOperacion)
+          description: Aplicado (o reintento de un cambio ya aplicado con el mismo idOperacion)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Tratamiento' }
         '404': { $ref: '#/components/responses/NoEncontrado' }
         '409':
-          description: Conflicto de versión, o tratamiento anulado
+          description: Conflicto de versión (también en el reintento de un cambio que quedó como conflicto), o tratamiento anulado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Conflicto' }
@@ -423,13 +436,13 @@ paths:
             schema: { $ref: '#/components/schemas/Anulacion' }
       responses:
         '200':
-          description: Anulado (o ya anulado con el mismo idOperacion)
+          description: Anulado (o reintento de una anulación ya aplicada con el mismo idOperacion)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Tratamiento' }
         '404': { $ref: '#/components/responses/NoEncontrado' }
         '409':
-          description: Conflicto de versión
+          description: Conflicto de versión (también en el reintento de una anulación que quedó como conflicto)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Conflicto' }
@@ -518,6 +531,14 @@ components:
       properties:
         correo: { type: string, format: email, maxLength: 254 }
         contrasena: { $ref: '#/components/schemas/Contrasena' }
+    EsperaAcceso:
+      type: object
+      required: [mensaje, segundosRestantes]
+      properties:
+        mensaje:
+          type: string
+          description: 'Lenguaje llano, p. ej. "Has fallado la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña."'
+        segundosRestantes: { type: integer, minimum: 1 }
     Cuenta:
       type: object
       required: [correo, explotacionId]

@@ -27,6 +27,7 @@ usuario 1──1 explotacion 1──* parcela
    │                                      ──* aviso_correo
    ├──* sesion
    └──* token_restablecimiento
+intento_acceso (por correo, sin relación: REQ-22)
 ```
 
 ## Cuentas (REQ-20, REQ-21)
@@ -68,6 +69,20 @@ Válida si `revocada_en IS NULL`, `now() < expira_en` y `now() - ultimo_uso < 30
 
 Límite: 3 solicitudes por usuario y hora, contadas sobre esta tabla. Al usarse un token: se revocan todas las
 sesiones del usuario y los demás tokens pendientes.
+
+### `intento_acceso` (REQ-22)
+
+| Columna | Tipo | Restricciones |
+| --- | --- | --- |
+| `correo_normalizado` | TEXT | PK (`lower(trim(correo))`); no es FK, porque el límite se aplica igual exista o no la cuenta |
+| `fallos_consecutivos` | SMALLINT | NOT NULL, CHECK ≥ 0 |
+| `primer_fallo_en` | TIMESTAMPTZ | NULL (inicio de la ventana de 15 minutos) |
+| `bloqueado_hasta` | TIMESTAMPTZ | NULL |
+
+Reglas (R9): se lee con `SELECT … FOR UPDATE` antes de verificar la contraseña. Si `bloqueado_hasta > now()`,
+se responde 429 sin verificar. Un fallo con `primer_fallo_en` de hace más de 15 minutos reinicia la ventana
+(`fallos_consecutivos = 1`). Al 5.º fallo de la ventana: `bloqueado_hasta = now() + 15 min`. Un acceso correcto
+o un restablecimiento de contraseña borran la fila. Las filas no guardan contraseñas ni IP.
 
 ## Explotación y datos maestros (REQ-14 a REQ-17)
 
@@ -169,11 +184,13 @@ de registro y propone reutilizarlo.
 | `equipo_id` | UUID | FK → `equipo`, NOT NULL | REQ-01 h | CUE 8.35 |
 | `eficacia` | TEXT | NULL, CHECK IN (`buena`, `regular`, `mala`) | REQ-01 j | CUE 8.54 |
 | `observaciones` | TEXT | NULL, ≤ 2000 car. | REQ-01 k | CUE 8.55 |
-| `registrado_en` | TIMESTAMPTZ | NOT NULL; ≥ `fecha` y ≤ `now()` | REQ-09, R14 | |
-| `fecha_vencimiento` | DATE | GENERATED `(fecha + interval '1 month')::date` | REQ-07, R14 | |
-| `anotado_fuera_plazo` | BOOLEAN | NOT NULL; `registrado_en::date > fecha_vencimiento` | REQ-09 | |
+| `registrado_en` | TIMESTAMPTZ | NOT NULL; ≤ `now()` (momento del guardado en el dispositivo) | REQ-09, R14 | |
+| `fecha_registro` | DATE | NOT NULL; CHECK `fecha_registro >= fecha`. **No generada**: la API la calcula como la fecha de `registrado_en` en `Europe/Madrid` | REQ-09, R14 | |
 | `completado_en` | TIMESTAMPTZ | CHECK (`eficacia IS NULL`) = (`completado_en IS NULL`) | REQ-07 | |
-| `completado_fuera_plazo` | BOOLEAN | NOT NULL; `completado_en::date > fecha_vencimiento` | REQ-07 | |
+| `fecha_completado` | DATE | CHECK (`completado_en IS NULL`) = (`fecha_completado IS NULL`). **No generada**: la API la calcula como la fecha de `completado_en` en `Europe/Madrid` | REQ-07, R14 | |
+| `fecha_vencimiento` | DATE | **GENERADA**: `(fecha + interval '1 month')::date` | REQ-07, R14 | |
+| `anotado_fuera_plazo` | BOOLEAN | **GENERADA**: `fecha_registro > (fecha + interval '1 month')::date` | REQ-09 | |
+| `completado_fuera_plazo` | BOOLEAN | **GENERADA**: `coalesce(fecha_completado > (fecha + interval '1 month')::date, false)` | REQ-07 | |
 | `anulado` | BOOLEAN | NOT NULL, por defecto falso | REQ-12 | |
 | `version` | INTEGER | NOT NULL, ≥ 1 | R5 | |
 | `en_conflicto` | BOOLEAN | NOT NULL, por defecto falso | R5 | |
@@ -188,8 +205,19 @@ Restricciones fuera de la tabla, aplicadas por la API en la misma transacción y
   `fecha > current_date - interval '3 years'`. `tratamiento_parcela`, `tratamiento_producto` y `cambio` están
   protegidos por sus claves foráneas `RESTRICT`.
 
-**Pendiente**: si PostgreSQL no admite la expresión de `fecha_vencimiento` como columna generada (debe ser
-inmutable), se calcula en la inserción con la misma expresión. La prueba de los casos compartidos lo detecta.
+**Columnas generadas y no generadas.** PostgreSQL no permite que una columna generada use otra columna
+generada, y sus expresiones tienen que ser inmutables. Por eso:
+
+- Las tres columnas **generadas** (`fecha_vencimiento`, `anotado_fuera_plazo`, `completado_fuera_plazo`) usan
+  solo columnas normales de tipo `DATE` (`fecha`, `fecha_registro`, `fecha_completado`) y repiten la expresión
+  del vencimiento en lugar de referirse a `fecha_vencimiento`.
+- `fecha_registro` y `fecha_completado` **no son generadas**: convertir un `TIMESTAMPTZ` a fecha depende de la
+  zona horaria y no es inmutable. Las calcula la API (`dominio/plazos.py`) en `Europe/Madrid`, y se prueban con
+  los casos compartidos (R8).
+
+**Pendiente**: confirmar en la primera migración que PostgreSQL acepta `(fecha + interval '1 month')::date`
+como expresión inmutable de una columna generada. Si no, las tres columnas se calculan en la API con la misma
+función de dominio y se guardan como columnas normales. Los casos compartidos detectan cualquier diferencia.
 
 #### Estado derivado (no se guarda, para que no haya incoherencias)
 
@@ -285,13 +313,14 @@ sustituye las copias locales, excepto los tratamientos con operaciones pendiente
 | REQ-04 | CHECK > 0; superficie ≤ parcela y fecha ≤ hoy en la API y la PWA (casos compartidos) |
 | REQ-05 | Copia del cultivo en `tratamiento_parcela` |
 | REQ-06 | Almacenes `tratamientos` y `cola`; UUID del cliente; `cambio.id` idempotente |
-| REQ-07, REQ-09 | `fecha_vencimiento`, `registrado_en`, `completado_en` y las marcas |
+| REQ-07, REQ-09 | `fecha_vencimiento` y las marcas (generadas); `fecha_registro` y `fecha_completado` (API) |
 | REQ-08 | `aviso_correo`; aviso en la app calculado en el cliente con `fecha_vencimiento` |
 | REQ-10 | Índices (`explotacion_id`, `fecha`), (`parcela_id`) y (`producto_id`) |
 | REQ-11, REQ-12 | `cambio` con instantáneas y motivo; `anulado` |
 | REQ-13 | Disparador `BEFORE DELETE`; claves foráneas `RESTRICT` |
 | REQ-14 a REQ-17 | Tablas maestras con `estado` y `fecha_baja`; validación de "activa al registrar" |
 | REQ-20, REQ-21 | `usuario`, `sesion` y `token_restablecimiento` |
+| REQ-22 | `intento_acceso` |
 
 ## Referencias
 
