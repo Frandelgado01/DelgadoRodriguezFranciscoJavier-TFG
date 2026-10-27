@@ -30,6 +30,17 @@ Reglas:
 5. **Cierre.** Si procede registrar, el agente avisa al alumno, actualiza `registro-iteraciones.md` y hace
    commit (registro incluido) y push.
 
+## Contraste normativo antes de aprobar una spec
+
+Ninguna especificación se aprueba sin contrastar **literalmente** cada norma que cita (artículo, anexo o
+apartado) con su publicación oficial en el BOE o en el DOCM, no solo con el texto consolidado ni con un resumen.
+El contraste se anota en la cabecera de la spec (fecha, normas cotejadas con su referencia oficial y diferencias
+encontradas) y en el registro. Las diferencias se corrigen en la spec antes de aprobarla.
+
+Motivo: en la funcionalidad 001 el contraste se hizo después de aprobar la spec y encontró tres diferencias
+(plazo de conservación, número de orden de la parcela y aprovechamiento) que obligaron a modificarla (decisión
+del 2026-10-27). Aplica el principio IV de la constitución.
+
 ## Roles
 
 - **Alumno:** decide, aprueba cada artefacto y fase, entiende todo lo que entra en el repositorio y redacta
