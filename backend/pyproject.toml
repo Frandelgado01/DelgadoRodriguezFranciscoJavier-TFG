@@ -22,5 +22,25 @@ testpaths = ["tests"]
 [dependency-groups]
 dev = [
     "httpx2==2.16.0",
+    "mypy==2.4.0",
+    "pip-audit==2.10.1",
     "pytest==9.2.0",
+    "ruff==0.17.3",
 ]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+# Selección explícita (documentación de Ruff: "Prefer lint.select over lint.extend-select").
+# S = flake8-bandit, reglas de seguridad (R13; principio VI).
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+# pytest usa assert para las comprobaciones (S101 "Use of assert detected").
+"tests/**" = ["S101"]
+
+[tool.mypy]
+strict = true
+files = ["src/cuaderno"]

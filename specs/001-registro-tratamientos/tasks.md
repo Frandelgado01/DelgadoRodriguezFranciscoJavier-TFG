@@ -71,7 +71,7 @@ borrador #1.
   `pyproject.toml`, `Dockerfile` y CI y anotarlo en research R1. Criterio de hecho: `docker compose up` levanta
   `db` y `mailpit` y el pipeline se ejecuta en verde en la PR en borrador #1. (R1, R2, R10, R13; principio VI:
   secretos en `.env`)
-- [ ] T-02 [P] Configurar la calidad del backend en `backend/pyproject.toml` y `.github/workflows/ci.yml`:
+- [X] T-02 [P] Configurar la calidad del backend en `backend/pyproject.toml` y `.github/workflows/ci.yml`:
   `ruff` (formato y lint, **con las reglas `S` de seguridad**), `mypy` en modo estricto sobre `src/cuaderno`,
   y `pip-audit` sobre `uv.lock`, de modo que una vulnerabilidad alta o crítica haga fallar el pipeline.
   **Pendiente R13**: verificar la configuración de las tres herramientas con su documentación oficial y citarla

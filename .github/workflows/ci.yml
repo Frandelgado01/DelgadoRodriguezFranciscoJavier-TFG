@@ -28,6 +28,18 @@ jobs:
           enable-cache: true
       - name: Instalar dependencias desde uv.lock
         run: uv sync --locked
+      - name: Lint (ruff, con las reglas S de seguridad)
+        run: uv run ruff check .
+      - name: Formato (ruff)
+        run: uv run ruff format --check .
+      - name: Tipos (mypy estricto)
+        run: uv run mypy
+      # pip-audit no lee uv.lock ni filtra por severidad: se exporta el bloqueo con hashes y falla con
+      # cualquier vulnerabilidad conocida (más estricto que "alta o crítica"; research R13).
+      - name: Dependencias (pip-audit sobre uv.lock)
+        run: |
+          uv export --format requirements.txt --locked --no-emit-project --output-file "$RUNNER_TEMP/requisitos.txt"
+          uv run pip-audit -r "$RUNNER_TEMP/requisitos.txt" --require-hashes --disable-pip --strict
       - name: Pruebas
         run: uv run pytest
 

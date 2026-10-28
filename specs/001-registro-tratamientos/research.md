@@ -308,8 +308,21 @@ como **pendiente**.
   `pip-audit` y `npm audit --audit-level=high`). Una vulnerabilidad alta o crítica bloquea la fusión.
 - **Motivo**: es el stack de pruebas de la constitución más Vitest, que es necesario para probar en Node la
   lógica sin conexión de la PWA y los casos compartidos (ver "Complejidad justificada" en el plan).
-- **Pendiente**: verificar en T-01 con su documentación oficial la configuración de `pip-audit`, `npm audit`
-  y las reglas `S` de `ruff`.
+- **Verificado en T-02 (backend, 2026-10-28)** con la documentación oficial:
+  - **Ruff** 0.17.3: las reglas de seguridad son las de flake8-bandit, con prefijo `S` (p. ej., S101 "Use of
+    `assert` detected"), y la categoría `security` está desactivada por defecto (Ruff, s. f.-a, s. f.-b). Se
+    seleccionan de forma explícita en `[tool.ruff.lint] select`, como recomienda la documentación ("Prefer
+    `lint.select` over `lint.extend-select`"), y se ignora S101 solo en `tests/`. Comprobado: un
+    `subprocess.call(..., shell=True)` y una contraseña escrita en el código dan S602, S607 y S105.
+  - **mypy** 2.4.0: `strict = true` en `[tool.mypy]` ("Enable all optional error checking flags"), sobre
+    `src/cuaderno` (mypy, s. f.).
+  - **pip-audit** 2.10.1: no lee `uv.lock` (solo `pyproject.toml` y `pylock.*.toml`) y **no filtra por
+    severidad**: devuelve el código 1 con cualquier vulnerabilidad conocida (pip-audit, s. f.). Por eso el CI
+    exporta el bloqueo con `uv export --format requirements.txt` (uv, s. f.), con hashes, y lo audita con
+    `pip-audit -r … --require-hashes --disable-pip --strict`. Es **más estricto** que la decisión (falla
+    también con severidad baja o media); si un falso positivo bloqueara el CI, se excluiría con
+    `--ignore-vuln ID` y se anotaría aquí. Comprobado: con `jinja2==2.10` devuelve el código 1.
+- **Pendiente**: verificar en T-03 la configuración de `npm audit` con su documentación oficial.
 
 ## R14. Fecha de vencimiento y "fuera de plazo"
 
@@ -384,6 +397,9 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/412
 National Institute of Standards and Technology [NIST]. (2025). *Digital identity guidelines: Authentication and
 authenticator management* (NIST Special Publication 800-63B-4). https://pages.nist.gov/800-63-4/sp800-63b.html
 
+mypy. (s. f.). *The mypy configuration file*. Recuperado el 28 de octubre de 2026, de
+https://mypy.readthedocs.io/en/stable/config_file.html
+
 Nielsen, J. (1993). *Response times: The 3 important limits*. Nielsen Norman Group.
 https://www.nngroup.com/articles/response-times-3-important-limits/
 
@@ -411,6 +427,9 @@ Recuperado el 27 de octubre de 2026, de https://github.com/pgvector/pgvector
 pgvector. (s. f.-b). *pgvector/pgvector* [Imagen de Docker]. Docker Hub. Recuperado el 27 de octubre de 2026, de
 https://hub.docker.com/r/pgvector/pgvector
 
+pip-audit. (s. f.). *pip-audit* [Proyecto de PyPI]. Recuperado el 28 de octubre de 2026, de
+https://pypi.org/project/pip-audit/
+
 PostgreSQL Global Development Group. (s. f.-a). *Versioning policy*. Recuperado el 27 de octubre de 2026, de
 https://www.postgresql.org/support/versioning/
 
@@ -419,6 +438,14 @@ Recuperado el 27 de octubre de 2026, de https://www.postgresql.org/docs/current/
 
 Python Software Foundation. (s. f.). *Download Python*. Recuperado el 27 de octubre de 2026, de
 https://www.python.org/downloads/
+
+Ruff. (s. f.-a). *Rules*. Astral. Recuperado el 28 de octubre de 2026, de https://docs.astral.sh/ruff/rules/
+
+Ruff. (s. f.-b). *The Ruff linter*. Astral. Recuperado el 28 de octubre de 2026, de
+https://docs.astral.sh/ruff/linter/
+
+uv. (s. f.). *Exporting a lockfile*. Astral. Recuperado el 28 de octubre de 2026, de
+https://docs.astral.sh/uv/concepts/projects/export/
 
 Vite PWA. (s. f.). *Getting started*. Recuperado el 27 de octubre de 2026, de
 https://vite-pwa-org.netlify.app/guide/
