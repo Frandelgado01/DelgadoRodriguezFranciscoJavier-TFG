@@ -84,7 +84,7 @@ borrador #1.
   con Vite y Caddy como imagen final): servir la PWA estática, hacer de proxy inverso de `/api/*` hacia `api` (mismo
   origen) y dar HTTPS con `tls internal` para `localhost`; añadir el servicio `web` a `compose.yaml`. Documentar
   en `quickstart.md` cómo confiar en la autoridad local en el portátil. (R11)
-- [ ] T-05 Crear la aplicación FastAPI base en `backend/src/cuaderno/main.py`, `config.py` (lectura de las
+- [X] T-05 Crear la aplicación FastAPI base en `backend/src/cuaderno/main.py`, `config.py` (lectura de las
   variables de `.env.example`, zona `Europe/Madrid`) y `db.py` (motor y sesión de SQLModel con psycopg 3), con el
   prefijo `/api` y la documentación interactiva en `/api/docs`; e inicializar Alembic en `backend/alembic/`
   apuntando a los modelos de `backend/src/cuaderno/modelos/`; añadir el servicio `api` a `compose.yaml` con la

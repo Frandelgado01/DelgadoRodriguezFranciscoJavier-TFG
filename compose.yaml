@@ -1,5 +1,5 @@
 # Entorno local del Cuaderno de Campo (plan, R2). Copia .env.example a .env antes de arrancar.
-# Servicios: db y mailpit (T-01), web (T-04); api (T-05) y worker (T-51) se añaden con su código.
+# Servicios: db y mailpit (T-01), web (T-04) y api (T-05); worker (T-51) se añade con su código.
 name: cuaderno
 
 services:
@@ -13,6 +13,28 @@ services:
       # La autoridad local de Caddy se conserva entre arranques para no tener que volver a confiar en ella.
       - datos-caddy:/data
       - config-caddy:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    environment:
+      URL_BASE_DATOS: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      URL_PUBLICA: ${URL_PUBLICA:?Copia .env.example a .env}
+      SMTP_HOST: ${SMTP_HOST:?Copia .env.example a .env}
+      SMTP_PORT: ${SMTP_PORT:?Copia .env.example a .env}
+      CORREO_REMITENTE: ${CORREO_REMITENTE:?Copia .env.example a .env}
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/openapi.json')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   db:
     image: pgvector/pgvector:0.8.7-pg18-trixie

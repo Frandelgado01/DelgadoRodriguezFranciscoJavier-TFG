@@ -13,9 +13,15 @@ COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --locked --no-dev --no-install-project
 
 COPY src ./src
+COPY alembic.ini ./
+COPY alembic ./alembic
 RUN uv sync --locked --no-dev
 
 ENV PATH="/app/.venv/bin:$PATH"
 
 RUN useradd --system --uid 10001 cuaderno
 USER cuaderno
+
+EXPOSE 8000
+# Aplica las migraciones pendientes y arranca la API. Caddy (servicio web) es el único que la expone.
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn cuaderno.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"]
