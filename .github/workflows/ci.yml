@@ -58,5 +58,11 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Instalar dependencias desde package-lock.json
         run: npm ci
+      - name: Lint (ESLint)
+        run: npm run lint
+      - name: Tipos (tsc estricto)
+        run: npm run typecheck
+      - name: Dependencias (npm audit, falla con altas o críticas)
+        run: npm run audit
       - name: Pruebas
         run: npm test

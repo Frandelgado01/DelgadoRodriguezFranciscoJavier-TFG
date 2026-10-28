@@ -322,7 +322,16 @@ como **pendiente**.
     `pip-audit -r … --require-hashes --disable-pip --strict`. Es **más estricto** que la decisión (falla
     también con severidad baja o media); si un falso positivo bloqueara el CI, se excluiría con
     `--ignore-vuln ID` y se anotaría aquí. Comprobado: con `jinja2==2.10` devuelve el código 1.
-- **Pendiente**: verificar en T-03 la configuración de `npm audit` con su documentación oficial.
+- **Verificado en T-03 (frontend, 2026-10-28)** con la documentación oficial:
+  - **npm audit** (npm 11.6.2): `audit-level` es "the minimum level of vulnerability for `npm audit` to exit
+    with a non-zero exit code" (valores `info`, `low`, `moderate`, `high`, `critical`, `none`) y no filtra el
+    informe, solo cambia el umbral de fallo (npm, s. f.). El CI ejecuta `npm audit --audit-level=high`.
+    Comprobado: con las 4 vulnerabilidades de severidad **baja** que hay hoy (`deepmerge`, que llega a través
+    de `vite-plugin-pwa` → `workbox-build`) devuelve 0 con `--audit-level=high` y 1 con `--audit-level=low`.
+    Se audita todo el árbol, incluidas las dependencias de desarrollo.
+  - **ESLint** 10.13.0 con la configuración recomendada de typescript-eslint 8.72.1 (`defineConfig` con
+    `js.configs.recommended` y `tseslint.configs.recommended`) más las reglas de los hooks de React
+    (typescript-eslint, s. f.); `tsc --noEmit` con `strict: true`.
 
 ## R14. Fecha de vencimiento y "fuera de plazo"
 
@@ -403,6 +412,9 @@ https://mypy.readthedocs.io/en/stable/config_file.html
 Nielsen, J. (1993). *Response times: The 3 important limits*. Nielsen Norman Group.
 https://www.nngroup.com/articles/response-times-3-important-limits/
 
+npm. (s. f.). *npm-audit*. npm Docs (CLI v11). Recuperado el 28 de octubre de 2026, de
+https://docs.npmjs.com/cli/v11/commands/npm-audit
+
 OpenAPI TypeScript. (s. f.). *Introduction*. Recuperado el 27 de octubre de 2026, de
 https://openapi-ts.dev/introduction
 
@@ -443,6 +455,9 @@ Ruff. (s. f.-a). *Rules*. Astral. Recuperado el 28 de octubre de 2026, de https:
 
 Ruff. (s. f.-b). *The Ruff linter*. Astral. Recuperado el 28 de octubre de 2026, de
 https://docs.astral.sh/ruff/linter/
+
+typescript-eslint. (s. f.). *Getting started*. Recuperado el 28 de octubre de 2026, de
+https://typescript-eslint.io/getting-started/
 
 uv. (s. f.). *Exporting a lockfile*. Astral. Recuperado el 28 de octubre de 2026, de
 https://docs.astral.sh/uv/concepts/projects/export/

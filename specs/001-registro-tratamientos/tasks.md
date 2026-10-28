@@ -76,7 +76,7 @@ borrador #1.
   y `pip-audit` sobre `uv.lock`, de modo que una vulnerabilidad alta o crítica haga fallar el pipeline.
   **Pendiente R13**: verificar la configuración de las tres herramientas con su documentación oficial y citarla
   en research R13. (R13; principio VI)
-- [ ] T-03 [P] Configurar la calidad del frontend en `frontend/package.json`, `frontend/eslint.config.js`,
+- [X] T-03 [P] Configurar la calidad del frontend en `frontend/package.json`, `frontend/eslint.config.js`,
   `frontend/tsconfig.json` y `.github/workflows/ci.yml`: ESLint, `tsc --noEmit` en modo estricto, Vitest y
   `npm audit --audit-level=high` (falla con vulnerabilidades altas o críticas). **Pendiente R13**: verificar la
   configuración de `npm audit` con su documentación oficial. (R13; principio VI)
