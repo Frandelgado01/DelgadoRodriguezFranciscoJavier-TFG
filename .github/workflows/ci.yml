@@ -20,6 +20,35 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    # Mismas imágenes que compose.yaml, para las pruebas de integración (T-06). Las credenciales son solo
+    # de este contenedor efímero del CI.
+    services:
+      db:
+        image: pgvector/pgvector:0.8.7-pg18-trixie
+        env:
+          POSTGRES_DB: cuaderno
+          POSTGRES_USER: cuaderno
+          POSTGRES_PASSWORD: cuaderno-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cuaderno -d cuaderno"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.32.0
+        ports:
+          - 1025:1025
+          - 8025:8025
+        options: >-
+          --health-cmd "/mailpit readyz"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      URL_BASE_DATOS: postgresql+psycopg://cuaderno:cuaderno-ci@127.0.0.1:5432/cuaderno
+      URL_PUBLICA: https://localhost
+      SMTP_HOST: 127.0.0.1
+      SMTP_PORT: "1025"
+      CORREO_REMITENTE: cuaderno@localhost
+      URL_MAILPIT: http://127.0.0.1:8025
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: astral-sh/setup-uv@v10.3.3

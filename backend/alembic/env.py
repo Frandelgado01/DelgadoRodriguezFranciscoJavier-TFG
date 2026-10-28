@@ -2,11 +2,11 @@
 
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 import cuaderno.modelos  # noqa: F401  (registra las tablas en SQLModel.metadata)
-from alembic import context
 from cuaderno.config import leer_config
 
 config = context.config

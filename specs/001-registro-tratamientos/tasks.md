@@ -90,7 +90,7 @@ borrador #1.
   apuntando a los modelos de `backend/src/cuaderno/modelos/`; añadir el servicio `api` a `compose.yaml` con la
   imagen de `backend/Dockerfile`. Criterio: `docker compose up` arranca `db`, `mailpit`, `api` y `web` (H1).
   (R2, R7)
-- [ ] T-06 Preparar la infraestructura de pruebas del backend en `backend/tests/conftest.py`: base de datos
+- [X] T-06 Preparar la infraestructura de pruebas del backend en `backend/tests/conftest.py`: base de datos
   PostgreSQL de pruebas aparte (migrada con `alembic upgrade head` y limpiada entre pruebas), cliente HTTP de
   FastAPI, reloj inyectable para fijar "hoy" en `Europe/Madrid` y un cliente de la API REST de Mailpit para leer
   y vaciar los correos recibidos. Añadir al CI los servicios `db` y `mailpit` para las pruebas de integración.
