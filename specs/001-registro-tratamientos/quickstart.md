@@ -30,6 +30,39 @@ docker compose up --build
 
 La primera vez, el navegador del portátil tiene que confiar en la autoridad local de Caddy (research R11).
 
+### Confiar en la autoridad local de Caddy en el portátil
+
+Caddy crea una autoridad de certificación propia ("Caddy Local Authority") y guarda su raíz en su directorio de
+datos, en `pki/authorities/local` (Caddy, s. f.; referencia completa en [research.md](research.md#referencias)). Dentro del contenedor no puede instalarla en el almacén del
+portátil, así que se hace a mano una vez. La raíz se conserva en el volumen `datos-caddy`, así que solo hay que
+repetirlo si se borra ese volumen (`docker compose down -v`).
+
+1. Con el entorno arrancado, copiar la raíz fuera del contenedor:
+
+   ```text
+   docker compose cp web:/data/caddy/pki/authorities/local/root.crt caddy-raiz.crt
+   ```
+
+2. Añadirla a las entidades raíz de confianza del usuario de Windows (Chrome y Edge usan ese almacén):
+
+   ```text
+   certutil -user -addstore Root caddy-raiz.crt
+   ```
+
+   Windows pide confirmación en una ventana. También se puede hacer con doble clic en `caddy-raiz.crt` →
+   "Instalar certificado" → "Usuario actual" → "Entidades de certificación raíz de confianza".
+3. Reiniciar el navegador y abrir https://localhost: debe cargar sin aviso de seguridad.
+
+`caddy-raiz.crt` no se versiona (`*.crt` está en `.gitignore`). Para quitar la confianza:
+`certutil -user -delstore Root "Caddy Local Authority - <año> ECC Root"` (el nombre exacto aparece en
+`certutil -user -store Root`).
+
+Para comprobarlo con `curl` en Windows hay que añadir `--ssl-no-revoke`, porque Schannel intenta comprobar la
+revocación y la autoridad local no publica lista de revocación:
+`curl --ssl-no-revoke --cacert caddy-raiz.crt https://localhost/`.
+
+El móvil Android de la demo necesita el mismo paso con su propio procedimiento (pendiente R11, T-69).
+
 ## Pruebas automáticas
 
 | Qué | Dónde | Verifica |

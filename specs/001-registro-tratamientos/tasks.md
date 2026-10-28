@@ -80,7 +80,7 @@ borrador #1.
   `frontend/tsconfig.json` y `.github/workflows/ci.yml`: ESLint, `tsc --noEmit` en modo estricto, Vitest y
   `npm audit --audit-level=high` (falla con vulnerabilidades altas o críticas). **Pendiente R13**: verificar la
   configuración de `npm audit` con su documentación oficial. (R13; principio VI)
-- [ ] T-04 Configurar el servicio `web` en `despliegue/Caddyfile` y `frontend/Dockerfile` (construcción de la PWA
+- [X] T-04 Configurar el servicio `web` en `despliegue/Caddyfile` y `frontend/Dockerfile` (construcción de la PWA
   con Vite y Caddy como imagen final): servir la PWA estática, hacer de proxy inverso de `/api/*` hacia `api` (mismo
   origen) y dar HTTPS con `tls internal` para `localhost`; añadir el servicio `web` a `compose.yaml`. Documentar
   en `quickstart.md` cómo confiar en la autoridad local en el portátil. (R11)

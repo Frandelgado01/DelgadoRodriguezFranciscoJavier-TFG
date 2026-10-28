@@ -1,8 +1,19 @@
 # Entorno local del Cuaderno de Campo (plan, R2). Copia .env.example a .env antes de arrancar.
-# Servicios: db y mailpit (T-01); web (T-04), api (T-05) y worker (T-51) se añaden con su código.
+# Servicios: db y mailpit (T-01), web (T-04); api (T-05) y worker (T-51) se añaden con su código.
 name: cuaderno
 
 services:
+  web:
+    build: ./frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./despliegue/Caddyfile:/etc/caddy/Caddyfile:ro
+      # La autoridad local de Caddy se conserva entre arranques para no tener que volver a confiar en ella.
+      - datos-caddy:/data
+      - config-caddy:/config
+
   db:
     image: pgvector/pgvector:0.8.7-pg18-trixie
     environment:
@@ -34,3 +45,5 @@ services:
 
 volumes:
   datos-db:
+  datos-caddy:
+  config-caddy:
