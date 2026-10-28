@@ -1,0 +1,72 @@
+# Entorno local del Cuaderno de Campo (plan, R2). Copia .env.example a .env antes de arrancar.
+# Servicios: db y mailpit (T-01), web (T-04) y api (T-05); worker (T-51) se añade con su código.
+name: cuaderno
+
+services:
+  web:
+    build: ./frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./despliegue/Caddyfile:/etc/caddy/Caddyfile:ro
+      # La autoridad local de Caddy se conserva entre arranques para no tener que volver a confiar en ella.
+      - datos-caddy:/data
+      - config-caddy:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    environment:
+      URL_BASE_DATOS: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      URL_PUBLICA: ${URL_PUBLICA:?Copia .env.example a .env}
+      # Direcciones internas de la red de Compose; .env las define para usarlas desde el portátil.
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      CORREO_REMITENTE: ${CORREO_REMITENTE:?Copia .env.example a .env}
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/openapi.json')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db:
+    image: pgvector/pgvector:0.8.7-pg18-trixie
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Copia .env.example a .env}
+      POSTGRES_USER: ${POSTGRES_USER:?Copia .env.example a .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copia .env.example a .env}
+    volumes:
+      # Desde PostgreSQL 18 el volumen se monta en /var/lib/postgresql (los datos van en 18/docker).
+      - datos-db:/var/lib/postgresql
+    ports:
+      # Solo en el portátil, para ejecutar las pruebas de la API fuera de los contenedores.
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.32.0
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP
+      - "127.0.0.1:8025:8025" # interfaz web y API REST
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  datos-db:
+  datos-caddy:
+  config-caddy:

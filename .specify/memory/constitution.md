@@ -1,3 +1,19 @@
+<!--
+Informe de impacto de sincronización
+- Versión: 1.1.0 → 1.1.1 (PATCH: se concreta una regla existente, el límite de iteraciones del bucle de
+  implementación, sin añadir ni redefinir principios).
+- Principios modificados: ninguno. Sección modificada: "Flujo de desarrollo y puertas de calidad", punto
+  "Bucle de implementación" (límite de 3 intentos de corrección por tarea y definición de intento; propuesta del
+  agente sin fuente, aprobada por el alumno el 2026-10-27 tras /speckit-analyze).
+- Secciones añadidas o eliminadas: ninguna.
+- TODO pendientes: TODO(PRESUPUESTO_RAG) (pendientes-tutor #14); TODO(METRICAS_RAG) (plan de la 002).
+- Plantillas: .specify/templates/plan-template.md ✅ sin cambios; spec-template.md ✅ sin cambios;
+  tasks-template.md ✅ sin cambios; checklist-template.md ✅ sin cambios.
+- Documentos: specs/001-registro-tratamientos/tasks.md ✅ actualizado ("Bucle de implementación" cita el
+  límite); specs/001-registro-tratamientos/plan.md ✅ actualizado (entrada con la constitución v1.1.1).
+- Historial: 1.0.0 → 1.1.0 (2026-10-27, MINOR): umbrales de rendimiento de k6 y TODO(METRICAS_RAG).
+-->
+
 # Constitución del Cuaderno de Campo
 
 ## Principios fundamentales
@@ -82,9 +98,14 @@
 - **Datos:** PostgreSQL con pgvector (una sola base de datos para datos y vectores).
 - **IA del producto:** Claude API para el módulo RAG. TODO(PRESUPUESTO_RAG): pendiente de cómo se financian las
   llamadas (pendientes-tutor #14).
-- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento). TODO(UMBRALES_RENDIMIENTO):
-  los umbrales de k6 y las métricas mínimas del RAG (fidelidad, relevancia) se fijan en la fase 4 y se incorporan
-  aquí por enmienda.
+- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento).
+- **Umbrales de rendimiento (k6):** con 20 usuarios virtuales durante 2 minutos sobre una base sembrada con
+  50 explotaciones (30 parcelas y 1 000 tratamientos cada una), el pipeline MUST fallar si no se cumple:
+  menos del 1 % de peticiones fallidas (`http_req_failed: rate<0.01`); p95 < 500 ms al registrar un tratamiento;
+  p95 < 300 ms en consultas y resto de peticiones. Son **umbrales iniciales** (plan 001, research R12) y se
+  revisarán con las mediciones de la fase 7.
+- **Métricas del RAG:** TODO(METRICAS_RAG): las métricas mínimas de fidelidad y relevancia se fijan en el plan de
+  la funcionalidad 002 y se incorporan aquí por enmienda.
 - **CI/CD:** GitHub Actions; contenedores Docker.
 - **Despliegue:** local con Docker Compose y demo; sin despliegue público.
 - **Idioma:** artefactos, interfaz, commits y documentación en español.
@@ -97,9 +118,12 @@
   ir directa a `main`.
 - **Puertas de fusión:** una PR solo se fusiona si (1) el pipeline está en verde, (2) `/speckit-converge` no
   deja tareas pendientes y (3) el alumno la ha revisado.
-- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de iteraciones por
-  tarea; si lo alcanza, se detiene y consulta al alumno. Si una validación falla por un requisito mal definido,
-  se vuelve a la fase 2.
+- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de **3 intentos de
+  corrección por tarea**. Un intento es cada cambio de código seguido de una ejecución de las pruebas de la tarea
+  que siguen fallando; la primera ejecución en rojo (la esperada al escribir las pruebas primero) no cuenta, y un
+  fallo del CI en esa tarea cuenta como un intento. Si alcanza el límite, se detiene sin hacer commit y consulta
+  al alumno, presentando las pruebas que fallan, lo intentado y si cree que el requisito está mal definido; en
+  ese caso se vuelve a la fase 2. El número es una propuesta del agente, sin fuente.
 - **Commits:** uno por tarea, en español; en implementación empiezan por `T-xx:`.
 - **Registro:** cada iteración relevante se anota en `docs/proceso/registro-iteraciones.md` en el mismo commit
   que el trabajo que registra.
@@ -115,4 +139,4 @@
 - **Cumplimiento:** cada `plan.md` MUST superar la comprobación de constitución antes de generar tareas, y cada
   PR se revisa contra estos principios.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-23
+**Versión**: 1.1.1 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-27

@@ -1,0 +1,785 @@
+openapi: 3.1.0
+info:
+  title: Cuaderno de Campo — API de la funcionalidad 001 (registro de tratamientos)
+  version: 0.1.0
+  description: |
+    Contrato de diseño de la funcionalidad 001 (specs/001-registro-tratamientos). Cada operación indica los
+    REQ-xx de spec.md que implementa. Todas las rutas, salvo las de cuenta y sesión marcadas con
+    `security: []`, exigen la cookie de sesión y solo dan acceso a la explotación del usuario (REQ-20).
+    Los errores de validación devuelven 422 con mensajes en lenguaje llano (REQ-04, principio V).
+servers:
+  - url: /api
+security:
+  - cookieSesion: []
+
+tags:
+  - name: cuenta
+  - name: parcelas
+  - name: personas
+  - name: equipos
+  - name: productos
+  - name: tratamientos
+  - name: avisos
+
+paths:
+  /cuenta:
+    post:
+      tags: [cuenta]
+      summary: Crear cuenta y explotación (REQ-20)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credenciales' }
+      responses:
+        '201': { description: 'Cuenta creada; inicia sesión (Set-Cookie __Host-sesion)' }
+        '409': { description: 'Ya existe una cuenta con ese correo' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /cuenta/yo:
+    get:
+      tags: [cuenta]
+      summary: Datos de la cuenta de la sesión (REQ-20)
+      responses:
+        '200':
+          description: Cuenta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cuenta' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+  /sesion:
+    post:
+      tags: [cuenta]
+      summary: Iniciar sesión (REQ-20, REQ-22)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credenciales' }
+      responses:
+        '204': { description: 'Sesión iniciada (Set-Cookie __Host-sesion; HttpOnly; Secure; SameSite=Strict; Path=/)' }
+        '401': { description: '"Correo o contraseña incorrectos" (mensaje genérico)' }
+        '429':
+          description: |
+            Demasiados intentos fallidos con este correo (REQ-22): 5 fallos en 15 minutos → espera de 15 minutos.
+            Se responde antes de verificar la contraseña e igual exista o no la cuenta. La recuperación de
+            contraseña sigue disponible.
+          headers:
+            Retry-After:
+              description: Segundos que faltan para poder intentarlo de nuevo
+              schema: { type: integer, minimum: 1 }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EsperaAcceso' }
+    delete:
+      tags: [cuenta]
+      summary: Cerrar sesión; invalida el token en el servidor (REQ-20)
+      responses:
+        '204': { description: 'Sesión cerrada (cookie borrada)' }
+  /cuenta/recuperacion:
+    post:
+      tags: [cuenta]
+      summary: Solicitar el enlace de restablecimiento por correo (REQ-21)
+      description: Responde siempre 202 con el mismo mensaje, exista o no la cuenta.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [correo]
+              properties:
+                correo: { type: string, format: email, maxLength: 254 }
+      responses:
+        '202': { description: 'Si la cuenta existe, se ha enviado un correo' }
+  /cuenta/recuperacion/confirmar:
+    post:
+      tags: [cuenta]
+      summary: Fijar una contraseña nueva con el token del enlace (REQ-21)
+      description: Invalida el token y todas las sesiones del usuario; no inicia sesión.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, contrasena]
+              properties:
+                token: { type: string, minLength: 32, maxLength: 128 }
+                contrasena: { $ref: '#/components/schemas/Contrasena' }
+      responses:
+        '204': { description: 'Contraseña cambiada' }
+        '400': { description: 'Enlace no válido o caducado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+
+  /parcelas:
+    get:
+      tags: [parcelas]
+      summary: Listar parcelas (REQ-14)
+      parameters:
+        - $ref: '#/components/parameters/IncluirBajas'
+      responses:
+        '200':
+          description: Parcelas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Parcela' } }
+    post:
+      tags: [parcelas]
+      summary: Dar de alta una parcela (REQ-14)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ParcelaEntrada' }
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Parcela' }
+        '409': { description: 'Ya hay una parcela activa con esa referencia SIGPAC' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /parcelas/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    put:
+      tags: [parcelas]
+      summary: Modificar una parcela (REQ-14); no altera tratamientos anteriores (REQ-05)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ParcelaEntrada' }
+      responses:
+        '200':
+          description: Modificada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Parcela' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /parcelas/{id}/baja:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [parcelas]
+      summary: Dar de baja una parcela (REQ-17)
+      responses:
+        '200':
+          description: De baja
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Parcela' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /personas:
+    get:
+      tags: [personas]
+      summary: Listar aplicadores y asesores (REQ-15)
+      parameters:
+        - $ref: '#/components/parameters/IncluirBajas'
+      responses:
+        '200':
+          description: Personas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Persona' } }
+    post:
+      tags: [personas]
+      summary: Dar de alta una persona (REQ-15)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PersonaEntrada' }
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Persona' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /personas/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    put:
+      tags: [personas]
+      summary: Modificar una persona (REQ-15)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PersonaEntrada' }
+      responses:
+        '200':
+          description: Modificada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Persona' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /personas/{id}/baja:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [personas]
+      summary: Dar de baja una persona (REQ-17)
+      responses:
+        '200':
+          description: De baja
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Persona' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /equipos:
+    get:
+      tags: [equipos]
+      summary: Listar equipos de aplicación (REQ-15)
+      parameters:
+        - $ref: '#/components/parameters/IncluirBajas'
+      responses:
+        '200':
+          description: Equipos
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Equipo' } }
+    post:
+      tags: [equipos]
+      summary: Dar de alta un equipo (REQ-15)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EquipoEntrada' }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Equipo' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /equipos/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    put:
+      tags: [equipos]
+      summary: Modificar un equipo (REQ-15)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EquipoEntrada' }
+      responses:
+        '200':
+          description: Modificado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Equipo' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /equipos/{id}/baja:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [equipos]
+      summary: Dar de baja un equipo (REQ-17)
+      responses:
+        '200':
+          description: De baja
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Equipo' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /productos:
+    get:
+      tags: [productos]
+      summary: Listar productos fitosanitarios (REQ-16)
+      parameters:
+        - $ref: '#/components/parameters/IncluirBajas'
+      responses:
+        '200':
+          description: Productos
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Producto' } }
+    post:
+      tags: [productos]
+      summary: Dar de alta un producto, también desde el registro y sin conexión (REQ-16, REQ-06)
+      description: Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProductoEntrada' }
+      responses:
+        '200':
+          description: Ya existía con el mismo contenido (reintento)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Producto' }
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Producto' }
+        '409': { description: 'Existe otro producto con ese id y distinto contenido' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /productos/{id}/baja:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [productos]
+      summary: Dar de baja un producto (REQ-17)
+      responses:
+        '200':
+          description: De baja
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Producto' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /tratamientos:
+    get:
+      tags: [tratamientos]
+      summary: Consultar tratamientos ordenados por fecha, con filtros (REQ-10)
+      parameters:
+        - { name: desde, in: query, schema: { type: string, format: date } }
+        - { name: hasta, in: query, schema: { type: string, format: date } }
+        - { name: parcela_id, in: query, schema: { type: string, format: uuid } }
+        - { name: producto_id, in: query, schema: { type: string, format: uuid } }
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [completo, pendiente, anotado_fuera_plazo, completado_fuera_plazo, anulado]
+        - { name: pagina, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: tamano, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+      responses:
+        '200':
+          description: Página de tratamientos; por defecto excluye los anulados salvo con estado=anulado
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [elementos, total]
+                properties:
+                  elementos: { type: array, items: { $ref: '#/components/schemas/Tratamiento' } }
+                  total: { type: integer }
+    post:
+      tags: [tratamientos]
+      summary: Registrar un tratamiento (REQ-01 a REQ-05, REQ-07, REQ-09)
+      description: Idempotente por `id` (UUID del cliente, REQ-06). Un reintento con el mismo contenido devuelve 200.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TratamientoNuevo' }
+      responses:
+        '200':
+          description: Ya existía con el mismo contenido (reintento)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '201':
+          description: Registrado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '409': { description: 'Existe otro tratamiento con ese id y distinto contenido' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /tratamientos/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    get:
+      tags: [tratamientos]
+      summary: Ver un tratamiento (REQ-10)
+      responses:
+        '200':
+          description: Tratamiento
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+    patch:
+      tags: [tratamientos]
+      summary: Corregir o completar un tratamiento (REQ-07, REQ-11)
+      description: |
+        Aplica los campos de `cambios` sobre la versión `versionBase`. Idempotente por `idOperacion`.
+        Si `versionBase` no es la vigente, no se sobrescribe: se guarda el cambio como conflicto y se
+        responde 409 (R5). Un reintento con el mismo `idOperacion` repite la respuesta del primer intento:
+        200 si se aplicó, o 409 con el mismo `conflictoId` si quedó como conflicto (R4).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Correccion' }
+      responses:
+        '200':
+          description: Aplicado (o reintento de un cambio ya aplicado con el mismo idOperacion)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409':
+          description: Conflicto de versión (también en el reintento de un cambio que quedó como conflicto), o tratamiento anulado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conflicto' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /tratamientos/{id}/anulacion:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [tratamientos]
+      summary: Anular un tratamiento registrado por error (REQ-12)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Anulacion' }
+      responses:
+        '200':
+          description: Anulado (o reintento de una anulación ya aplicada con el mismo idOperacion)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409':
+          description: Conflicto de versión (también en el reintento de una anulación que quedó como conflicto)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conflicto' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /tratamientos/{id}/resolucion-conflicto:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    post:
+      tags: [tratamientos]
+      summary: Elegir la versión vigente tras un conflicto de sincronización (caso límite de la spec, R5)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResolucionConflicto' }
+      responses:
+        '200':
+          description: Resuelto
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tratamiento' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { description: 'La versión vigente ha vuelto a cambiar; repetir con la nueva' }
+  /tratamientos/{id}/historial:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    get:
+      tags: [tratamientos]
+      summary: Historial de cambios, anulación y conflictos (REQ-11, REQ-12)
+      responses:
+        '200':
+          description: Cambios en orden cronológico
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Cambio' } }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+
+  /avisos:
+    get:
+      tags: [avisos]
+      summary: Tratamientos pendientes que vencen en 7 días o menos, o ya vencidos (REQ-08)
+      description: La PWA calcula los mismos avisos sin conexión con sus datos locales.
+      responses:
+        '200':
+          description: Avisos
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Aviso' } }
+
+components:
+  securitySchemes:
+    cookieSesion:
+      type: apiKey
+      in: cookie
+      name: __Host-sesion
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IncluirBajas:
+      name: incluir_bajas
+      in: query
+      schema: { type: boolean, default: false }
+
+  responses:
+    Validacion:
+      description: Datos no válidos; un mensaje en lenguaje llano por campo (REQ-04)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorValidacion' }
+    NoEncontrado:
+      description: No existe en la explotación del usuario
+    NoAutenticado:
+      description: Sesión ausente, caducada o revocada
+
+  schemas:
+    Contrasena:
+      type: string
+      minLength: 15
+      maxLength: 128
+      description: Sin reglas de composición (R9)
+    Credenciales:
+      type: object
+      required: [correo, contrasena]
+      properties:
+        correo: { type: string, format: email, maxLength: 254 }
+        contrasena: { $ref: '#/components/schemas/Contrasena' }
+    EsperaAcceso:
+      type: object
+      required: [mensaje, segundosRestantes]
+      properties:
+        mensaje:
+          type: string
+          description: 'Lenguaje llano, p. ej. "Has fallado la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña."'
+        segundosRestantes: { type: integer, minimum: 1 }
+    Cuenta:
+      type: object
+      required: [correo, explotacionId]
+      properties:
+        correo: { type: string, format: email }
+        explotacionId: { type: string, format: uuid }
+
+    EstadoMaestro:
+      type: string
+      enum: [activa, baja]
+
+    ParcelaEntrada:
+      type: object
+      required: [sigpac, superficie, usoSigpac, aprovechamiento, cultivoLenoso, sistemaExplotacion, protegido]
+      properties:
+        nombre: { type: [string, 'null'], minLength: 1, maxLength: 100, description: 'Opcional; la parcela se identifica por su numeroOrden (A.2.a)' }
+        sigpac: { $ref: '#/components/schemas/ReferenciaSigpac' }
+        superficie: { type: number, exclusiveMinimum: 0, description: 'ha' }
+        usoSigpac: { type: string, minLength: 1, maxLength: 10 }
+        aprovechamiento: { type: string, enum: [forestal, pastos, cultivo], description: 'Anexo III, A.2.d' }
+        cultivoLenoso: { type: boolean, description: 'Solo si aprovechamiento es cultivo; si es true, cultivoEspecie y cultivoVariedad son obligatorias (A.2.d)' }
+        cultivoEspecie: { type: [string, 'null'], maxLength: 100 }
+        cultivoVariedad: { type: [string, 'null'], maxLength: 100 }
+        sistemaExplotacion: { type: string, enum: [secano, regadio] }
+        sistemaRiego: { type: [string, 'null'], maxLength: 100, description: 'Obligatorio si regadio' }
+        protegido: { type: boolean }
+        tipoProteccion: { type: [string, 'null'], maxLength: 100, description: 'Obligatorio si protegido' }
+        sistemaCertificacion: { type: [string, 'null'], maxLength: 100 }
+        marcoControlPlagas: { type: [string, 'null'], maxLength: 100 }
+    Parcela:
+      allOf:
+        - $ref: '#/components/schemas/ParcelaEntrada'
+        - type: object
+          required: [id, numeroOrden, estado]
+          properties:
+            id: { type: string, format: uuid }
+            numeroOrden:
+              type: integer
+              minimum: 1
+              readOnly: true
+              description: Número de orden correlativo en la explotación; lo asigna el servidor y no se reutiliza tras una baja (REQ-14 a)
+            estado: { $ref: '#/components/schemas/EstadoMaestro' }
+            fechaBaja: { type: [string, 'null'], format: date }
+    ReferenciaSigpac:
+      type: object
+      required: [provincia, municipio, agregado, zona, poligono, parcela, recinto]
+      properties:
+        provincia: { type: integer, minimum: 1, maximum: 99 }
+        municipio: { type: integer, minimum: 1 }
+        agregado: { type: integer, minimum: 0 }
+        zona: { type: integer, minimum: 0 }
+        poligono: { type: integer, minimum: 1 }
+        parcela: { type: integer, minimum: 1 }
+        recinto: { type: integer, minimum: 1 }
+
+    PersonaEntrada:
+      type: object
+      required: [nombre, tipo, numeroCarne]
+      properties:
+        nombre: { type: string, minLength: 1, maxLength: 150 }
+        tipo: { type: string, enum: [aplicador, asesor] }
+        numeroCarne: { type: string, minLength: 1, maxLength: 30 }
+    Persona:
+      allOf:
+        - $ref: '#/components/schemas/PersonaEntrada'
+        - type: object
+          required: [id, estado]
+          properties:
+            id: { type: string, format: uuid }
+            estado: { $ref: '#/components/schemas/EstadoMaestro' }
+            fechaBaja: { type: [string, 'null'], format: date }
+
+    EquipoEntrada:
+      type: object
+      required: [descripcion, fechaAdquisicionOInspeccion]
+      properties:
+        descripcion: { type: string, minLength: 1, maxLength: 150 }
+        fechaAdquisicionOInspeccion: { type: string, format: date }
+        numeroRoma: { type: [string, 'null'], maxLength: 30, description: 'Número ROMA o referencia censal, si procede' }
+    Equipo:
+      allOf:
+        - $ref: '#/components/schemas/EquipoEntrada'
+        - type: object
+          required: [id, estado]
+          properties:
+            id: { type: string, format: uuid }
+            estado: { $ref: '#/components/schemas/EstadoMaestro' }
+            fechaBaja: { type: [string, 'null'], format: date }
+
+    ProductoEntrada:
+      type: object
+      required: [id, nombreComercial, numeroRegistro]
+      properties:
+        id: { type: string, format: uuid, description: 'Generado por el cliente (R4)' }
+        nombreComercial: { type: string, minLength: 1, maxLength: 150 }
+        numeroRegistro: { type: string, minLength: 1, maxLength: 30 }
+    Producto:
+      allOf:
+        - $ref: '#/components/schemas/ProductoEntrada'
+        - type: object
+          required: [estado]
+          properties:
+            estado: { $ref: '#/components/schemas/EstadoMaestro' }
+            fechaBaja: { type: [string, 'null'], format: date }
+
+    Eficacia:
+      type: string
+      enum: [buena, regular, mala]
+      description: Escala del catálogo SIEX (anexo V, CUE 1.4.11) y de la clarificación del 2026-10-27
+    ParcelaTratada:
+      type: object
+      required: [parcelaId, superficieTratada, cultivoEspecie, cultivoVariedad]
+      properties:
+        parcelaId: { type: string, format: uuid }
+        numeroOrden: { type: integer, minimum: 1, readOnly: true, description: 'Número de orden de la parcela (REQ-01 b); solo en las respuestas' }
+        superficieTratada: { type: number, exclusiveMinimum: 0, multipleOf: 0.01, description: 'ha; ≤ superficie de la parcela (REQ-04)' }
+        cultivoEspecie: { type: string, minLength: 1, maxLength: 100 }
+        cultivoVariedad: { type: string, minLength: 1, maxLength: 100 }
+        productoSemilla: { type: [string, 'null'], maxLength: 150 }
+    ProductoAplicado:
+      type: object
+      required: [productoId, cantidad, unidadMedida]
+      properties:
+        productoId: { type: string, format: uuid }
+        cantidad: { type: number, exclusiveMinimum: 0 }
+        unidadMedida: { type: string, enum: [kg, L] }
+    DatosTratamiento:
+      type: object
+      required: [fecha, problema, aplicadorId, equipoId, parcelas, productos]
+      properties:
+        fecha: { type: string, format: date, description: '≤ hoy (REQ-04)' }
+        problema: { type: string, minLength: 1, maxLength: 200 }
+        aplicadorId: { type: string, format: uuid }
+        asesorId: { type: [string, 'null'], format: uuid }
+        equipoId: { type: string, format: uuid }
+        parcelas: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ParcelaTratada' } }
+        productos: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ProductoAplicado' } }
+        eficacia: { oneOf: [{ $ref: '#/components/schemas/Eficacia' }, { type: 'null' }] }
+        observaciones: { type: [string, 'null'], maxLength: 2000 }
+    TratamientoNuevo:
+      allOf:
+        - $ref: '#/components/schemas/DatosTratamiento'
+        - type: object
+          required: [id, registradoEn]
+          properties:
+            id: { type: string, format: uuid, description: 'Generado por el cliente (R4)' }
+            registradoEn: { type: string, format: date-time, description: 'Momento del guardado en el dispositivo (R14)' }
+    Tratamiento:
+      allOf:
+        - $ref: '#/components/schemas/TratamientoNuevo'
+        - type: object
+          required: [estado, fechaVencimiento, anotadoFueraPlazo, completadoFueraPlazo, version, enConflicto]
+          properties:
+            estado: { type: string, enum: [completo, pendiente, anulado] }
+            vencido: { type: boolean, description: 'Pendiente con hoy > fechaVencimiento' }
+            fechaVencimiento: { type: string, format: date }
+            anotadoFueraPlazo: { type: boolean }
+            completadoEn: { type: [string, 'null'], format: date-time }
+            completadoFueraPlazo: { type: boolean }
+            version: { type: integer, minimum: 1 }
+            enConflicto: { type: boolean }
+    Correccion:
+      type: object
+      required: [idOperacion, versionBase, realizadoEn, cambios]
+      properties:
+        idOperacion: { type: string, format: uuid }
+        versionBase: { type: integer, minimum: 1 }
+        realizadoEn: { type: string, format: date-time }
+        motivo: { type: [string, 'null'], maxLength: 500, description: 'Obligatorio salvo si el cambio solo añade la eficacia' }
+        cambios:
+          description: Campos de DatosTratamiento que cambian; las listas se sustituyen completas
+          type: object
+          minProperties: 1
+    Anulacion:
+      type: object
+      required: [idOperacion, versionBase, realizadoEn, motivo]
+      properties:
+        idOperacion: { type: string, format: uuid }
+        versionBase: { type: integer, minimum: 1 }
+        realizadoEn: { type: string, format: date-time }
+        motivo: { type: string, minLength: 1, maxLength: 500 }
+    ResolucionConflicto:
+      type: object
+      required: [idOperacion, versionBase, conflictoId, eleccion, realizadoEn, motivo]
+      properties:
+        idOperacion: { type: string, format: uuid }
+        versionBase: { type: integer, minimum: 1 }
+        conflictoId: { type: string, format: uuid, description: 'Cambio de tipo conflicto que se resuelve' }
+        eleccion: { type: string, enum: [vigente, propuesta] }
+        realizadoEn: { type: string, format: date-time }
+        motivo: { type: string, minLength: 1, maxLength: 500 }
+    Conflicto:
+      type: object
+      required: [mensaje, vigente]
+      properties:
+        mensaje: { type: string }
+        conflictoId: { type: [string, 'null'], format: uuid }
+        vigente: { $ref: '#/components/schemas/Tratamiento' }
+        propuesta: { type: [object, 'null'], description: 'Datos que no se aplicaron' }
+    Cambio:
+      type: object
+      required: [id, tipo, versionBase, datosNuevos, realizadoEn, recibidoEn]
+      properties:
+        id: { type: string, format: uuid }
+        tipo: { type: string, enum: [creacion, correccion, anulacion, conflicto, resolucion_conflicto] }
+        versionBase: { type: integer }
+        versionResultante: { type: [integer, 'null'] }
+        datosAnteriores: { type: [object, 'null'] }
+        datosNuevos: { type: object }
+        diferencias:
+          type: array
+          items:
+            type: object
+            required: [campo]
+            properties:
+              campo: { type: string }
+              anterior: {}
+              nuevo: {}
+        motivo: { type: [string, 'null'] }
+        realizadoEn: { type: string, format: date-time }
+        recibidoEn: { type: string, format: date-time }
+    Aviso:
+      type: object
+      required: [tratamientoId, fecha, datoQueFalta, fechaVencimiento, diasRestantes, mensaje]
+      properties:
+        tratamientoId: { type: string, format: uuid }
+        fecha: { type: string, format: date }
+        datoQueFalta: { type: string, enum: [eficacia] }
+        fechaVencimiento: { type: string, format: date }
+        diasRestantes: { type: integer, description: 'Negativo si ya ha vencido' }
+        mensaje: { type: string, description: 'Lenguaje llano, p. ej. "Te quedan 5 días para anotar la eficacia del tratamiento del 3 de octubre en Viña Grande."' }
+    ErrorValidacion:
+      type: object
+      required: [errores]
+      properties:
+        errores:
+          type: array
+          items:
+            type: object
+            required: [campo, mensaje]
+            properties:
+              campo: { type: string }
+              mensaje: { type: string, description: 'Lenguaje llano, p. ej. "La superficie tratada (5 ha) es mayor que la de la parcela (4,2 ha)."' }
+              req: { type: string, description: 'Requisito que se incumple, p. ej. REQ-04' }
