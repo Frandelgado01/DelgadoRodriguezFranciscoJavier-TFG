@@ -53,7 +53,7 @@ tratamiento (spec, historia 4: "sin parcelas, aplicadores y equipos no se puede 
 **Objetivo**: repositorio con la estructura del plan, entorno de Compose arrancable y pipeline mínimo en la PR en
 borrador #1.
 
-- [ ] T-01 Crear el esqueleto del repositorio según el plan: carpetas `backend/`, `frontend/`, `compartido/`,
+- [X] T-01 Crear el esqueleto del repositorio según el plan: carpetas `backend/`, `frontend/`, `compartido/`,
   `e2e/`, `rendimiento/` y `despliegue/`; `backend/pyproject.toml` con `uv` y `backend/uv.lock` (FastAPI,
   Pydantic, SQLModel, Alembic, psycopg 3, `pwdlib[argon2]`, pytest); `frontend/package.json` y
   `frontend/package-lock.json` con Node.js 24 (React, Vite, vite-plugin-pwa, Dexie, openapi-typescript, Vitest),

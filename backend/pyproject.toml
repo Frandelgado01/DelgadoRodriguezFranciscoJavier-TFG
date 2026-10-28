@@ -1,0 +1,26 @@
+[project]
+name = "cuaderno"
+version = "0.1.0"
+description = "API del Cuaderno de Campo digital (TFG UCLM)"
+requires-python = "==3.14.*"
+dependencies = [
+    "alembic==1.20.1",
+    "fastapi==0.162.0",
+    "psycopg[binary]==3.3.6",
+    "pwdlib[argon2]==0.3.1",
+    "pydantic==2.14.1",
+    "sqlmodel==0.0.48",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "httpx2==2.16.0",
+    "pytest==9.2.0",
+]

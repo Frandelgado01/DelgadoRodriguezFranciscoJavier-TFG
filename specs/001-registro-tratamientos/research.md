@@ -20,8 +20,14 @@ como **pendiente**.
 - **Alternativas**: Python 3.15 (más reciente, pero algunas dependencias podrían no tener todavía ruedas
   publicadas); Node 22 (en mantenimiento); imagen oficial `postgres:18` instalando pgvector a mano (más trabajo
   sin ventaja).
-- **Pendiente**: comprobar en T-01 que FastAPI, SQLModel, pwdlib y psycopg publican ruedas para Python 3.14. Si
-  alguna falla, se baja a 3.13.
+- **Resuelto en T-01 (2026-10-28)**: se mantiene **Python 3.14** (3.14.10). Todas las dependencias instalan desde
+  ruedas con `uv` 0.13.6 en Windows y en la imagen `ghcr.io/astral-sh/uv:0.13.6-python3.14-trixie-slim`, y
+  funcionan: FastAPI 0.162.0 (Starlette 1.10.0), Pydantic 2.14.1, SQLModel 0.0.48 (SQLAlchemy 2.1.6), Alembic
+  1.20.1, psycopg 3.3.6 con su implementación binaria y pwdlib 0.3.1 (Argon2id). No hace falta bajar a 3.13.
+  Versiones exactas en `backend/pyproject.toml` y `backend/uv.lock`, y en `frontend/package.json` y
+  `frontend/package-lock.json`. Dos ajustes: el cliente de pruebas de Starlette 1.10 necesita `httpx2` (dependencia
+  de desarrollo), y TypeScript se fija en **5.9.3** y no en la 7.0.2 (la última), porque openapi-typescript 7.13.0
+  exige TypeScript 5 (`peerDependencies: ^5.x`).
 
 ## R2. Estructura del repositorio (pregunta 1)
 
