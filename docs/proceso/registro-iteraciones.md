@@ -39,6 +39,7 @@ cada sesión.
 | 2026-10-27 | — | Claude Code (app escritorio) | `docs/proceso/pendientes-tutor.md` (#16); PR en borrador de `001-registro-tratamientos` | Explicar el manejo de ramas y cuándo se hace la PR; abrir la PR de la 001 en borrador y preguntar al tutor cómo quiere revisar las funcionalidades | 1 | — | suscripción | | (este commit, main) |
 | 2026-10-27 | 5 | Claude Code (app escritorio) | `docs/proceso/forma-de-trabajo.md` (contraste normativo antes de aprobar una spec); aprobación de `tasks.md` de la 001 | Registrar la aprobación de las 71 tareas y convertir en regla el contraste literal con el BOE tras las diferencias D1–D3 | 1 | — | suscripción | | (este commit, main) |
 | 2026-10-28 | M | Claude Code (app escritorio) | `docs/proceso/guion-entrevistas.md`; `pendientes-tutor.md` (#17) | Comprobar si falta algo antes de implementar (auditoría frente al índice, la forma de trabajo y la constitución) y preparar el guion de entrevistas a agricultores | 1 | — | suscripción | | (este commit, main) |
+| 2026-11-03 | M | Claude Code (app escritorio) | `docs/proceso/preguntas.md` | Hoja con solo las 23 preguntas de `guion-entrevistas.md` y espacio para contestarlas | 1 | — | suscripción | | (este commit, main) |
 
 ## Decisiones
 
