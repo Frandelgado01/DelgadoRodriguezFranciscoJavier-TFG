@@ -10,6 +10,14 @@
 > - **Bibliografía:** estilo APA.
 > - **Alcance:** tratamientos fitosanitarios, fertilización, labores y cosechas; formato compatible con el SIEX
 >   (exportable), sin integración real; normativa estatal + Castilla-La Mancha.
+>
+> **Cambios acordados en la tutoría anotada el 2026-11-09** (prevalecen sobre lo anterior):
+>
+> - **Alcance:** se implementan solo la 001 (registro de tratamientos), la 002 (consultas normativas con RAG, parte
+>   principal del TFG) y la 006 (registro en lenguaje natural). Fertilización, labores, cosechas y exportación SIEX
+>   pasan a un apartado final **"Próximos pasos"** (6.4), que explica cuáles serían las siguientes funcionalidades.
+> - **2.3:** el estado del arte incluye un análisis de por qué se eligió cada tecnología y no otras, con pros,
+>   contras y una comparativa (frontend, backend, base de datos, LLM, RAG, pruebas y CI/CD).
 
 Versión 4 del índice (2 oct 2026), adaptada al desarrollo dirigido por especificaciones (SDD) con agentes de IA.
 La especificación versionada en el repositorio es la fuente de verdad: el alumno especifica, la IA planifica e
@@ -118,6 +126,11 @@ desechables durante la ideación.
   hooks que lanzan pruebas y linters, y MCP (base de datos, GitHub, documentación normativa).
 - Marcos SDD: GitHub Spec Kit (fases como comandos en Claude Code); Kiro como alternativa.
 - Alternativas para la comparativa: GitHub Copilot, Cursor, Gemini CLI y Antigravity, y Codex.
+- **Tecnologías del producto (tutoría anotada el 2026-11-09):** por qué se eligió cada una y no otras, con pros,
+  contras y tabla comparativa: PWA con React + TypeScript frente a app nativa o multiplataforma; FastAPI frente a
+  Django, Flask o Node; PostgreSQL + pgvector frente a bases documentales o vectoriales dedicadas; Claude frente a
+  otros LLM y modelos locales; RAG propio frente a marcos como LangChain o LlamaIndex; pytest, Playwright y k6;
+  GitHub Actions y Docker.
 
 ### 2.4. RAG
 
@@ -203,7 +216,9 @@ explica su método.
 ## 6. Conclusiones
 
 Tabla de objetivos cumplidos; valoración crítica de SDD con IA a partir de 4.5 y 5; competencias del título (guía
-docente del TFG de la UCLM); trabajo futuro priorizado.
+docente del TFG de la UCLM); y, como apartado final, **próximos pasos**: las funcionalidades no implementadas
+(cosechas con plazo de seguridad, fertilización, labores de ecorregímenes y exportación SIEX), con su base
+normativa y el orden en que se abordarían.
 
 ## Bibliografía
 

@@ -33,6 +33,14 @@ decisiones pasan a la tabla **Decisiones** de `registro-iteraciones.md`.
 | 12 | Ámbito normativo | **Estatal + Castilla-La Mancha** |
 | 13 | Entrevistas | El alumno tiene contactos de agricultores |
 
+### Tutoría anotada el 2026-11-09
+
+| # | Tema | Acuerdo con el tutor |
+| --- | --- | --- |
+| 18 | Alcance | Se implementan solo la **001** (tratamientos), la **002** (RAG) y la **006** (lenguaje natural), para centrarse en el RAG, parte principal del TFG. Las demás (003, 004, 005 y 007) se explican en un apartado final de "Próximos pasos". Sustituye al tema 11 |
+| 19 | Entrevistas | Se harán de forma **sintética**. Sustituye a la pregunta 17. Forma concreta pendiente de fijar con el alumno (ver registro) |
+| 20 | Estado del arte | Análisis de por qué se usan unas tecnologías y no otras, con pros, contras y comparativa |
+
 ## Pendientes para próximas tutorías
 
 | # | Tema | Pregunta | Respuesta del tutor |
