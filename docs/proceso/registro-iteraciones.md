@@ -61,7 +61,9 @@ cada sesión.
 | 2026-11-09 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer los acuerdos y respuestas de la tutoría, el guion y las preguntas; resolver el conflicto del registro (unión de filas) y completar los commits pendientes | 1 | — | suscripción | | 4d48713 |
 | 2026-11-09 | 1 | Claude Code (app escritorio) | `.specify/memory/constitution.md` v2.0.0 | Enmendar la constitución con los acuerdos de la tutoría: visto bueno del tutor a spec y plan (II), alcance 001, 002 y 006 y normativa europea (IV), IA del producto con Haiku y Voyage AI | 1 | — | suscripción | | 688eee5 |
 | 2026-11-09 | — | Claude Code (app escritorio) | `pendientes-tutor.md` (#21) | Registrar el visto bueno del tutor a la spec y al plan de la 001 y la consulta sobre el Reglamento (UE) 2023/564 | 1 | — | suscripción | | 9d3f015 (main) |
-| 2026-11-09 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer el visto bueno del tutor y la pregunta 21; resolver el conflicto del registro (unión de filas) | 1 | — | suscripción | | (este merge) |
+| 2026-11-09 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer el visto bueno del tutor y la pregunta 21; resolver el conflicto del registro (unión de filas) | 1 | — | suscripción | | 242f49d |
+| 2026-11-09 | M | Claude Code (app escritorio) | `docs/proceso/proto-personas.md` (3 perfiles con fuentes: INE, StatCounter, Moncloa, Reglamento (UE) 2023/564); `docs/proceso/medicion-proceso.md` (propuesta) | Preparar las proto-personas que responden al guion y una propuesta para medir el proceso desde H2 | 1 | — | suscripción | | 5acb90c (main) |
+| 2026-11-09 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer las proto-personas y la propuesta de medición; resolver el conflicto del registro (unión de filas) | 1 | — | suscripción | | (este merge) |
 
 ## Decisiones
 
