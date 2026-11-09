@@ -10,6 +10,19 @@
 > - **Bibliografía:** estilo APA.
 > - **Alcance:** tratamientos fitosanitarios, fertilización, labores y cosechas; formato compatible con el SIEX
 >   (exportable), sin integración real; normativa estatal + Castilla-La Mancha.
+>
+> **Cambios acordados en la tutoría anotada el 2026-11-09** (prevalecen sobre lo anterior):
+>
+> - **Alcance:** se implementan solo la 001 (registro de tratamientos), la 002 (consultas normativas con RAG, parte
+>   principal del TFG) y la 006 (registro en lenguaje natural). Fertilización, labores, cosechas y exportación SIEX
+>   pasan a un apartado final **"Próximos pasos"** (6.4), que explica cuáles serían las siguientes funcionalidades.
+> - **2.3:** el estado del arte incluye un análisis de por qué se eligió cada tecnología y no otras, con pros,
+>   contras y una comparativa (frontend, backend, base de datos, LLM, RAG, pruebas y CI/CD).
+> - **5.2 (nuevo):** análisis de opciones y costes de la infraestructura LLM del producto: API de Claude con gasto
+>   propio mínimo (límite de unos 10 €), generación con Haiku, embeddings con Voyage AI o un modelo local, y modelo
+>   local de generación como alternativa.
+> - **Anexos:** declaración breve de uso de IA generativa (producto y memoria), con el formato que pida la
+>   normativa de TFG de la ESI.
 
 Versión 4 del índice (2 oct 2026), adaptada al desarrollo dirigido por especificaciones (SDD) con agentes de IA.
 La especificación versionada en el repositorio es la fuente de verdad: el alumno especifica, la IA planifica e
@@ -118,6 +131,11 @@ desechables durante la ideación.
   hooks que lanzan pruebas y linters, y MCP (base de datos, GitHub, documentación normativa).
 - Marcos SDD: GitHub Spec Kit (fases como comandos en Claude Code); Kiro como alternativa.
 - Alternativas para la comparativa: GitHub Copilot, Cursor, Gemini CLI y Antigravity, y Codex.
+- **Tecnologías del producto (tutoría anotada el 2026-11-09):** por qué se eligió cada una y no otras, con pros,
+  contras y tabla comparativa: PWA con React + TypeScript frente a app nativa o multiplataforma; FastAPI frente a
+  Django, Flask o Node; PostgreSQL + pgvector frente a bases documentales o vectoriales dedicadas; Claude frente a
+  otros LLM y modelos locales; RAG propio frente a marcos como LangChain o LlamaIndex; pytest, Playwright y k6;
+  GitHub Actions y Docker.
 
 ### 2.4. RAG
 
@@ -194,16 +212,21 @@ explica su método.
 
 - **5.1. Costes con IA:** personal (horas por fase, tarifa de referencia citada), herramientas de IA (suscripción o
   API, tokens por fase), infraestructura, equipo y licencias.
-- **5.2. Coste de operación:** mensual y por agricultor y mes.
-- **5.3. Estimación clásica:** equipo tipo con tarifas citadas; desglose por fase contrastado con COCOMO II o puntos de
+- **5.2. Infraestructura LLM: opciones y costes:** API de Claude (Haiku para generar) frente a modelos locales;
+  embeddings con Voyage AI (cuota gratuita) frente a un modelo local; coste real de la demo y de la evaluación del
+  RAG con el límite de gasto fijado en la consola; precios con fuente y fecha.
+- **5.3. Coste de operación:** mensual y por agricultor y mes.
+- **5.4. Estimación clásica:** equipo tipo con tarifas citadas; desglose por fase contrastado con COCOMO II o puntos de
   función; mismo alcance.
-- **5.4. Comparativa:** tabla por fase (horas, coste, plazo) y barras agrupadas; costes ocultos de la IA; calidad.
-- **5.5. Sensibilidad:** tarifa, precio de tokens y tamaño; punto de equilibrio; limitaciones.
+- **5.5. Comparativa:** tabla por fase (horas, coste, plazo) y barras agrupadas; costes ocultos de la IA; calidad.
+- **5.6. Sensibilidad:** tarifa, precio de tokens y tamaño; punto de equilibrio; limitaciones.
 
 ## 6. Conclusiones
 
 Tabla de objetivos cumplidos; valoración crítica de SDD con IA a partir de 4.5 y 5; competencias del título (guía
-docente del TFG de la UCLM); trabajo futuro priorizado.
+docente del TFG de la UCLM); y, como apartado final, **próximos pasos**: las funcionalidades no implementadas
+(cosechas con plazo de seguridad, fertilización, labores de ecorregímenes y exportación SIEX), con su base
+normativa y el orden en que se abordarían.
 
 ## Bibliografía
 
@@ -213,4 +236,5 @@ de código y RAG.
 ## Anexos
 
 `constitution.md`, `spec.md`, `plan.md` y `tasks.md` finales; registro de prompts e iteraciones; manual de instalación
-y despliegue con enlace al repositorio; declaración de uso de IA generativa si la normativa de la UCLM la exige.
+y despliegue con enlace al repositorio; declaración breve de uso de IA generativa en el producto y en la memoria
+(tutoría anotada el 2026-11-09), con el formato que pida la normativa de TFG de la ESI.

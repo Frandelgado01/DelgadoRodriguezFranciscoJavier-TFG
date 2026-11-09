@@ -13,13 +13,22 @@ el alumno especifica y aprueba, el agente planifica e implementa, el pipeline CI
 - Forma de trabajo acordada (dónde, ciclo de iteración, roles, aprendizaje): `docs/proceso/forma-de-trabajo.md`.
 - Acuerdos con el tutor (2026-10-23): SDD *spec-anchored*; rama corta por funcionalidad; stack PWA React +
   TypeScript, Python + FastAPI, PostgreSQL + pgvector, Claude API, pytest/Playwright/k6, GitHub Actions + Docker;
-  despliegue local con Docker + demo; alcance: tratamientos, fertilización, labores y cosechas, con formato
-  compatible con el SIEX; normativa estatal + Castilla-La Mancha. Detalle en `docs/proceso/pendientes-tutor.md`.
+  despliegue local con Docker + demo; normativa estatal + Castilla-La Mancha. Detalle en
+  `docs/proceso/pendientes-tutor.md`.
+- **Alcance reducido (tutoría anotada el 2026-11-09):** solo se implementan las funcionalidades **001**
+  (tratamientos), **002** (consultas normativas con RAG, núcleo del TFG) y **006** (registro en lenguaje natural).
+  Las demás (003 cosechas, 004 fertilización, 005 labores y 007 exportación SIEX) se describen en el apartado final
+  "Próximos pasos" de la memoria. El estado del arte justifica la elección de cada tecnología frente a sus
+  alternativas (pros, contras y comparativa). Ver `docs/proceso/hoja-de-ruta.md`.
+- **IA del producto (tutor, 2026-11-09):** API de Claude con gasto propio mínimo y límite de unos 10 € en la
+  consola; generación con Haiku; embeddings con Voyage AI o un modelo local.
+- **Revisión del tutor:** da el visto bueno a la spec y al plan de cada funcionalidad antes de implementar y comenta
+  en la PR al cerrar cada hito.
 - **Ámbito territorial: solo Castilla-La Mancha.** Se usa únicamente normativa europea y estatal aplicable y la
   de Castilla-La Mancha; nunca normativa, herramientas ni ejemplos específicos de otras comunidades autónomas
   (indicación del alumno, 2026-10-26). Vale para la especificación, el corpus del RAG y la memoria.
-- Base normativa de los requisitos: `docs/conceptos/04-normativa-cuaderno-de-campo.md`. Acordado (2026-10-26):
-  las cosechas son un registro voluntario de apoyo al cumplimiento (comprobar el plazo de seguridad) y las
+- Base normativa de los requisitos: `docs/conceptos/04-normativa-cuaderno-de-campo.md`. Acordado (2026-10-26),
+  ahora para "Próximos pasos": las cosechas son un registro voluntario de apoyo al cumplimiento (comprobar el plazo de seguridad) y las
   labores se ligan a las prácticas de ecorregímenes (RD 1048/2022), con aviso del plazo de un mes.
 
 ## Regla obligatoria: registro del proceso
@@ -57,7 +66,8 @@ No pases de fase sin la aprobación explícita del alumno. Un cambio de requisit
 - Formato de entrega: LaTeX con la plantilla oficial de la ESI-UCLM, en `docs/memoria/latex/` (raíz
   `principal.tex`, capítulos en `Caps/`, anexos en `Anexos/`, bibliografía en `bibliografia.bib`). Compilación
   local con pdflatex + bibtex. El contenido pendiente se marca con `\pendiente{...}`.
-- El alumno revisa y reescribe con su voz todo borrador; el uso de IA se declara en el anexo si la UCLM lo exige.
+- El alumno revisa y reescribe con su voz todo borrador; el uso de IA (producto y memoria) se declara en un anexo
+  breve (tutor, 2026-11-09).
 - Cifras, normas y afirmaciones técnicas siempre con fuente citada en **APA** (acordado con el tutor). Si no hay
   fuente, se marca como pendiente; nunca se inventan datos.
 - Los capítulos 4 y 5 se redactan a partir del registro del proceso, no de memoria.

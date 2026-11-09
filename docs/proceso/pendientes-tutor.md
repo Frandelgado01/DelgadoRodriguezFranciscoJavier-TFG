@@ -33,10 +33,19 @@ decisiones pasan a la tabla **Decisiones** de `registro-iteraciones.md`.
 | 12 | Ámbito normativo | **Estatal + Castilla-La Mancha** |
 | 13 | Entrevistas | El alumno tiene contactos de agricultores |
 
+### Tutoría anotada el 2026-11-09
+
+| # | Tema | Acuerdo con el tutor |
+| --- | --- | --- |
+| 18 | Alcance | Se implementan solo la **001** (tratamientos), la **002** (RAG) y la **006** (lenguaje natural), para centrarse en el RAG, parte principal del TFG. Las demás (003, 004, 005 y 007) se explican en un apartado final de "Próximos pasos". Sustituye al tema 11 |
+| 19 | Entrevistas | Se harán de forma **sintética**. Sustituye a la pregunta 17. Forma concreta pendiente de fijar con el alumno (ver registro) |
+| 20 | Estado del arte | Análisis de por qué se usan unas tecnologías y no otras, con pros, contras y comparativa |
+
 ## Pendientes para próximas tutorías
 
 | # | Tema | Pregunta | Respuesta del tutor |
 | --- | --- | --- | --- |
-| 14 | Presupuesto del RAG | Con solo suscripción, ¿cómo se cubren las llamadas a la API de Claude del módulo RAG en la demo (la suscripción no incluye la API)? ¿Créditos de prueba, gasto mínimo propio o un modelo local? | |
-| 15 | Declaración de IA | Confirmar por escrito, o en la normativa de TFG de la escuela, que no hace falta la declaración: la memoria también se redacta con ayuda de IA, no solo el producto | |
-| 16 | Revisión de las funcionalidades | Cada funcionalidad se desarrolla en su rama y se fusiona en `main` por PR cuando el pipeline está en verde, `/speckit-converge` no deja tareas y el alumno la ha revisado. La PR se abre en borrador desde la fase 4 para que pueda seguirla y comentarla en GitHub. ¿Cómo prefiere revisar cada funcionalidad: comentando en la PR, en tutoría, o dando su visto bueno antes de cada fusión? ¿En qué fases (spec, plan, código)? Para comentar en la PR necesita acceso al repositorio | |
+| 14 | Presupuesto del RAG | Con solo suscripción, ¿cómo se cubren las llamadas a la API de Claude del módulo RAG en la demo (la suscripción no incluye la API)? ¿Créditos de prueba, gasto mínimo propio o un modelo local? || **Gasto propio mínimo con la API**, con un límite de gasto de unos 10 € en la consola. Generación con **Haiku**. Embeddings: un modelo local o la API de **Voyage AI** (la que recomienda Anthropic, con cuota gratuita). El modelo local para generar queda como alternativa en la comparativa. Propone un capítulo que analice opciones y costes de la infraestructura LLM |
+| 15 | Declaración de IA | Confirmar por escrito, o en la normativa de TFG de la escuela, que no hace falta la declaración: la memoria también se redacta con ayuda de IA, no solo el producto || Mejor incluir una **declaración breve en un anexo**: no cuesta nada, la memoria también se redacta con IA y evita pegas del tribunal. Revisar la normativa de TFG de la ESI por si exige un formato. Puede ayudar Andrés Montoro Montarroso |
+| 16 | Revisión de las funcionalidades | Cada funcionalidad se desarrolla en su rama y se fusiona en `main` por PR cuando el pipeline está en verde, `/speckit-converge` no deja tareas y el alumno la ha revisado. La PR se abre en borrador desde la fase 4 para que pueda seguirla y comentarla en GitHub. ¿Cómo prefiere revisar cada funcionalidad: comentando en la PR, en tutoría, o dando su visto bueno antes de cada fusión? ¿En qué fases (spec, plan, código)? Para comentar en la PR necesita acceso al repositorio || **Visto bueno del tutor a la spec y al plan antes de implementar**; comenta en la PR al cerrar cada hito; lo que haya que discutir, en tutoría. Pide acceso como colaborador del repositorio (usuario de GitHub `gonzajim`) |
+| 17 | Entrevistas a agricultores | Se harán 2 o 3 entrevistas breves y anónimas, con consentimiento oral, para el apartado 1.1 y para validar decisiones de uso (`guion-entrevistas.md`). ¿Exige la UCLM algún trámite para entrevistas en un TFG (modelo de consentimiento propio, comité de ética)? || Si son **anónimas, sin grabación y sin datos personales**, basta una hoja de consentimiento sencilla, sin comité de ética. Confirmarlo en la normativa de la UCLM. Puede aportar Andrés Montoro Montarroso. (Ver también el tema 19: entrevistas sintéticas) |
