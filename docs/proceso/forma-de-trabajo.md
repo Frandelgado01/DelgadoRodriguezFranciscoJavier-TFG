@@ -41,6 +41,14 @@ Motivo: en la funcionalidad 001 el contraste se hizo después de aprobar la spec
 (plazo de conservación, número de orden de la parcela y aprovechamiento) que obligaron a modificarla (decisión
 del 2026-10-27). Aplica el principio IV de la constitución.
 
+## Revisión del tutor
+
+Acordado en la tutoría anotada el 2026-11-09:
+
+- El tutor da el **visto bueno a la spec y al plan** de cada funcionalidad **antes de implementar**.
+- Al cerrar cada hito, el tutor **comenta en la PR** de la funcionalidad; lo que haya que discutir se ve en tutoría.
+- El tutor tiene acceso al repositorio como colaborador.
+
 ## Roles
 
 - **Alumno:** decide, aprueba cada artefacto y fase, entiende todo lo que entra en el repositorio y redacta
