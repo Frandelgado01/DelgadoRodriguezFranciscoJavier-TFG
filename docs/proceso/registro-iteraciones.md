@@ -44,6 +44,7 @@ cada sesión.
 | 2026-11-09 | — | Claude Code (app escritorio) | `pendientes-tutor.md` (respuestas 14–17), `CLAUDE.md`, `forma-de-trabajo.md` (revisión del tutor), `indice.md`, capítulo 5 (nueva sección de infraestructura LLM) y anexo D (declaración de IA) | Recoger las respuestas del tutor a las preguntas 14–17 y propagarlas | 1 | — | suscripción | | b0cd854 (main) |
 | 2026-11-09 | M | Claude Code (app escritorio) | `guion-entrevistas.md` (nota de sustitución) | Registrar que las entrevistas se hacen con proto-personas | 1 | — | suscripción | | (este commit, main) |
 | 2026-11-09 | — | Claude Code (app escritorio) | `pendientes-tutor.md` (#21) | Registrar el visto bueno del tutor a la spec y al plan de la 001 y la consulta sobre el Reglamento (UE) 2023/564 | 1 | — | suscripción | | (este commit, main) |
+| 2026-11-09 | M | Claude Code (app escritorio) | `docs/proceso/proto-personas.md` (3 perfiles con fuentes: INE, StatCounter, Moncloa, Reglamento (UE) 2023/564); `docs/proceso/medicion-proceso.md` (propuesta) | Preparar las proto-personas que responden al guion y una propuesta para medir el proceso desde H2 | 1 | — | suscripción | | (este commit, main) |
 
 ## Decisiones
 
