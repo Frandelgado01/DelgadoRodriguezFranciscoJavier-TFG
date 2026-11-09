@@ -1,5 +1,10 @@
 # Guion de entrevistas a agricultores
 
+> **Sustituido (2026-11-09):** por decisión del alumno, tras la tutoría, las entrevistas se hacen con
+> **proto-personas** declaradas como ficticias (perfiles supuestos construidos a partir de fuentes reales), no con
+> agricultores reales. Este guion y `preguntas.md` se conservan como base de las preguntas que cada proto-persona
+> responde y por si se hicieran entrevistas reales más adelante.
+
 Entrevistas cualitativas, breves y semiestructuradas, a dos o tres agricultores de Castilla-La Mancha. Tienen dos
 fines:
 
