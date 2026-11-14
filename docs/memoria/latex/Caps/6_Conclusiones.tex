@@ -26,3 +26,17 @@
 % ecorregímenes y 007 exportación compatible con el SIEX (y, después, la
 % integración real con el SIEX). Base: docs/proceso/hoja-de-ruta.md.
 \pendiente{próximos pasos}
+
+\subsection{Datos pendientes del Reglamento de Ejecución (UE) 2023/564}\label{subsec:PendientesReglamento2023564}
+% Borrador del agente (2026-11-14), pendiente de revisión y reescritura del
+% alumno. Acuerdo con el tutor (pendientes-tutor #21); base: spec 001, REQ-23 y
+% supuestos; texto contrastado con el DOUE el 2026-11-14.
+Desde el 1 de enero de 2026 es aplicable el Reglamento de Ejecución (UE) 2023/564, que fija el contenido y el formato de los registros de productos fitosanitarios que mantienen los usuarios profesionales y es directamente aplicable en cada Estado miembro \citep{reg2023-564}. Para los tratamientos de superficies, su anexo pide, además de los datos que ya exige el Real Decreto 1311/2012 \citep{rd1311-2012}, la dosis de aplicación en kilogramos o litros de producto por hectárea, la hora de inicio <<en su caso>>, los cultivos según los códigos de la Organización Europea y Mediterránea para la Protección de las Plantas (OEPP) <<cuando proceda>> y la etapa de desarrollo según la monografía BBCH <<en su caso>>. Su única modificación, el Reglamento de Ejecución (UE) 2025/2203, solo afecta al plazo para pasar los registros a formato electrónico \citep{reg2025-2203}.
+
+De estos datos, la funcionalidad de registro de tratamientos incorpora únicamente la dosis por hectárea (requisito REQ-23), porque se obtiene de lo que el agricultor ya anota: la cantidad de cada producto dividida entre la superficie tratada total del tratamiento. No añade ningún campo al formulario. Los otros tres datos quedan como trabajo futuro, de acuerdo con el tutor:
+
+\begin{itemize}
+	\item \textbf{Hora de inicio.} El anexo solo la exige cuando el uso del producto se limita a momentos concretos del día o cuando el momento de uso es relevante (nota~4). Saber cuándo procede requiere conocer las condiciones de uso de cada producto, y esta versión no consulta el Registro de Productos Fitosanitarios; pedirla siempre añadiría un campo más al registro.
+	\item \textbf{Códigos OEPP del cultivo.} El cultivo se guarda como texto y habría que convertirlo en un código de catálogo. El reglamento encarga a los Estados miembros poner a disposición de los usuarios las denominaciones comunes correspondientes a esos códigos (art.~1.3). Encaja mejor junto con los catálogos del SIEX, al desarrollar la exportación.
+	\item \textbf{Etapa de desarrollo BBCH.} Es un dato que tendría que anotar el agricultor en cada tratamiento, consultando la escala, lo que alarga un registro que se quiere hacer desde el móvil en menos de dos minutos (criterio SC-001).
+\end{itemize}
