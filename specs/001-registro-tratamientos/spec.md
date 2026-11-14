@@ -22,13 +22,28 @@
      la explotación (anexo III, A.2.a); el nombre pasa a ser opcional.
   3. **Aprovechamiento** (REQ-14 d): se usa el término de la norma en lugar de "uso del suelo"; especie y
      variedad obligatorias en cultivos leñosos (A.2.d); "cultivo actual en los demás" pasa a ser apoyo de REQ-05.
+- 2026-11-14, propuesta del tutor (pendientes-tutor #21): se añade REQ-23 (dosis por hectárea calculada) a partir
+  del Reglamento de Ejecución (UE) 2023/564, anexo. Contraste literal con la publicación oficial: Reglamento de
+  Ejecución (UE) 2023/564, arts. 1–5 y anexo (DO L 74 de 13.3.2023, pp. 4–9, copia del BOE en
+  `boe.es/doue/2023/074/L00004-00009.pdf`), y su única modificación, el Reglamento de Ejecución (UE) 2025/2203
+  (DO L de 3.11.2025), que solo añade un párrafo al art. 3 (transferencia al formato electrónico) y no cambia el
+  anexo. Resultado:
+  1. **Dosis** (anexo, fila "Tratamiento de superficies"): "Cantidad en kilogramos o litros de producto
+     fitosanitario aplicado por hectárea". La spec no la recogía; se añade como dato **calculado** (REQ-23), sin
+     ningún campo nuevo para el agricultor.
+  2. **Hora de inicio** ("en su caso", nota 4), **cultivo según los códigos OEPP** ("cuando proceda", nota 5) y
+     **etapa BBCH** ("en su caso", nota 7): no se incorporan; pasan a próximos pasos (ver Supuestos).
+  3. Sin diferencias en el resto de columnas aplicables: nombre y número de autorización del producto (REQ-01 g),
+     fecha (REQ-01 a), número de hectáreas tratadas (REQ-01 f) y unidad de terreno SIGPAC de la parcela
+     (REQ-14 b).
 
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
 
 **Base normativa**: Real Decreto 1311/2012, art. 16 y anexo III, parte I, secciones A y B (texto consolidado
 de 20/11/2025, contrastado con la publicación oficial el 2026-10-27); Real Decreto 1054/2022, art. 9 y anexo II;
-Código Civil, art. 5.1, en la redacción del Decreto 1836/1974 (cómputo del plazo de un mes). Resumen en `docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
+Código Civil, art. 5.1, en la redacción del Decreto 1836/1974 (cómputo del plazo de un mes); Reglamento de
+Ejecución (UE) 2023/564, anexo (dosis por hectárea, REQ-23; contrastado con el DOUE el 2026-11-14). Resumen en `docs/conceptos/04-normativa-cuaderno-de-campo.md`, apartados 1 y 2.
 
 ## Contexto
 
@@ -84,6 +99,12 @@ anexo III.
 5. **Dado** que el agricultor no tiene conexión, **cuando** registra un tratamiento, **entonces** el registro
    se guarda en el dispositivo, se marca como pendiente de sincronizar y se sincroniza sin pérdida de datos al
    recuperar la conexión.
+6. **Dado** el tratamiento del escenario 1 (2 kg de producto en 3,5 ha tratadas), **cuando** el agricultor lo
+   consulta en el cuaderno, **entonces** el producto muestra una dosis de 0,57 kg/ha, sin que el agricultor la
+   haya introducido.
+7. **Dado** un tratamiento sobre dos parcelas con 1,5 ha y 2 ha tratadas, con 2 kg de un producto A y 1,5 l de un
+   producto B en mezcla, **cuando** se consulta en el cuaderno, **entonces** A muestra 0,57 kg/ha y B 0,43 l/ha
+   (cantidad de cada producto entre las 3,5 ha tratadas en total).
 
 ---
 
@@ -198,6 +219,11 @@ comprobar que aparecen como opciones al registrar un tratamiento.
 - **Equipo sin número ROMA**: se admite, porque el ROMA solo se exige "si procede" (anexo III, sección B, h).
 - **Cantidad con unidad incoherente**: la cantidad se expresa en kg o en l; el sistema no admite otras unidades
   ni cantidades nulas o negativas.
+- **Dosis por hectárea con varias parcelas**: la cantidad de cada producto se anota para todo el tratamiento, no
+  por parcela, así que la dosis se calcula con la superficie tratada total (REQ-23) y supone una aplicación
+  uniforme. Si en una parcela se aplicó una dosis distinta, el agricultor la registra como un tratamiento aparte.
+- **Dosis tras una corrección**: si se corrige la cantidad de un producto o la superficie tratada de una parcela,
+  la dosis se recalcula; el historial guarda el dato corregido, no la dosis.
 
 ## Requisitos *(obligatorio)*
 
@@ -232,6 +258,15 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
 - **REQ-06**: El registro de tratamientos MUST funcionar sin conexión: los tratamientos registrados o
   modificados sin conexión se guardan en el dispositivo, se identifican como pendientes de sincronizar y se
   sincronizan sin pérdida al recuperar la conexión. *Apoyo: constitución, principio V.*
+- **REQ-23**: El cuaderno MUST mostrar, para cada producto de un tratamiento, su **dosis por hectárea**,
+  calculada como la cantidad de ese producto dividida entre la **superficie tratada total** del tratamiento (la
+  suma de las superficies tratadas de todas sus parcelas), en kg/ha si la cantidad está en kg y en l/ha si está en
+  l. La dosis no la introduce el agricultor: se calcula siempre a partir de los datos de REQ-01 f e i y cambia si
+  estos se corrigen (REQ-11). Se muestra con dos decimales (2 kg en 3,5 ha → 0,57 kg/ha); si una dosis positiva
+  quedara en 0,00, se muestran los decimales necesarios hasta su primera cifra distinta de cero (0,02 l en 5 ha
+  → 0,004 l/ha). *Fuente: Reglamento de Ejecución (UE) 2023/564, anexo, fila "Tratamiento de superficies",
+  columna "Dosis de aplicación" ("Cantidad en kilogramos o litros de producto fitosanitario aplicado por
+  hectárea"). Cálculo con la superficie total: propuesta del tutor (2026-11-14); redondeo: apoyo.*
 
 **Plazo de un mes y eficacia** (historia 2)
 
@@ -350,7 +385,8 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
   vencimiento del plazo y estado de sincronización.
 - **Parcela tratada**: une un tratamiento con una parcela; superficie tratada y cultivo (especie, variedad y
   producto de la semilla, si procede) en el momento del tratamiento.
-- **Producto aplicado**: une un tratamiento con un producto; cantidad y unidad (kg o l).
+- **Producto aplicado**: une un tratamiento con un producto; cantidad y unidad (kg o l); dosis por hectárea
+  calculada (REQ-23), que no introduce el agricultor.
 - **Cambio en el historial**: tratamiento afectado, dato cambiado, valor anterior y nuevo, fecha y motivo; o
   anulación con su motivo.
 
@@ -398,7 +434,13 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
   funcionalidad aparte. La referencia es la documentación técnica agrícola del SIEX del FEGA (v3.11): anexo V
   (definición de variables del REA y del CUE) y anexo VII (catálogos de códigos). Esta funcionalidad guarda los
   datos de forma que puedan exportarse después; el plan revisará el anexo V para que los nombres y valores de
-  los datos sean compatibles.
+  los datos sean compatibles. Cuando se especifique, la exportación MUST incluir la dosis por hectárea de
+  REQ-23 (anexo del Reglamento de Ejecución (UE) 2023/564) y usar un formato legible por máquina (art. 2).
+- **Resto de datos del Reglamento de Ejecución (UE) 2023/564**: la hora de inicio ("en su caso"), el cultivo
+  según los códigos OEPP ("cuando proceda") y la etapa de desarrollo BBCH ("en su caso") quedan **fuera del
+  alcance de esta funcionalidad** y se describen en los próximos pasos de la memoria (propuesta del tutor,
+  2026-11-14). Los códigos OEPP exigen un catálogo que el Estado debe poner a disposición (art. 1.3) y la etapa
+  BBCH es un dato más que anotaría el agricultor.
 - **Justificantes**: adjuntar la documentación justificativa (facturas, recomendaciones del asesor, inspección de
   equipos) queda fuera de alcance; se conserva solo el registro.
 - **Resto de la sección A**: se especificarán con la fertilización: los datos generales de la explotación y del
