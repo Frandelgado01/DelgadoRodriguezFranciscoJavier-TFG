@@ -275,6 +275,10 @@ Corregir un tratamiento anulado no está permitido (`409`). Una corrección que 
 | `cantidad` | NUMERIC(12,3) | NOT NULL, CHECK > 0 | CUE 8.25 |
 | `unidad_medida` | TEXT | NOT NULL, CHECK IN (`kg`, `L`) | CUE 8.27 |
 
+**Dosis por hectárea (REQ-23)**: no es una columna. Se calcula con `cantidad` dividida entre la suma de
+`tratamiento_parcela.superficie_tratada` del mismo tratamiento, en `kg/ha` o `L/ha` según `unidad_medida`, en
+`dominio/dosis.py` (API) y `dominio/dosis.ts` (PWA), con aritmética exacta y el redondeo de REQ-23 (R15).
+
 ### `cambio` (historial; REQ-11, REQ-12, R4, R5)
 
 | Columna | Tipo | Restricciones |
@@ -333,6 +337,7 @@ sustituye las copias locales, excepto los tratamientos con operaciones pendiente
 | REQ-14 a REQ-17 | Tablas maestras con `estado` y `fecha_baja`; `numero_orden` con `explotacion.ultimo_numero_parcela`; `cultivo_lenoso`; validación de "activa al registrar" |
 | REQ-20, REQ-21 | `usuario`, `sesion` y `token_restablecimiento` |
 | REQ-22 | `intento_acceso` |
+| REQ-23 | No se guarda: se calcula a partir de `tratamiento_producto.cantidad` y `tratamiento_parcela.superficie_tratada` (R15) |
 
 ## Referencias
 

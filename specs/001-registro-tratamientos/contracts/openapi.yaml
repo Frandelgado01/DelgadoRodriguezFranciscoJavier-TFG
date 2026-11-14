@@ -665,6 +665,8 @@ components:
         productoId: { type: string, format: uuid }
         cantidad: { type: number, exclusiveMinimum: 0 }
         unidadMedida: { type: string, enum: [kg, L] }
+        dosisPorHectarea: { type: number, exclusiveMinimum: 0, readOnly: true, description: 'REQ-23: cantidad entre la superficie tratada total del tratamiento, redondeada según REQ-23 (R15). Solo en las respuestas; no se acepta en la entrada' }
+        unidadDosis: { type: string, enum: [kg/ha, L/ha], readOnly: true, description: 'REQ-23: kg/ha si unidadMedida es kg; L/ha si es L. Solo en las respuestas' }
     DatosTratamiento:
       type: object
       required: [fecha, problema, aplicadorId, equipoId, parcelas, productos]

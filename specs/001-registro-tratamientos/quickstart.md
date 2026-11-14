@@ -96,6 +96,9 @@ vinifera*, Airén, 4,2 ha.
    producto nuevo dado de alta desde el propio formulario → aparece en el cuaderno con todos los datos. Probar
    5 ha (se rechaza indicando el máximo de 4,2 ha) y guardar sin producto (indica qué falta). Registrar una
    mezcla de dos productos en dos parcelas.
+   **Dosis por hectárea (REQ-23, escenarios 6 y 7)**: el primer tratamiento muestra 0,57 kg/ha sin haberla
+   introducido. La mezcla con 1,5 ha y 2 ha tratadas, 2 kg de A y 1,5 L de B, muestra 0,57 kg/ha y 0,43 L/ha.
+   Corregir la cantidad de A a 3,5 kg → pasa a 1,00 kg/ha. Repetirlo sin conexión → la dosis se ve igual.
 4. **Sin conexión (historia 1, escenario 5; SC-003)**: en las herramientas del navegador, poner la red sin
    conexión, registrar 3 tratamientos → se ven como "pendiente de sincronizar" y el contador de pendientes
    marca 3. Recuperar la red → se sincronizan y el contador vuelve a 0. Comprobar en la API que no hay
@@ -116,5 +119,5 @@ vinifera*, Airén, 4,2 ha.
 ## Resultado esperado para cerrar la fase 7
 
 - Todas las pruebas en verde en el pipeline, incluidos los umbrales de k6.
-- Cada `REQ-01` a `REQ-17` y `REQ-20` a `REQ-22` con al menos una prueba que lo cita y pasa.
+- Cada `REQ-01` a `REQ-17` y `REQ-20` a `REQ-23` con al menos una prueba que lo cita y pasa.
 - `/speckit-converge` sin tareas pendientes.

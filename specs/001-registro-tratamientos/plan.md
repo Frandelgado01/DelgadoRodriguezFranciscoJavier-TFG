@@ -12,7 +12,16 @@ constitución v1.1.1.
 intentos de inicio de sesión entra en la 001 (REQ-22); se aceptan los umbrales de k6 (constitución v1.1.0); las
 diferencias con el SIEX se aplazan a la 007.
 
-**Artefactos de esta fase**: [research.md](research.md) (decisiones R1–R14 con fuentes) ·
+**Cambio del 2026-11-14 (REQ-23, dosis por hectárea)**: la spec aprobada añade REQ-23 a propuesta del tutor
+(Reglamento de Ejecución (UE) 2023/564). Respuestas del plan, con el detalle en R15:
+
+| Pregunta | Decisión |
+| --- | --- |
+| ¿Dónde se calcula? | En una función pura de dominio en cada capa: `dominio/dosis.py` (API) y `dominio/dosis.ts` (PWA), con los mismos casos compartidos (R8). La PWA la necesita para mostrar el cuaderno sin conexión (REQ-06) |
+| ¿Se guarda en la base de datos o se calcula al mostrarla? | **Se calcula** cada vez a partir de la cantidad y de la suma de superficies tratadas. No se guarda: depende de filas de dos tablas y se desincronizaría tras una corrección o un conflicto. Aritmética exacta (sin coma flotante) para que las dos capas redondeen igual |
+| ¿Cómo sale en la exportación? | La 001 no tiene exportación (spec, Supuestos). La API devuelve la dosis en las respuestas (`dosisPorHectarea` y `unidadDosis`, de solo lectura) y la exportación reutilizará `dominio/dosis.py` cuando se especifique; queda pendiente comprobar el campo de dosis del anexo V del SIEX |
+
+**Artefactos de esta fase**: [research.md](research.md) (decisiones R1–R15 con fuentes) ·
 [data-model.md](data-model.md) · [contracts/openapi.yaml](contracts/openapi.yaml) ·
 [quickstart.md](quickstart.md)
 
@@ -64,10 +73,10 @@ del alumno, frente a la constitución v1.1.0, y revisada tras `/speckit-analyze`
 
 | Principio | Comprobación | Antes | Después del diseño (revisión, v1.1.0) |
 | --- | --- | --- | --- |
-| I. La spec es la fuente de verdad | El plan solo implementa REQ de la spec. El límite de intentos se añadió **primero** a la spec (REQ-22) y después a research, data-model, contrato y quickstart. Las diferencias con el SIEX se aplazan a la 007 por decisión del alumno, sin cambiar la spec (R6). El contrato OpenAPI se verifica con una prueba (R7) | ✅ | ✅ |
+| I. La spec es la fuente de verdad | El plan solo implementa REQ de la spec. El límite de intentos se añadió **primero** a la spec (REQ-22) y después a research, data-model, contrato y quickstart; la dosis por hectárea (REQ-23), igual, el 2026-11-14. Las diferencias con el SIEX se aplazan a la 007 por decisión del alumno, sin cambiar la spec (R6). El contrato OpenAPI se verifica con una prueba (R7) | ✅ | ✅ |
 | II. Humano en el bucle | Spec aprobada (2026-10-27) y modificada solo por decisión del alumno, con nota en la cabecera. Revisión del plan anotada en el registro. `/speckit-tasks` espera su aprobación | ✅ | ✅ (pendiente de aprobar) |
 | III. Pruebas primero y trazabilidad | Cada REQ, incluido REQ-22, tiene criterios Dado/Cuando/Entonces; la tabla de [data-model.md](data-model.md#correspondencia-con-los-requisitos) indica dónde se garantiza cada uno; las pruebas citarán su `REQ-xx`; casos compartidos para las reglas (R8) | ✅ | ✅ |
-| IV. Conformidad normativa con fuente | Campos del anexo III; cómputo del mes según el Código Civil, art. 5.1 (R14); nombres y escala de eficacia contrastados con el anexo V del SIEX (R6). Las cifras técnicas citan su fuente; las de REQ-22 (5 intentos, 15 min) están **marcadas como propuesta del agente** dentro de los márgenes de OWASP y NIST | ✅ | ✅ |
+| IV. Conformidad normativa con fuente | Campos del anexo III; dosis por hectárea del anexo del Reglamento de Ejecución (UE) 2023/564, contrastado con el DOUE (R15); cómputo del mes según el Código Civil, art. 5.1 (R14); nombres y escala de eficacia contrastados con el anexo V del SIEX (R6). Las cifras técnicas citan su fuente; las de REQ-22 (5 intentos, 15 min) están **marcadas como propuesta del agente** dentro de los márgenes de OWASP y NIST | ✅ | ✅ |
 | V. Centrado en el agricultor | Formulario móvil y sin conexión, verificado en Chrome para Android, la plataforma de referencia; en iOS/Safari es compatible por diseño pero no se verifica (limitación declarada, R3); mensajes en lenguaje llano en errores, avisos y espera de acceso (contrato, 429). El registro en lenguaje natural sigue siendo el incumplimiento temporal justificado de la spec (funcionalidad 006) | ⚠️ justificado en la spec | ⚠️ justificado en la spec |
 | VI. Seguridad y privacidad | Argon2id, token de sesión opaco con hash, cookie `__Host-` `HttpOnly` `Secure` `SameSite=Strict`, recuperación según OWASP y **límite de intentos por correo** sin revelar si la cuenta existe (R9, REQ-22); sin NIF de terceros; solo el correo como dato personal; secretos en `.env`; análisis estático y de dependencias en CI (R13) | ✅ | ✅ |
 | VII. Simplicidad | Una sola vía de sincronización sin Background Sync (R3); idempotencia apoyada en el historial (R4); bucle simple para los avisos (R10); espera fija sin escalado exponencial y sin CAPTCHA (R9). Las piezas añadidas se justifican en "Complejidad justificada" | ✅ | ✅ |
@@ -127,7 +136,7 @@ backend/
 │   ├── db.py                 # sesión de SQLModel
 │   ├── modelos/              # tablas (data-model.md)
 │   ├── esquemas/             # modelos Pydantic de entrada y salida (contrato)
-│   ├── dominio/              # reglas puras: validacion.py, plazos.py, estados.py, historial.py
+│   ├── dominio/              # reglas puras: validacion.py, plazos.py, estados.py, historial.py, dosis.py
 │   ├── servicios/            # cuentas.py, sesiones.py, tratamientos.py, correo.py
 │   ├── api/                  # routers: cuenta, parcelas, personas, equipos, productos, tratamientos, avisos
 │   └── avisos.py             # punto de entrada del worker (revisión de plazos)
@@ -143,13 +152,13 @@ frontend/
 │   ├── api/                  # openapi.json + tipos generados + cliente
 │   ├── db/                   # esquema Dexie (almacenes de data-model.md)
 │   ├── sync/                 # cola de operaciones y vaciado
-│   ├── dominio/              # validacion.ts, plazos.ts, avisos.ts
+│   ├── dominio/              # validacion.ts, plazos.ts, avisos.ts, dosis.ts
 │   ├── paginas/              # cuenta, cuaderno, tratamiento, datos de la explotación, historial
 │   └── componentes/
 └── tests/                    # Vitest (incluye los casos compartidos)
 
 compartido/
-└── casos-validacion.json     # casos de las reglas REQ-02, 04, 07 y 09 para pytest y Vitest
+└── casos-validacion.json     # casos de las reglas REQ-02, 04, 07, 09 y 23 para pytest y Vitest
 
 e2e/                          # Playwright: historias 1–4, sin red, conflicto
 rendimiento/                  # k6: escenario y umbrales de R12; script de siembra de datos
@@ -176,6 +185,7 @@ spec si hiciera falta (principio I). Detalle en R6.
 4. Comprobar en la primera migración que PostgreSQL acepta como inmutables las expresiones de las columnas
    generadas (`fecha_vencimiento` y marcas de plazo); si no, se calculan en la API (data-model).
 5. Anexo VII (catálogos) y diferencias con el SIEX: aplazados a la 007 por decisión del alumno (R6).
+6. Campo de dosis del anexo V del SIEX (si existe y con qué unidad): al especificar la exportación (R15).
 
 Resueltos en la revisión del 2026-10-27: límite de intentos (ahora REQ-22) y enmienda de la constitución con
 los umbrales de k6 (v1.1.0).

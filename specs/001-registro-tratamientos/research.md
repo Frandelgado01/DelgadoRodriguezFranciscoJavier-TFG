@@ -4,7 +4,7 @@
 
 Resuelve las decisiones técnicas abiertas del plan y las preguntas del apartado 6 del módulo 05
 (`docs/conceptos/05-arquitectura-web.md`). Cada decisión sigue el formato Decisión / Motivo / Alternativas.
-Las fuentes se consultaron el 2026-10-27 y se citan en APA al final. Lo que no se ha podido verificar se marca
+Las fuentes se consultaron el 2026-10-27 (R15, el 2026-11-14) y se citan en APA al final. Lo que no se ha podido verificar se marca
 como **pendiente**.
 
 ---
@@ -172,7 +172,7 @@ como **pendiente**.
   1. **Tipos**: `openapi-typescript` genera los tipos de TypeScript a partir de `openapi.json` (OpenAPI
      TypeScript, s. f.). El CI regenera el fichero y **falla si difiere del versionado**, de modo que un cambio
      en la API sin actualizar la PWA rompe la construcción.
-  2. **Reglas**: las reglas de REQ-02, REQ-04, REQ-07 y REQ-09 se implementan dos veces, en
+  2. **Reglas**: las reglas de REQ-02, REQ-04, REQ-07, REQ-09 y REQ-23 (cálculo de la dosis, R15) se implementan dos veces, en
      `backend/src/cuaderno/dominio/` (Python) y en `frontend/src/dominio/` (TypeScript), porque la PWA tiene que
      validar sin conexión.
   3. **Casos compartidos**: un único fichero `compartido/casos-validacion.json` recoge los casos de cada regla
@@ -352,6 +352,36 @@ como **pendiente**.
     es inmutable. Detalle en [data-model.md](data-model.md#tratamiento).
 - **Motivo**: una sola regla, en la base de datos y probada con los mismos casos en las dos capas.
 - **Alternativas**: calcular el vencimiento solo en la aplicación (dos implementaciones sin garantía en la base).
+
+## R15. Dosis por hectárea (REQ-23, añadida el 2026-11-14)
+
+- **Decisión**:
+  - **No se guarda** en la base de datos. Es un dato derivado, como el estado del tratamiento
+    ([data-model.md](data-model.md#estado-derivado-no-se-guarda-para-que-no-haya-incoherencias)): se calcula
+    cada vez a partir de `tratamiento_producto.cantidad` y de la suma de `tratamiento_parcela.superficie_tratada`
+    del mismo tratamiento.
+  - **Una función pura en cada capa**: `backend/src/cuaderno/dominio/dosis.py` y `frontend/src/dominio/dosis.ts`,
+    con los mismos casos en `compartido/casos-validacion.json` (R8). La PWA la usa para mostrar el cuaderno, también
+    sin conexión y con tratamientos aún no sincronizados (REQ-06). La API la usa para devolver la dosis en las
+    respuestas de los tratamientos (campos de solo lectura `dosisPorHectarea` y `unidadDosis` en
+    `ProductoAplicado`) y la reutilizará la exportación cuando se especifique.
+  - **Aritmética exacta**: `cantidad` tiene 3 decimales y `superficie_tratada` 2 (data-model), así que ambas se
+    pasan a enteros (milésimas de kg o L y centésimas de ha). Python usa `Decimal` y TypeScript `BigInt`; ninguna
+    capa usa coma flotante, para que las dos redondeen igual. Redondeo **al más próximo, con los empates hacia
+    arriba** (0,565 → 0,57), con dos decimales; si el resultado positivo queda en 0,00, se aumentan los decimales
+    hasta la primera cifra distinta de cero (REQ-23).
+  - **Unidad**: `kg/ha` si `unidad_medida = 'kg'` y `L/ha` si es `'L'` (grafía del SIEX, R6).
+  - **Historial**: las instantáneas de `cambio` guardan cantidades y superficies, no la dosis. La dosis de una
+    versión anterior se puede recalcular a partir de su instantánea.
+- **Motivo**: guardar un dato que depende de filas de dos tablas obliga a mantenerlo con disparadores o desde la
+  API en cada corrección, y se puede desincronizar. Una columna generada no sirve, porque solo puede usar columnas
+  de su propia fila. Calcularla a partir de los datos guardados la mantiene siempre coherente, y sale barato:
+  pocos productos y parcelas por tratamiento (principio VII).
+- **Alternativas**: columna en `tratamiento_producto` mantenida por la API (riesgo de incoherencia tras una
+  corrección o un conflicto); calcularla en una vista de PostgreSQL (la PWA sin conexión necesita su propio cálculo
+  de todas formas); calcularla solo en la PWA (la API y la exportación no la tendrían).
+- **Pendiente (exportación)**: comprobar en el anexo V del SIEX si el CUE tiene un campo de dosis y con qué unidad,
+  al especificar la exportación (próximos pasos).
 
 ---
 
