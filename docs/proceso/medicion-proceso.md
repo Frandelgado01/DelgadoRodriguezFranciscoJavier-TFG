@@ -1,6 +1,8 @@
 # Medición del proceso (propuesta)
 
-**Estado: propuesta pendiente de aprobación del alumno.** El objetivo 6 de la memoria, el apartado 4.5 y el
+**Estado: propuesta pendiente de aprobación del alumno.** **Nota (2026-11-14):** el registro de iteraciones ya
+no tiene columnas de minutos ni de tokens/coste (decisión del alumno). Las métricas de tiempo y de consumo de la IA
+de desarrollo de esta propuesta se quedan sin fuente y hay que rehacerlas o descartarlas al revisarla. El objetivo 6 de la memoria, el apartado 4.5 y el
 capítulo 5 necesitan datos del propio proceso SDD: tiempo, iteraciones, código corregido y consumo de IA. Hasta el
 hito H1 no se ha medido nada de forma sistemática: ninguna fila del registro tiene minutos y los tokens figuran como
 "suscripción". Esta propuesta fija qué se mide, cómo y quién, a partir del hito H2.
