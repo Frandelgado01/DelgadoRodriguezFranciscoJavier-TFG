@@ -36,12 +36,12 @@ el alumno especifica y aprueba, el agente planifica e implementa, el pipeline CI
 Cuando el agente considere que es oportuno registrar un proceso (artefacto, código, decisión, texto de la memoria, configuración), actualiza `docs/proceso/registro-iteraciones.md` avisando previamente al alumno:
 
 1. Añade una fila en **Sesiones** (fecha, fase, herramienta, artefacto, prompt clave resumido, iteraciones,
-   corrección manual, tokens/coste, minutos, commit). Si la iteración continúa una fila del mismo día y
+   corrección manual, commit). Si la iteración continúa una fila del mismo día y
    artefacto, actualiza esa fila en lugar de duplicarla.
 2. Si el alumno tomó una decisión (aceptó, rechazó o cambió algo propuesto por la IA), añádela en
    **Decisiones** con alternativas y motivo.
-3. No inventes datos: lo que no puedas medir (minutos del alumno, tokens si no hay `/cost`) déjalo vacío
-   para que lo complete el alumno.
+3. No inventes datos: lo que no puedas medir déjalo vacío para que lo complete el alumno. El registro no
+   recoge minutos ni tokens/coste (decisión del alumno, 2026-11-14).
 4. Incluye el cambio del registro en el mismo commit que el trabajo que registra.
 5. Al cerrar cada iteración haz commit y push a `origin main` sin esperar a que te lo pidan (acordado con el
    alumno el 2026-10-10).

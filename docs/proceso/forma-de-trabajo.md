@@ -52,7 +52,7 @@ Acordado en la tutoría anotada el 2026-11-09:
 ## Roles
 
 - **Alumno:** decide, aprueba cada artefacto y fase, entiende todo lo que entra en el repositorio y redacta
-  con su propia voz. Completa en el registro los minutos y tokens que el agente no puede medir.
+  con su propia voz.
 - **Agente:** propone, explica, genera, verifica y registra. Nunca pasa de fase sin aprobación explícita.
   Si el alumno no entiende algo, se para hasta que quede claro: lo que no se entiende no se puede defender.
 
