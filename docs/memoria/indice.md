@@ -23,6 +23,12 @@
 >   local de generación como alternativa.
 > - **Anexos:** declaración breve de uso de IA generativa (producto y memoria), con el formato que pida la
 >   normativa de TFG de la ESI.
+>
+> **Cambio del 2026-11-14** (decisión del alumno: el registro deja de recoger minutos y tokens/coste; pendiente
+> del visto bueno del tutor):
+>
+> - **Objetivo 6, 4.5 y capítulo 5:** el proceso se mide solo con datos verificables en el repositorio. Sin horas
+>   del alumno no hay coste de personal con IA; se declara como limitación. El tiempo se expresa en días con actividad por fase (fechas distintas con alguna fila del registro o algún commit de esa fase; no la duración entre fechas, porque los días sin commits son días en que no se avanzó).
 
 Versión 4 del índice (2 oct 2026), adaptada al desarrollo dirigido por especificaciones (SDD) con agentes de IA.
 La especificación versionada en el repositorio es la fuente de verdad: el alumno especifica, la IA planifica e
@@ -73,8 +79,9 @@ uno a uno):
    evaluado con métricas objetivas.
 4. Automatizar construcción, pruebas y despliegue con CI/CD.
 5. Validar contra los criterios de aceptación con pruebas E2E y de rendimiento.
-6. Medir el propio proceso SDD (iteraciones, código corregido, tiempo) y comparar su coste con el de un desarrollo
-   clásico.
+6. Medir el propio proceso SDD con datos verificables en el repositorio (iteraciones por artefacto, correcciones
+   del alumno, cambios de la especificación tras su aprobación, intentos de corrección por tarea, pruebas y
+   cobertura) y contrastarlo con una estimación clásica del mismo alcance.
 
 ### 1.3. Estructura de la memoria
 
@@ -203,23 +210,28 @@ Aplica el ciclo al Cuaderno de Campo: artefactos, iteraciones con la IA y decisi
   manuales); estructura resultante y construcción del RAG.
 - **4.4. Despliegue y testing:** pipeline CI/CD; E2E (Playwright) con tabla REQ → prueba; rendimiento (k6 o Locust)
   con umbrales de la constitución; evaluación del RAG en el pipeline (fidelidad y relevancia).
-- **4.5. Resultados del proceso:** métricas (iteraciones, código corregido, tiempos, cobertura, pruebas) y análisis.
+- **4.5. Resultados del proceso:** métricas (iteraciones, código corregido, cambios de la spec tras su aprobación,
+  intentos de corrección por tarea, días con actividad por fase (fechas distintas con alguna fila del registro o algún commit de esa fase; no la duración entre fechas, porque los días sin commits son días en que no se avanzó), cobertura, pruebas) y análisis.
 
 ## 5. Análisis de costes
 
-Coste real con IA frente a estimación clásica con el mismo alcance; datos reales de 4.5; la estimación clásica
-explica su método.
+Costes directos reales con IA frente a estimación clásica con el mismo alcance; datos reales de 4.5; la estimación
+clásica explica su método. El tiempo del alumno no se registró: no hay coste de personal del lado de la IA y se
+declara como limitación.
 
-- **5.1. Costes con IA:** personal (horas por fase, tarifa de referencia citada), herramientas de IA (suscripción o
-  API, tokens por fase), infraestructura, equipo y licencias.
+- **5.1. Costes con IA:** costes directos: suscripción de Claude (precio publicado × meses de uso), gasto de la API
+  del RAG según la consola, infraestructura local, equipo y licencias.
 - **5.2. Infraestructura LLM: opciones y costes:** API de Claude (Haiku para generar) frente a modelos locales;
   embeddings con Voyage AI (cuota gratuita) frente a un modelo local; coste real de la demo y de la evaluación del
   RAG con el límite de gasto fijado en la consola; precios con fuente y fecha.
 - **5.3. Coste de operación:** mensual y por agricultor y mes.
 - **5.4. Estimación clásica:** equipo tipo con tarifas citadas; desglose por fase contrastado con COCOMO II o puntos de
   función; mismo alcance.
-- **5.5. Comparativa:** tabla por fase (horas, coste, plazo) y barras agrupadas; costes ocultos de la IA; calidad.
-- **5.6. Sensibilidad:** tarifa, precio de tokens y tamaño; punto de equilibrio; limitaciones.
+- **5.5. Comparativa:** tamaño (requisitos, tareas, pruebas), días con actividad frente al plazo estimado y coste
+  de herramientas; el esfuerzo de personal solo existe en el lado clásico y se dice; costes ocultos de la IA;
+  calidad.
+- **5.6. Sensibilidad:** precio de la API y consultas por agricultor (operación); tarifa y tamaño del enfoque
+  clásico; limitaciones.
 
 ## 6. Conclusiones
 
