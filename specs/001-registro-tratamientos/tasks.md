@@ -4,8 +4,9 @@ description: "Tareas de implementación de la funcionalidad 001: registro de tra
 
 # Tareas: Registro de tratamientos fitosanitarios
 
-**Entrada**: `specs/001-registro-tratamientos/`: [spec.md](spec.md) (aprobada, con REQ-22), [plan.md](plan.md)
-(aprobado el 2026-10-27), [research.md](research.md) (R1–R14), [data-model.md](data-model.md),
+**Entrada**: `specs/001-registro-tratamientos/`: [spec.md](spec.md) (aprobada, con REQ-22 y, desde el
+2026-11-14, REQ-23), [plan.md](plan.md) (aprobado el 2026-10-27; cambio de REQ-23 aprobado el 2026-11-14),
+[research.md](research.md) (R1–R15), [data-model.md](data-model.md),
 [contracts/openapi.yaml](contracts/openapi.yaml), [quickstart.md](quickstart.md) y constitución v1.1.0.
 
 **Pruebas**: obligatorias (principio III, NO NEGOCIABLE). Para cada REQ, la tarea que escribe sus pruebas a
@@ -27,7 +28,7 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 | H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca `db`, `mailpit`, `api` y `web` (el `worker` llega en T-51) y el CI está en verde en la PR #1 |
 | H2 Cuentas | 2 | T-07 a T-19 | Crear cuenta, entrar, salir, recuperar la contraseña y comprobar el límite de intentos |
 | H3 Datos de la explotación | 3 (US4) | T-20 a T-29 | Dar de alta, modificar y dar de baja parcela, aplicador, equipo y producto |
-| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 | Registrar con y sin conexión y ver el tratamiento en el cuaderno |
+| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 y T-72 a T-77 | Registrar con y sin conexión y ver el tratamiento en el cuaderno, con la dosis por hectárea de cada producto |
 | H5 Plazos y avisos | 5 (US2) | T-43 a T-52 | Tratamiento pendiente, aviso en la app, correo único en Mailpit, completar la eficacia |
 | H6 Consulta e historial | 6 (US3) | T-53 a T-62 | Filtrar, corregir, anular, ver el historial y resolver un conflicto |
 | H7 Cierre | 7 | T-63 a T-71 (T-70 la última) | E2E y k6 en verde, quickstart en el Android de la demo, sesión con agricultores (SC-001, SC-005, SC-007) y `/speckit-converge` sin pendientes |
@@ -38,7 +39,7 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 - **[US1]…[US4]**: historia de usuario de la spec (US1 = historia 1, registrar; US2 = historia 2, plazo y
   eficacia; US3 = historia 3, consultar, corregir y conservar; US4 = historia 4, datos de la explotación).
 - **Trazabilidad** al final de cada tarea: los `REQ-xx` que cubre o, en infraestructura, el principio o la
-  decisión del plan (R1–R14) que la motiva.
+  decisión del plan (R1–R15) que la motiva.
 
 ## Orden de las fases
 
@@ -360,8 +361,44 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   todos los campos de la sección B; cada parcela tratada se muestra por su número de orden), con pruebas de componentes escritas antes en
   `frontend/tests/paginas/cuaderno.test.tsx`. (REQ-01, REQ-06)
 
+**Dosis por hectárea (REQ-23)**, añadidas el 2026-11-14 tras el cambio de la spec (propuesta del tutor). Llevan
+números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentro del hito se indica en
+"Dependencias y orden de ejecución".
+
+- [ ] T-72 [P] [US1] Añadir a `compartido/casos-validacion.json` los casos del cálculo de REQ-23 (deben fallar en
+  pytest y Vitest), con la entrada `{productos: [{cantidad, unidadMedida}], superficiesTratadas: [ha]}` y la
+  salida esperada por producto (`dosisPorHectarea` como texto con sus decimales y `unidadDosis`): escenario 6
+  (2 kg en 3,5 ha → "0,57" kg/ha); escenario 7 (2 kg de A y 1,5 L de B en 1,5 + 2 ha → "0,57" kg/ha y
+  "0,43" L/ha); empate (1,13 kg en 2 ha = 0,565 → "0,57"); caso que falla con coma flotante (0,57 kg en 2 ha =
+  0,285 → "0,29"); dosis muy pequeña (0,02 L en 5 ha → "0,004" L/ha); resultado exacto (3,5 kg en 3,5 ha →
+  "1,00"); la unidad sigue a la cantidad (`kg` → `kg/ha`, `L` → `L/ha`). (REQ-23; R8, R15)
+- [ ] T-73 [P] [US1] Implementar el cálculo de T-72 en `backend/src/cuaderno/dominio/dosis.py`: función pura que
+  recibe las cantidades con su unidad y las superficies tratadas y devuelve la dosis de cada producto, con
+  `Decimal` (sin `float`), la suma de las superficies como divisor y el redondeo de REQ-23 (al más próximo,
+  empates hacia arriba, dos decimales o hasta la primera cifra distinta de cero). Pasan los casos en pytest.
+  (REQ-23; R15)
+- [ ] T-74 [P] [US1] Implementar el mismo cálculo en `frontend/src/dominio/dosis.ts`, con aritmética entera
+  (`BigInt`, milésimas de kg o L y centésimas de ha), sin `number` en la división ni en el redondeo. Pasan los
+  casos en Vitest. (REQ-23; R15)
+- [ ] T-75 [US1] Escribir las pruebas de la dosis en la API (deben fallar) en
+  `backend/tests/integration/test_dosis_tratamiento.py` y ampliar `test_contrato_tratamientos.py` con los campos
+  de solo lectura `dosisPorHectarea` y `unidadDosis` de `ProductoAplicado`: tras registrar el tratamiento del
+  escenario 6, `GET /tratamientos/{id}` devuelve 0,57 y `kg/ha`; con el del escenario 7, 0,57 `kg/ha` para A y
+  0,43 `L/ha` para B; una `dosisPorHectarea` enviada en `POST /tratamientos` no se guarda ni cambia la dosis
+  devuelta; la instantánea del cambio `creacion` no contiene la dosis; no hay ninguna columna de dosis en la
+  base de datos. (REQ-23; R15)
+- [ ] T-76 [US1] Implementar la dosis en las respuestas de la API en `backend/src/cuaderno/esquemas/tratamiento.py`
+  y `servicios/tratamientos.py`: campos calculados de solo lectura con `dominio/dosis.py` a partir de las
+  cantidades y las superficies tratadas del tratamiento; las instantáneas del historial siguen sin la dosis;
+  regenerar `frontend/src/api/openapi.json` y los tipos (T-15). Pasan las pruebas de T-75. (REQ-23; R15)
+- [ ] T-77 [US1] Escribir las pruebas de componentes (deben fallar) en `frontend/tests/paginas/cuaderno.test.tsx`
+  y después mostrar la dosis en el detalle del tratamiento del cuaderno (`frontend/src/paginas/cuaderno/`): junto
+  a la cantidad de cada producto, su dosis calculada con `dominio/dosis.ts` ("0,57 kg/ha"), también para los
+  tratamientos guardados sin conexión y aún no sincronizados; el formulario de registro no tiene ningún campo de
+  dosis. (REQ-23, REQ-06; R15)
+
 **Punto de control (MVP)**: con la historia 4 hecha, el agricultor registra tratamientos con y sin conexión y
-los ve en el cuaderno.
+los ve en el cuaderno, con la dosis por hectárea de cada producto.
 
 ---
 
@@ -455,11 +492,14 @@ otro, y comprobar que ambos cambios quedan en el historial (spec, historia 3).
 - [ ] T-55 [US3] Escribir las pruebas de corrección, anulación e historial (deben fallar) en
   `backend/tests/integration/test_corregir_anular.py` y ampliar el contrato con
   `POST /tratamientos/{id}/anulacion` y `GET /tratamientos/{id}/historial`: corregir la cantidad con motivo →
-  valor nuevo, y el historial conserva el anterior, la fecha y el motivo (escenario 2); corregir sin motivo (si
+  valor nuevo, y el historial conserva el anterior, la fecha y el motivo (escenario 2); tras corregir la cantidad
+  o una superficie tratada, `dosisPorHectarea` refleja el valor nuevo (2 kg → 3,5 kg en 3,5 ha: 0,57 → 1,00 kg/ha)
+  y las `diferencias` del historial muestran la cantidad o la superficie, no la dosis (spec, caso límite "Dosis
+  tras una corrección"); corregir sin motivo (si
   no es solo añadir la eficacia) → 422; corregir la fecha recalcula el vencimiento y las marcas; anular con
   motivo → deja el cuaderno vigente y sigue en el historial marcado como anulado (escenario 3); anular sin
   motivo → 422; corregir un anulado → 409; el historial devuelve los cambios en orden con sus `diferencias`
-  (campo, anterior, nuevo). (REQ-11, REQ-12)
+  (campo, anterior, nuevo). (REQ-11, REQ-12, REQ-23)
 - [ ] T-56 [US3] Implementar la anulación (`POST /tratamientos/{id}/anulacion`), el historial
   (`GET /tratamientos/{id}/historial`, con `diferencias` calculadas desde las instantáneas) y el motivo
   obligatorio en las correcciones, en `backend/src/cuaderno/dominio/historial.py`,
@@ -527,8 +567,8 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
   REQ-16, REQ-17, REQ-20, REQ-21, REQ-22)
 - [ ] T-65 [P] Escribir el E2E de registro en `e2e/registrar.spec.ts`: escenarios 1 a 4 de la historia 1 y,
   con la red cortada por Playwright, 20 tratamientos registrados sin conexión que se sincronizan sin pérdida ni
-  duplicados al recuperarla (escenario 5, SC-003), incluido un producto dado de alta sin conexión. (REQ-01 a
-  REQ-06, REQ-16)
+  duplicados al recuperarla (escenario 5, SC-003), incluido un producto dado de alta sin conexión; escenarios 6
+  y 7 (dosis por hectárea en el cuaderno, también sin conexión). (REQ-01 a REQ-06, REQ-16, REQ-23)
 - [ ] T-66 [P] Escribir el E2E de plazos, consulta y conflictos en `e2e/plazos-consulta.spec.ts`: escenarios de
   la historia 2 (pendiente, aviso, correo único en Mailpit, completar, fuera de plazo) y de la historia 3
   (filtrar, corregir, anular, historial), y un conflicto con dos contextos de navegador sin red que se resuelve
@@ -555,7 +595,7 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
   `docs/proceso/registro-iteraciones.md`. Si algún criterio no se cumple, se presenta al alumno antes de T-70.
   (SC-001, SC-005, SC-007; principio V)
 - [ ] T-70 Comprobar la trazabilidad final (la **última** tarea, después de T-71): cada `REQ-01` a `REQ-17` y
-  `REQ-20` a `REQ-22` tiene al menos una prueba que lo cita y pasa (búsqueda de `REQ-xx` en `backend/tests`,
+  `REQ-20` a `REQ-23` tiene al menos una prueba que lo cita y pasa (búsqueda de `REQ-xx` en `backend/tests`,
   `frontend/tests` y `e2e`); T-71 está hecha y sus resultados anotados; el pipeline está en verde; ejecutar
   `/speckit-converge` y dejar el resultado en la PR #1. (Principio III; puertas de fusión de la constitución)
 
@@ -569,12 +609,15 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
   T-01.
 - **Base común (T-07 a T-19)**: depende del Setup y **bloquea todas las historias**.
 - **US4 (T-20 a T-29)**: depende de la base común.
-- **US1 (T-30 a T-42)**: depende de US4 (parcelas, personas, equipos y productos).
+- **US1 (T-30 a T-42 y T-72 a T-77)**: depende de US4 (parcelas, personas, equipos y productos). Orden de
+  ejecución dentro del hito: T-30 a T-32 → T-72 a T-74 → T-33 a T-36 → T-75 y T-76 → T-37 a T-42 → T-77.
+  T-72 usa el fichero de casos de T-07; T-75 necesita el registro de T-36, y T-77 la vista del cuaderno de T-42.
 - **US2 (T-43 a T-52)**: depende de US1 (tabla `tratamiento` y registro).
 - **US3 (T-53 a T-62)**: depende de US1. T-57 y T-58 amplían el `PATCH` de T-49 (US2).
 - **Cierre (T-63 a T-71)**: depende de las historias que se quieran validar. T-63, con su prueba de humo, va
   antes de T-64 a T-66; T-71 va después de T-69, y T-70 es la última. T-71 lleva un número mayor que T-70 porque
-  se añadió después del análisis; el orden de ejecución es el indicado.
+  se añadió después del análisis; el orden de ejecución es el indicado. Lo mismo ocurre con T-72 a T-77, que
+  pertenecen a US1 (H4).
 
 ### Dentro de cada historia
 
@@ -586,7 +629,8 @@ pruebas de cada REQ van siempre antes de su implementación.
 - Setup: T-02 y T-03.
 - Base común: T-07, T-08 y T-16 entre sí y con la cadena de cuentas (T-09 a T-14).
 - US4: las pruebas T-22 y T-24 mientras se implementa T-21.
-- US1: T-31 y T-32 (Python y TypeScript de las mismas reglas) tras T-30.
+- US1: T-31 y T-32 (Python y TypeScript de las mismas reglas) tras T-30; T-73 y T-74 (cálculo de la dosis)
+  tras T-72.
 - US2: T-44 y T-45 tras T-43.
 - Cierre: T-64, T-65 y T-66 tras T-63 (con la prueba de humo en verde).
 
@@ -606,7 +650,7 @@ Tras T-30 (casos de REQ-02 y REQ-04 en compartido/casos-validacion.json):
 
 1. Setup y base común (T-01 a T-19).
 2. Historia 4 (T-20 a T-29), requisito de la 1.
-3. Historia 1 (T-30 a T-42).
+3. Historia 1 (T-30 a T-42 y T-72 a T-77).
 4. **Parar y validar**: registrar con y sin conexión (prueba independiente de la historia 1).
 
 ### Entrega incremental
@@ -649,6 +693,7 @@ actualizado en el mismo commit cuando proceda.
 | REQ-20 | T-09, T-17 | T-10, T-17, T-19 | T-64 |
 | REQ-21 | T-11 | T-12, T-19 | T-64 |
 | REQ-22 | T-13 | T-14, T-19 | T-64 |
+| REQ-23 | T-72, T-75, T-55 | T-73, T-74, T-76, T-77 | T-65 |
 
 Criterios de éxito: SC-002 → T-30 y T-35; SC-003 → T-39 y T-65; SC-004 → T-50 y T-66; SC-006 → T-55 y T-59;
 SC-001, SC-005 y SC-007 → T-71 (sesión con agricultores).
@@ -664,7 +709,7 @@ en el móvil Android → T-69. El anexo VII y las diferencias con el SIEX quedan
 
 ## Notas
 
-- Las tareas de páginas y de la cola de la PWA (T-17 a T-19, T-28, T-29, T-41, T-42, T-52, T-61 y T-62)
+- Las tareas de páginas y de la cola de la PWA (T-17 a T-19, T-28, T-29, T-41, T-42, T-52, T-61, T-62 y T-77)
   incluyen sus pruebas de componentes o de Vitest, que se escriben primero dentro de la misma tarea. La prueba
   de API de cada REQ que cubren va siempre en una tarea anterior (tabla de trazabilidad).
 
