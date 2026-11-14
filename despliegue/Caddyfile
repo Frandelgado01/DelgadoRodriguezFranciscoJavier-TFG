@@ -1,0 +1,17 @@
+# Servicio web (research R11): PWA estática, proxy de /api hacia la API (mismo origen) y HTTPS con la
+# autoridad de certificación local de Caddy.
+localhost {
+	tls internal
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		root * /srv
+		# Navegación de la PWA: las rutas que no son ficheros devuelven index.html.
+		try_files {path} /index.html
+		file_server
+	}
+}

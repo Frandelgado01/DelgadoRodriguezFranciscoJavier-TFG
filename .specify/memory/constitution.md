@@ -1,3 +1,25 @@
+<!--
+Informe de impacto de sincronización
+- Versión: 1.1.1 → 2.0.0 (MAJOR: se redefinen los principios II y IV). Acuerdos de la tutoría anotada el
+  2026-11-09; enmienda aplicada por decisión del alumno.
+- Principios modificados:
+  - II. Humano en el bucle: el tutor da el visto bueno a la especificación y al plan de cada funcionalidad
+    antes de implementar (pendientes-tutor #16).
+  - IV. Conformidad normativa con fuente: el producto implementa solo el registro de tratamientos
+    fitosanitarios; fertilización, labores, cosechas y la exportación compatible con el SIEX pasan a "Próximos
+    pasos" (pendientes-tutor #18). El ámbito normativo incluye la normativa europea directamente aplicable,
+    como ya decía CLAUDE.md.
+- Secciones modificadas: Restricciones técnicas, "IA del producto" (resuelve TODO(PRESUPUESTO_RAG):
+  pendientes-tutor #14).
+- TODO pendientes: TODO(METRICAS_RAG) (plan de la 002).
+- Plantillas: .specify/templates/*.md ✅ sin cambios (la comprobación de constitución es genérica).
+- Documentos que la citan: specs/001-registro-tratamientos/plan.md ⚠ sigue citando v1.1.1; se revisará en la
+  próxima comprobación de constitución (antes de H2). La spec 001 ya trata la exportación SIEX como funcionalidad
+  posterior.
+- Historial: 1.0.0 → 1.1.0 (2026-10-27, MINOR): umbrales de k6 y TODO(METRICAS_RAG). 1.1.0 → 1.1.1 (2026-10-27,
+  PATCH): límite de 3 intentos de corrección por tarea en el bucle de implementación.
+-->
+
 # Constitución del Cuaderno de Campo
 
 ## Principios fundamentales
@@ -17,6 +39,8 @@
 
 - El alumno MUST aprobar de forma explícita cada artefacto (constitución, especificación, plan, tareas) antes
   de pasar a la fase siguiente.
+- El tutor MUST dar su visto bueno a la especificación y al plan de cada funcionalidad antes de implementarla, y
+  revisa la PR al cerrar cada hito.
 - Ningún cambio llega a `main` sin que el alumno lo haya revisado y entendido.
 - Las decisiones del alumno (aceptar, rechazar o cambiar una propuesta de la IA) MUST quedar en
   `docs/proceso/registro-iteraciones.md`.
@@ -37,9 +61,11 @@
 ### IV. Conformidad normativa con fuente
 
 - Cada requisito derivado de una norma MUST citar la norma concreta (artículo o ficha oficial). Ámbito:
-  normativa estatal y de Castilla-La Mancha.
-- Los registros cubren tratamientos fitosanitarios, fertilización, labores y cosechas, y MUST poder
-  exportarse en un formato compatible con el SIEX. No hay integración real con el SIEX.
+  normativa europea directamente aplicable, estatal y de Castilla-La Mancha.
+- El producto implementa el registro de tratamientos fitosanitarios, las consultas normativas (RAG) y el
+  registro en lenguaje natural. Fertilización, labores, cosechas y la exportación compatible con el SIEX quedan
+  como próximos pasos; los datos se nombran según el anexo V del SIEX para facilitarla. No hay integración real
+  con el SIEX.
 - El módulo RAG MUST citar la fuente de cada respuesta. Si no encuentra respaldo en el corpus, MUST decir que
   no lo sabe en lugar de responder.
 - Nunca se inventan datos normativos, plazos ni cifras.
@@ -80,11 +106,17 @@
 - **Frontend:** PWA con React + TypeScript.
 - **Backend:** Python + FastAPI.
 - **Datos:** PostgreSQL con pgvector (una sola base de datos para datos y vectores).
-- **IA del producto:** Claude API para el módulo RAG. TODO(PRESUPUESTO_RAG): pendiente de cómo se financian las
-  llamadas (pendientes-tutor #14).
-- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento). TODO(UMBRALES_RENDIMIENTO):
-  los umbrales de k6 y las métricas mínimas del RAG (fidelidad, relevancia) se fijan en la fase 4 y se incorporan
-  aquí por enmienda.
+- **IA del producto:** Claude API con gasto propio mínimo y un límite de gasto de unos 10 € en la consola;
+  generación con Claude Haiku; embeddings con Voyage AI (cuota gratuita) o con un modelo local, a decidir en el
+  plan de la 002. Un modelo local de generación se evalúa solo como alternativa (pendientes-tutor #14).
+- **Pruebas:** pytest (unitarias e integración), Playwright (E2E), k6 (rendimiento).
+- **Umbrales de rendimiento (k6):** con 20 usuarios virtuales durante 2 minutos sobre una base sembrada con
+  50 explotaciones (30 parcelas y 1 000 tratamientos cada una), el pipeline MUST fallar si no se cumple:
+  menos del 1 % de peticiones fallidas (`http_req_failed: rate<0.01`); p95 < 500 ms al registrar un tratamiento;
+  p95 < 300 ms en consultas y resto de peticiones. Son **umbrales iniciales** (plan 001, research R12) y se
+  revisarán con las mediciones de la fase 7.
+- **Métricas del RAG:** TODO(METRICAS_RAG): las métricas mínimas de fidelidad y relevancia se fijan en el plan de
+  la funcionalidad 002 y se incorporan aquí por enmienda.
 - **CI/CD:** GitHub Actions; contenedores Docker.
 - **Despliegue:** local con Docker Compose y demo; sin despliegue público.
 - **Idioma:** artefactos, interfaz, commits y documentación en español.
@@ -97,9 +129,12 @@
   ir directa a `main`.
 - **Puertas de fusión:** una PR solo se fusiona si (1) el pipeline está en verde, (2) `/speckit-converge` no
   deja tareas pendientes y (3) el alumno la ha revisado.
-- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de iteraciones por
-  tarea; si lo alcanza, se detiene y consulta al alumno. Si una validación falla por un requisito mal definido,
-  se vuelve a la fase 2.
+- **Bucle de implementación:** el agente itera implementar–probar–corregir con un límite de **3 intentos de
+  corrección por tarea**. Un intento es cada cambio de código seguido de una ejecución de las pruebas de la tarea
+  que siguen fallando; la primera ejecución en rojo (la esperada al escribir las pruebas primero) no cuenta, y un
+  fallo del CI en esa tarea cuenta como un intento. Si alcanza el límite, se detiene sin hacer commit y consulta
+  al alumno, presentando las pruebas que fallan, lo intentado y si cree que el requisito está mal definido; en
+  ese caso se vuelve a la fase 2. El número es una propuesta del agente, sin fuente.
 - **Commits:** uno por tarea, en español; en implementación empiezan por `T-xx:`.
 - **Registro:** cada iteración relevante se anota en `docs/proceso/registro-iteraciones.md` en el mismo commit
   que el trabajo que registra.
@@ -115,4 +150,4 @@
 - **Cumplimiento:** cada `plan.md` MUST superar la comprobación de constitución antes de generar tareas, y cada
   PR se revisa contra estos principios.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-10-23
+**Versión**: 2.0.0 | **Ratificada**: 2026-10-23 | **Última enmienda**: 2026-11-09
