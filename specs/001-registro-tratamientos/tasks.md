@@ -126,7 +126,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   sesión → 401; un usuario no ve los datos de otra explotación (404); la base rechaza un correo repetido con
   otras mayúsculas. Contrato: `POST /cuenta`,
   `GET /cuenta/yo`, `POST /sesion`, `DELETE /sesion`. (REQ-20)
-- [ ] T-10 Implementar REQ-20. Migración y modelos en `backend/alembic/versions/` y
+- [X] T-10 Implementar REQ-20. Migración y modelos en `backend/alembic/versions/` y
   `backend/src/cuaderno/modelos/cuentas.py`: `usuario` (`id` UUID PK; `correo` TEXT NOT NULL, UNIQUE sobre
   `lower(correo)`; `hash_contrasena` TEXT NOT NULL; `creado_en` TIMESTAMPTZ NOT NULL), `explotacion` (`id` UUID
   PK; `usuario_id` FK NOT NULL, UNIQUE; `creada_en` TIMESTAMPTZ NOT NULL) y `sesion` (`hash_token` BYTEA PK;
