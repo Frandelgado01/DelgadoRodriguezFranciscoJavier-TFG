@@ -58,6 +58,14 @@ No pases de fase sin la aprobación explícita del alumno. Un cambio de requisit
 
 - Requisitos `REQ-xx` en `spec.md`; tareas `T-xx` en `tasks.md`, cada una enlazada a su `REQ`.
 - Un commit por tarea. Mensaje en español; en implementación empieza por la tarea: `T-07: ...`.
+- **Medición del proceso** (`docs/proceso/medicion-proceso.md`, aprobada el 2026-11-23):
+  - Cada commit de implementación incluye una línea `Intentos: n`, con los intentos de corrección tras la
+    primera ejecución en rojo (máximo 3, constitución). Al llegar a 3, el agente se detiene y lo anota en
+    Decisiones con la causa.
+  - Las correcciones a mano del alumno van en commits aparte: `T-xx (corrección del alumno): ...`. El agente no
+    las mezcla con las suyas.
+  - Al cerrar cada hito, el resumen del punto de control da las líneas del agente y del alumno, los intentos por
+    tarea, los días con actividad y el estado del CI, y se anotan en la fila de la sesión del hito.
 - Cada prueba indica en su nombre o docstring el `REQ-xx` que verifica.
 - Nunca subir secretos: claves en `.env` (ignorado); documentar variables en `.env.example`.
 
