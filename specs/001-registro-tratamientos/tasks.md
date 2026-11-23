@@ -185,7 +185,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   service worker con `vite-plugin-pwa` (estrategia `generateSW`, solo precaché de la carcasa, **sin Background
   Sync**) y navegación entre las páginas del plan. Prueba en `frontend/tests/pwa.test.ts`: la configuración no
   registra Background Sync. (R3, R11; principio V)
-- [ ] T-19 Implementar las páginas de cuenta en `frontend/src/paginas/cuenta/`: crear cuenta (sugiere usar una
+- [X] T-19 Implementar las páginas de cuenta en `frontend/src/paginas/cuenta/`: crear cuenta (sugiere usar una
   frase), iniciar sesión, cerrar sesión (borra IndexedDB solo si la cola está vacía; si no, avisa de que hay
   registros sin enviar), "He olvidado mi contraseña", restablecer contraseña y el mensaje de espera en lenguaje
   llano cuando la API responde 429, con los minutos que faltan. Pruebas de componentes en
