@@ -116,7 +116,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   `specs/001-registro-tratamientos/contracts/openapi.yaml` y comprueba, para una lista de operaciones dada,
   que la ruta, el método y los códigos de estado documentados existen en el OpenAPI generado por FastAPI.
   Cada historia la usa en su prueba de contrato. (R7; principio I)
-- [ ] T-09 Escribir las pruebas de REQ-20 (deben fallar) en `backend/tests/integration/test_cuenta_sesion.py` y
+- [X] T-09 Escribir las pruebas de REQ-20 (deben fallar) en `backend/tests/integration/test_cuenta_sesion.py` y
   `backend/tests/contract/test_contrato_cuenta.py`: crear cuenta (201, crea la explotación e inicia sesión);
   correo repetido → 409; contraseña de menos de 15 o más de 128 caracteres → 422, sin reglas de composición;
   el hash es Argon2id y la contraseña en claro no se guarda; inicio de sesión correcto → 204 con cookie
