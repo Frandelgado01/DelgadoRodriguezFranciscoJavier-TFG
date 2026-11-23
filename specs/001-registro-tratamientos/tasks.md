@@ -138,7 +138,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   como SHA-256; cookie y caducidades de R9; dependencia de FastAPI que exige sesión válida, actualiza
   `ultimo_uso` y devuelve la explotación del usuario, que filtra todas las consultas; la API solo acepta
   `application/json`. Pasan las pruebas de T-09. (REQ-20)
-- [ ] T-11 Escribir las pruebas de REQ-21 (deben fallar) en `backend/tests/integration/test_recuperacion.py` y
+- [X] T-11 Escribir las pruebas de REQ-21 (deben fallar) en `backend/tests/integration/test_recuperacion.py` y
   ampliar `test_contrato_cuenta.py`: `POST /cuenta/recuperacion` responde 202 con el mismo mensaje exista o no la
   cuenta; Mailpit recibe un único correo con un enlace construido con `URL_PUBLICA` (nunca con la cabecera
   `Host`); el token caduca a la hora y solo vale una vez (400 en el segundo uso); más de 3 solicitudes por cuenta

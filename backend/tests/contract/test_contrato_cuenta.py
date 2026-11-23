@@ -16,3 +16,11 @@ def test_req20_iniciar_sesion_cumple_el_contrato_salvo_el_limite_de_intentos() -
     # El 429 es de REQ-22 y llega con T-13 y T-14, que amplían esta prueba.
     diferencias = comprobar_operaciones(openapi_generado(), [("POST", "/sesion")])
     assert diferencias == ["POST /sesion: faltan los códigos 429"]
+
+
+def test_req21_operaciones_de_recuperacion_cumplen_el_contrato() -> None:
+    operaciones = [
+        ("POST", "/cuenta/recuperacion"),
+        ("POST", "/cuenta/recuperacion/confirmar"),
+    ]
+    assert comprobar_operaciones(openapi_generado(), operaciones) == []
