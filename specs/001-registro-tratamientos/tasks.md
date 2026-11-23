@@ -108,7 +108,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
 
 **⚠️ Ninguna historia empieza antes de terminar esta fase.**
 
-- [ ] T-07 [P] Crear el fichero de casos compartidos `compartido/casos-validacion.json` (formato: regla,
+- [X] T-07 [P] Crear el fichero de casos compartidos `compartido/casos-validacion.json` (formato: regla,
   entrada, resultado esperado, `req`) y los dos ejecutores que lo recorren:
   `backend/tests/unit/test_casos_compartidos.py` (pytest) y `frontend/tests/casos-compartidos.test.ts`
   (Vitest). Cada caso se ejecuta como una prueba con su `REQ-xx` en el nombre. (R8; principio III)

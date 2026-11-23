@@ -1,0 +1,4 @@
+{
+  "descripcion": "Casos compartidos de las reglas de validación (research R8). Los recorren pytest (backend/tests/unit/test_casos_compartidos.py) y Vitest (frontend/tests/casos-compartidos.test.ts). Cada caso: req (REQ-xx que verifica), regla, descripcion, entrada y esperado.",
+  "casos": []
+}
