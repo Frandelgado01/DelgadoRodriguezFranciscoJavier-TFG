@@ -12,7 +12,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "audit": "npm audit --audit-level=high"
+    "audit": "npm audit --audit-level=high",
+    "api:tipos": "openapi-typescript src/api/openapi.json -o src/api/tipos.ts"
   },
   "dependencies": {
     "dexie": "4.4.7",

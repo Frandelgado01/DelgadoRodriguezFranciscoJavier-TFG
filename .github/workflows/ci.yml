@@ -71,6 +71,11 @@ jobs:
           uv run pip-audit -r "$RUNNER_TEMP/requisitos.txt" --require-hashes --disable-pip --strict
       - name: Pruebas
         run: uv run pytest
+      # R7 y R8: el OpenAPI que usa la PWA tiene que ser el que genera la API.
+      - name: OpenAPI exportado al día (frontend/src/api/openapi.json)
+        run: |
+          uv run python scripts/exportar_openapi.py
+          git diff --exit-code -- ../frontend/src/api/openapi.json
 
   frontend:
     name: Frontend (Vitest)
@@ -95,3 +100,8 @@ jobs:
         run: npm run audit
       - name: Pruebas
         run: npm test
+      # R8: un cambio en la API sin regenerar los tipos rompe la construcción.
+      - name: Tipos de la API al día (src/api/tipos.ts)
+        run: |
+          npm run api:tipos
+          git diff --exit-code -- src/api/tipos.ts

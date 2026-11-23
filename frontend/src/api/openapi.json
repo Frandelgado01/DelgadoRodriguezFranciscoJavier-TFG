@@ -1,0 +1,432 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cuaderno de Campo",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/cuenta": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Crear cuenta y explotación (REQ-20)",
+        "operationId": "crear_cuenta_cuenta_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cuenta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya existe una cuenta con ese correo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cuenta/yo": {
+      "get": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Datos de la cuenta de la sesión (REQ-20)",
+        "operationId": "yo_cuenta_yo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cuenta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sesión ausente, caducada o revocada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/sesion": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Iniciar sesión (REQ-20, REQ-22)",
+        "operationId": "iniciar_sesion_sesion_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Correo o contraseña incorrectos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos fallidos con este correo (REQ-22): 5 fallos en 15 minutos → espera de 15 minutos. Se responde antes de verificar la contraseña e igual exista o no la cuenta.",
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos que faltan para poder intentarlo de nuevo",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1.0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EsperaAcceso"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Cerrar sesión; invalida el token en el servidor (REQ-20)",
+        "operationId": "cerrar_sesion_sesion_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/cuenta/recuperacion": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Solicitar el enlace de restablecimiento por correo (REQ-21)",
+        "description": "Responde siempre igual; el correo se envía después de responder (R10).",
+        "operationId": "solicitar_recuperacion_cuenta_recuperacion_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudRecuperacion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cuenta/recuperacion/confirmar": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Fijar una contraseña nueva con el token del enlace (REQ-21)",
+        "description": "Cambia la contraseña y cierra todas las sesiones; no inicia sesión.",
+        "operationId": "confirmar_recuperacion_cuenta_recuperacion_confirmar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmacionRecuperacion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "description": "Enlace no válido o caducado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConfirmacionRecuperacion": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 32,
+            "title": "Token"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 15,
+            "title": "Contrasena"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "contrasena"
+        ],
+        "title": "ConfirmacionRecuperacion"
+      },
+      "Credenciales": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "title": "Correo"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 15,
+            "title": "Contrasena"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo",
+          "contrasena"
+        ],
+        "title": "Credenciales"
+      },
+      "Cuenta": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "title": "Correo"
+          },
+          "explotacionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Explotacionid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo",
+          "explotacionId"
+        ],
+        "title": "Cuenta"
+      },
+      "ErrorCampo": {
+        "properties": {
+          "campo": {
+            "type": "string",
+            "title": "Campo"
+          },
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          },
+          "req": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Req"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campo",
+          "mensaje"
+        ],
+        "title": "ErrorCampo"
+      },
+      "ErrorValidacion": {
+        "properties": {
+          "errores": {
+            "items": {
+              "$ref": "#/components/schemas/ErrorCampo"
+            },
+            "type": "array",
+            "title": "Errores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "errores"
+        ],
+        "title": "ErrorValidacion",
+        "description": "Respuesta 422: un mensaje en lenguaje llano por campo (REQ-04, principio V)."
+      },
+      "EsperaAcceso": {
+        "properties": {
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          },
+          "segundosRestantes": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Segundosrestantes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mensaje",
+          "segundosRestantes"
+        ],
+        "title": "EsperaAcceso",
+        "description": "Respuesta 429 del inicio de sesión (REQ-22)."
+      },
+      "Mensaje": {
+        "properties": {
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mensaje"
+        ],
+        "title": "Mensaje",
+        "description": "Respuesta de error con un mensaje en lenguaje llano."
+      },
+      "SolicitudRecuperacion": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "title": "Correo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo"
+        ],
+        "title": "SolicitudRecuperacion"
+      }
+    },
+    "securitySchemes": {
+      "cookieSesion": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-sesion"
+      }
+    }
+  }
+}

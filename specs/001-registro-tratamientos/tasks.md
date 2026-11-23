@@ -168,7 +168,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   `lower(trim(correo))` en `intento_acceso`, leído con `SELECT … FOR UPDATE` antes de verificar la contraseña;
   ventana de 15 minutos; al 5.º fallo `bloqueado_hasta = now() + 15 min`; 429 con `Retry-After` y cuerpo
   `EsperaAcceso`; un acceso correcto o un restablecimiento borran la fila. Pasan las pruebas de T-13. (REQ-22)
-- [ ] T-15 Exportar el OpenAPI generado a `frontend/src/api/openapi.json` con un script
+- [X] T-15 Exportar el OpenAPI generado a `frontend/src/api/openapi.json` con un script
   (`backend/scripts/exportar_openapi.py`), generar los tipos con openapi-typescript en
   `frontend/src/api/tipos.ts`, crear el cliente en `frontend/src/api/cliente.ts` (mismo origen, JSON) y añadir
   al CI el paso que regenera ambos ficheros y **falla si difieren de los versionados**. (R7, R8)
