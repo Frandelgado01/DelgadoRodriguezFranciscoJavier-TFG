@@ -177,7 +177,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   (clave `id`; índices `fecha`, `estadoSincronizacion`, `*parcelaIds`, `*productoIds`); `cola` (clave
   `++orden`; índice único `idOperacion`; índice `entidadId`) y `meta` (clave `clave`). Prueba en
   `frontend/tests/db/esquema.test.ts`. Base de REQ-06, que se prueba en T-24, T-37 y T-39. (R3)
-- [ ] T-17 Añadir a `compartido/casos-validacion.json` los casos de la contraseña (15 a 128 caracteres,
+- [X] T-17 Añadir a `compartido/casos-validacion.json` los casos de la contraseña (15 a 128 caracteres,
   cualquier carácter, incluidos espacios y Unicode, sin reglas de composición) y del correo; deben fallar en
   pytest y Vitest. Después implementarlos en `backend/src/cuaderno/dominio/validacion.py` y
   `frontend/src/dominio/validacion.ts`. (REQ-20; R8)

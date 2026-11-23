@@ -5,6 +5,7 @@
 // regla divergen, falla la prueba de una de ellas. Cada caso es una prueba con su REQ-xx en el nombre.
 import { describe, expect, it } from "vitest";
 import datos from "../../compartido/casos-validacion.json";
+import { validarContrasena, validarCorreo } from "../src/dominio/validacion";
 
 interface Caso {
   req: string;
@@ -16,7 +17,10 @@ interface Caso {
 
 // Regla del fichero de casos → función del dominio que la implementa. Se amplía con cada regla nueva
 // (contraseña y correo en T-17; REQ-02 y REQ-04 en T-32; plazos en T-45; dosis en T-74).
-const reglas: Record<string, (entrada: never) => unknown> = {};
+const reglas: Record<string, (entrada: never) => unknown> = {
+  contrasena: validarContrasena,
+  correo: validarCorreo,
+};
 
 const casos = (datos as { casos: Caso[] }).casos;
 const nombre = (caso: Caso) => `${caso.req} ${caso.regla}: ${caso.descripcion}`;

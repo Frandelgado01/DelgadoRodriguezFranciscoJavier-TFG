@@ -17,12 +17,17 @@ from typing import Any
 
 import pytest
 
+from cuaderno.dominio import validacion
+
 FICHERO_CASOS = Path(__file__).resolve().parents[3] / "compartido" / "casos-validacion.json"
 CAMPOS_CASO = {"req", "regla", "descripcion", "entrada", "esperado"}
 
 # Regla del fichero de casos → función del dominio que la implementa. Se amplía con cada regla nueva
 # (contraseña y correo en T-17; REQ-02 y REQ-04 en T-31; plazos en T-44; dosis en T-73).
-REGLAS: dict[str, Callable[[Any], Any]] = {}
+REGLAS: dict[str, Callable[[Any], Any]] = {
+    "contrasena": validacion.validar_contrasena,
+    "correo": validacion.validar_correo,
+}
 
 
 def _cargar_casos() -> list[dict[str, Any]]:

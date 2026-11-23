@@ -1,4 +1,210 @@
 {
   "descripcion": "Casos compartidos de las reglas de validación (research R8). Los recorren pytest (backend/tests/unit/test_casos_compartidos.py) y Vitest (frontend/tests/casos-compartidos.test.ts). Cada caso: req (REQ-xx que verifica), regla, descripcion, entrada y esperado.",
-  "casos": []
+  "casos": [
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "vacía",
+      "entrada": "",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "14 caracteres",
+      "entrada": "aaaaaaaaaaaaaa",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "15 caracteres (mínimo)",
+      "entrada": "aaaaaaaaaaaaaaa",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "128 caracteres (máximo)",
+      "entrada": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "129 caracteres",
+      "entrada": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "frase solo con minúsculas y espacios, sin reglas de composición",
+      "entrada": "mi huerta de olivos",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "15 espacios",
+      "entrada": "               ",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "letras con tilde y eñe",
+      "entrada": "ñandú cigüeña olivo",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "14 letras y un emoji cuentan 15 caracteres",
+      "entrada": "aaaaaaaaaaaaaa🌾",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "127 letras y un emoji cuentan 128 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa🌾",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "128 letras y un emoji cuentan 129 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa🌾",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "correo normal",
+      "entrada": "ana@example.com",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con espacios a los lados",
+      "entrada": "  ana@example.com  ",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con mayúsculas",
+      "entrada": "Ana@Example.COM",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con letras con tilde",
+      "entrada": "ñandú@campo.es",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "vacío",
+      "entrada": "",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "solo espacios",
+      "entrada": "   ",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "sin arroba",
+      "entrada": "anaexample.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con dos arrobas",
+      "entrada": "ana@@example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "sin punto en el dominio",
+      "entrada": "ana@example",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con un espacio dentro",
+      "entrada": "ana @example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "254 caracteres (máximo)",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.es",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "255 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.es",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    }
+  ]
 }

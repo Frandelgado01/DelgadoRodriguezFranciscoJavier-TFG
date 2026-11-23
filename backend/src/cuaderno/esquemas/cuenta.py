@@ -1,31 +1,28 @@
-"""Esquemas de cuenta y sesión (contrato: Credenciales, Cuenta; REQ-20)."""
+"""Esquemas de cuenta y sesión (contrato: Credenciales, Cuenta, EsperaAcceso; REQ-20 a REQ-22).
 
-import re
+Las reglas de la contraseña y del correo son las de `dominio/validacion.py`, compartidas con la PWA.
+"""
+
 import uuid
 from typing import Annotated
 
 from pydantic import AfterValidator, Field, WithJsonSchema
 
+from cuaderno.dominio import validacion
 from cuaderno.esquemas.base import DatoNoValido, Esquema
-
-_FORMATO_CORREO = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 
 
 def validar_contrasena(valor: str) -> str:
-    """De 15 a 128 caracteres, cualquier carácter y sin reglas de composición (R9)."""
-    if not 15 <= len(valor) <= 128:
-        raise DatoNoValido("La contraseña debe tener entre 15 y 128 caracteres.", "REQ-20")
+    if error := validacion.validar_contrasena(valor):
+        raise DatoNoValido(error["mensaje"], error["req"])
     return valor
 
 
 def validar_correo(valor: str) -> str:
-    """Correo con forma nombre@dominio, sin espacios a los lados y de 254 caracteres como mucho."""
-    valor = valor.strip()
-    if len(valor) > 254 or not _FORMATO_CORREO.fullmatch(valor):
-        raise DatoNoValido(
-            "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.", "REQ-20"
-        )
-    return valor
+    """Devuelve el correo sin los espacios de los lados."""
+    if error := validacion.validar_correo(valor):
+        raise DatoNoValido(error["mensaje"], error["req"])
+    return valor.strip()
 
 
 Contrasena = Annotated[
