@@ -112,7 +112,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   entrada, resultado esperado, `req`) y los dos ejecutores que lo recorren:
   `backend/tests/unit/test_casos_compartidos.py` (pytest) y `frontend/tests/casos-compartidos.test.ts`
   (Vitest). Cada caso se ejecuta como una prueba con su `REQ-xx` en el nombre. (R8; principio III)
-- [ ] T-08 [P] Crear la utilidad de prueba de contrato en `backend/tests/contract/contrato.py`: carga
+- [X] T-08 [P] Crear la utilidad de prueba de contrato en `backend/tests/contract/contrato.py`: carga
   `specs/001-registro-tratamientos/contracts/openapi.yaml` y comprueba, para una lista de operaciones dada,
   que la ruta, el método y los códigos de estado documentados existen en el OpenAPI generado por FastAPI.
   Cada historia la usa en su prueba de contrato. (R7; principio I)
