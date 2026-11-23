@@ -181,7 +181,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   cualquier carácter, incluidos espacios y Unicode, sin reglas de composición) y del correo; deben fallar en
   pytest y Vitest. Después implementarlos en `backend/src/cuaderno/dominio/validacion.py` y
   `frontend/src/dominio/validacion.ts`. (REQ-20; R8)
-- [ ] T-18 Crear la carcasa de la PWA en `frontend/vite.config.ts` y `frontend/src/main.tsx`: manifiesto,
+- [X] T-18 Crear la carcasa de la PWA en `frontend/vite.config.ts` y `frontend/src/main.tsx`: manifiesto,
   service worker con `vite-plugin-pwa` (estrategia `generateSW`, solo precaché de la carcasa, **sin Background
   Sync**) y navegación entre las páginas del plan. Prueba en `frontend/tests/pwa.test.ts`: la configuración no
   registra Background Sync. (R3, R11; principio V)
