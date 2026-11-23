@@ -161,7 +161,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   ventana; un restablecimiento permite entrar enseguida; un correo sin cuenta recibe exactamente la misma
   respuesta; durante la espera no se verifica la contraseña (no se llama a Argon2); dos peticiones simultáneas
   no se saltan el límite. (REQ-22)
-- [ ] T-14 Implementar REQ-22. Migración y modelo `intento_acceso` en `backend/src/cuaderno/modelos/cuentas.py`
+- [X] T-14 Implementar REQ-22. Migración y modelo `intento_acceso` en `backend/src/cuaderno/modelos/cuentas.py`
   (`correo_normalizado` TEXT PK, sin FK; `fallos_consecutivos` SMALLINT NOT NULL, CHECK ≥ 0; `primer_fallo_en`
   y `bloqueado_hasta` TIMESTAMPTZ NULL; sin contraseñas ni IP). Lógica en
   `backend/src/cuaderno/servicios/sesiones.py` y `api/cuenta.py`: contador por

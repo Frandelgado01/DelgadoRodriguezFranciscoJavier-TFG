@@ -12,6 +12,7 @@ from cuaderno.esquemas.cuenta import (
     ConfirmacionRecuperacion,
     Credenciales,
     Cuenta,
+    EsperaAcceso,
     SolicitudRecuperacion,
 )
 from cuaderno.modelos import Explotacion, Usuario
@@ -62,23 +63,49 @@ def yo(
     return Cuenta(correo=usuario.correo, explotacion_id=explotacion.id)
 
 
+_ESPERA = {
+    "model": EsperaAcceso,
+    "description": (
+        "Demasiados intentos fallidos con este correo (REQ-22): 5 fallos en 15 minutos → espera de "
+        "15 minutos. Se responde antes de verificar la contraseña e igual exista o no la cuenta."
+    ),
+    "headers": {
+        "Retry-After": {
+            "description": "Segundos que faltan para poder intentarlo de nuevo",
+            "schema": {"type": "integer", "minimum": 1},
+        }
+    },
+}
+
+
 @router.post(
     "/sesion",
     status_code=status.HTTP_204_NO_CONTENT,
     response_class=Response,
-    summary="Iniciar sesión (REQ-20)",
+    summary="Iniciar sesión (REQ-20, REQ-22)",
     responses={
         401: {"model": Mensaje, "description": "Correo o contraseña incorrectos"},
         422: _VALIDACION,
+        429: _ESPERA,
     },
 )
 def iniciar_sesion(datos: Credenciales, s: SesionBD, reloj: RelojAPI) -> Response:
-    usuario = cuentas.verificar_credenciales(s, datos.correo, datos.contrasena)
-    if usuario is None:
+    ahora = reloj.ahora()
+    resultado = sesiones.autenticar(s, datos.correo, datos.contrasena, ahora)
+    if isinstance(resultado, sesiones.EsperaPendiente):
+        s.commit()
+        espera = EsperaAcceso(mensaje=resultado.mensaje, segundos_restantes=resultado.segundos)
+        return JSONResponse(
+            espera.model_dump(by_alias=True),
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            headers={"Retry-After": str(resultado.segundos)},
+        )
+    if resultado is None:
+        s.commit()
         return JSONResponse(
             {"mensaje": "Correo o contraseña incorrectos"}, status.HTTP_401_UNAUTHORIZED
         )
-    token = sesiones.crear_sesion(s, usuario.id, reloj.ahora())
+    token = sesiones.crear_sesion(s, resultado.id, ahora)
     s.commit()
     respuesta = Response(status_code=status.HTTP_204_NO_CONTENT)
     sesiones.poner_cookie(respuesta, token)
@@ -140,11 +167,13 @@ def confirmar_recuperacion(
 ) -> Response:
     """Cambia la contraseña y cierra todas las sesiones; no inicia sesión."""
     try:
-        cuentas.confirmar_recuperacion(s, datos.token, datos.contrasena, reloj.ahora())
+        usuario = cuentas.confirmar_recuperacion(s, datos.token, datos.contrasena, reloj.ahora())
     except cuentas.EnlaceNoValido as error:
         s.rollback()
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, "El enlace no es válido o ha caducado. Pide otro."
         ) from error
+    # Un restablecimiento pone a cero el límite de intentos (REQ-22).
+    sesiones.borrar_intentos(s, usuario.correo)
     s.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

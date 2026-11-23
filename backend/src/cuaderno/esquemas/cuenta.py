@@ -57,3 +57,10 @@ class SolicitudRecuperacion(Esquema):
 class ConfirmacionRecuperacion(Esquema):
     token: str = Field(min_length=32, max_length=128)
     contrasena: Contrasena
+
+
+class EsperaAcceso(Esquema):
+    """Respuesta 429 del inicio de sesión (REQ-22)."""
+
+    mensaje: str
+    segundos_restantes: int = Field(ge=1)

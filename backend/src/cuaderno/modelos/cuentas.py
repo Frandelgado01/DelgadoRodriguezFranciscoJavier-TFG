@@ -7,7 +7,7 @@ migración de Alembic, que es la que crea el esquema.
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, LargeBinary
+from sqlalchemy import Column, DateTime, ForeignKey, LargeBinary, SmallInteger
 from sqlmodel import Field, SQLModel
 
 
@@ -62,3 +62,17 @@ class TokenRestablecimiento(SQLModel, table=True):
     creado_en: datetime = Field(sa_column=_instante())
     expira_en: datetime = Field(sa_column=_instante())
     usado_en: datetime | None = Field(default=None, sa_column=_instante(nulo=True))
+
+
+class IntentoAcceso(SQLModel, table=True):
+    """Fallos de inicio de sesión por correo normalizado, exista o no la cuenta (REQ-22).
+
+    Sin clave foránea, sin contraseñas y sin IP.
+    """
+
+    __tablename__ = "intento_acceso"
+
+    correo_normalizado: str = Field(primary_key=True)
+    fallos_consecutivos: int = Field(sa_column=Column(SmallInteger, nullable=False))
+    primer_fallo_en: datetime | None = Field(default=None, sa_column=_instante(nulo=True))
+    bloqueado_hasta: datetime | None = Field(default=None, sa_column=_instante(nulo=True))
