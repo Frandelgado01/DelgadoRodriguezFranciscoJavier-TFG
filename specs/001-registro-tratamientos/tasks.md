@@ -172,7 +172,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   (`backend/scripts/exportar_openapi.py`), generar los tipos con openapi-typescript en
   `frontend/src/api/tipos.ts`, crear el cliente en `frontend/src/api/cliente.ts` (mismo origen, JSON) y añadir
   al CI el paso que regenera ambos ficheros y **falla si difieren de los versionados**. (R7, R8)
-- [ ] T-16 [P] Crear el esquema local de la PWA en `frontend/src/db/esquema.ts` con Dexie, con los almacenes de
+- [X] T-16 [P] Crear el esquema local de la PWA en `frontend/src/db/esquema.ts` con Dexie, con los almacenes de
   data-model: `parcelas`, `personas`, `equipos` y `productos` (clave `id`, índice `estado`); `tratamientos`
   (clave `id`; índices `fecha`, `estadoSincronizacion`, `*parcelaIds`, `*productoIds`); `cola` (clave
   `++orden`; índice único `idOperacion`; índice `entidadId`) y `meta` (clave `clave`). Prueba en
