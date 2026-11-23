@@ -1,9 +1,9 @@
-# Medición del proceso (propuesta)
+# Medición del proceso
 
-**Estado: propuesta pendiente de aprobación del alumno** (actualizada el 2026-11-14). El objetivo 6 de la memoria,
+**Estado: aprobada por el alumno el 2026-11-23**, con la actualización del 2026-11-14. El objetivo 6 de la memoria,
 el apartado 4.5 y el capítulo 5 necesitan datos del propio proceso SDD. Desde el 2026-11-14 el registro no recoge
 minutos ni tokens/coste (decisión del alumno), así que el proceso se mide solo con datos verificables en el
-repositorio, y el tiempo se expresa en días con actividad por fase. Esta propuesta fija qué se mide, cómo y quién, a
+repositorio, y el tiempo se expresa en días con actividad por fase. Este documento fija qué se mide, cómo y quién, a
 partir del hito H2.
 
 Regla de base (CLAUDE.md): **no se inventan datos**. Lo que no se mida se deja vacío y se dice en la memoria.
@@ -29,8 +29,7 @@ Regla de base (CLAUDE.md): **no se inventan datos**. Lo que no se mida se deja v
 
 Los días con actividad, las iteraciones y los cambios de la spec de las fases 1 a 5 y de H1 se pueden obtener del registro y de git, así que no hace falta estimar nada a posteriori.
 
-## Decisiones que necesita el alumno
+## Aplicación
 
-1. Aprobar la propuesta o cambiarla.
-2. Si se aprueba: añadir la regla de `Intentos: n` y la de los commits de corrección a `CLAUDE.md` para que la
-   respete también la sesión de VS Code.
+Aprobada el 2026-11-23. Las reglas de `Intentos: n` y de los commits de corrección del alumno están en
+`CLAUDE.md` ("Trazabilidad y commits"), para que las siga cualquier sesión del agente, también la de VS Code.
