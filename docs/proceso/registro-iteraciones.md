@@ -70,7 +70,9 @@ cada sesión.
 | 2026-11-14 | — | Claude Code (app escritorio) | `registro-iteraciones.md` (sin las columnas "Tokens / coste" y "Minutos"), `CLAUDE.md` (regla del registro), `forma-de-trabajo.md` (roles), `medicion-proceso.md` (nota) | Eliminar del registro los minutos y el coste | 1 | — | ec5f6fa (main); fila añadida en el commit siguiente |
 | 2026-11-14 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer la eliminación de los minutos y el coste; resolver el conflicto del registro quitando las dos columnas también en las filas de la rama | 1 | — | 1c34ecd |
 | 2026-11-14 | M | Claude Code (app escritorio) | `indice.md` (cambio del 2026-11-14: objetivo 6, 4.5 y capítulo 5), comentarios de los capítulos 1, 4 y 5 de la memoria, `medicion-proceso.md` | Adaptar la memoria a un registro sin minutos ni coste: proceso medido con datos verificables del repositorio y días con actividad por fase; compilación sin errores (53 páginas) | 2 (propuesta → observación del alumno sobre los días sin commits) | — | b8277c8 (main) |
-| 2026-11-14 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer la adaptación de la memoria sin minutos ni coste; resolver el conflicto del registro (unión de filas) | 1 | — | (este merge) |
+| 2026-11-14 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer la adaptación de la memoria sin minutos ni coste; resolver el conflicto del registro (unión de filas) | 1 | — | 4ad5256 |
+| 2026-11-23 | 2 | Claude Code (app escritorio) | `docs/proceso/proto-personas.md` (las 23 preguntas respondidas una a una por P1, P2 y P3, con la base de cada respuesta; síntesis actualizada con REQ-23 y dos notas para próximos pasos) | Generar las respuestas de las proto-personas al guion antes de aprobar H2 | 1 | Pendiente de revisión del alumno | 4f4659e (main) |
+| 2026-11-23 | — | Claude Code (app escritorio) | Fusión de `main` en `001-registro-tratamientos` | Traer las respuestas de las proto-personas; resolver el conflicto del registro (unión de filas) | 1 | — | (este merge) |
 
 ## Decisiones
 
