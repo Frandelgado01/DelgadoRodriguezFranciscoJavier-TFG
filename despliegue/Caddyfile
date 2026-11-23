@@ -4,6 +4,9 @@ localhost {
 	tls internal
 	encode zstd gzip
 
+	# El enlace de recuperación lleva el token en la URL: la página no lo envía en Referer (R9, REQ-21).
+	header /restablecer* Referrer-Policy "no-referrer"
+
 	handle /api/* {
 		reverse_proxy api:8000
 	}

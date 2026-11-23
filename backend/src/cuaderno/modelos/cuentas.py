@@ -48,3 +48,17 @@ class Sesion(SQLModel, table=True):
     ultimo_uso: datetime = Field(sa_column=_instante())
     expira_en: datetime = Field(sa_column=_instante())
     revocada_en: datetime | None = Field(default=None, sa_column=_instante(nulo=True))
+
+
+class TokenRestablecimiento(SQLModel, table=True):
+    """Token del enlace de recuperación: solo su SHA-256, un solo uso y válido 1 hora (REQ-21)."""
+
+    __tablename__ = "token_restablecimiento"
+
+    hash_token: bytes = Field(sa_column=Column(LargeBinary, primary_key=True))
+    usuario_id: uuid.UUID = Field(
+        sa_column=Column(ForeignKey("usuario.id", ondelete="RESTRICT"), nullable=False)
+    )
+    creado_en: datetime = Field(sa_column=_instante())
+    expira_en: datetime = Field(sa_column=_instante())
+    usado_en: datetime | None = Field(default=None, sa_column=_instante(nulo=True))

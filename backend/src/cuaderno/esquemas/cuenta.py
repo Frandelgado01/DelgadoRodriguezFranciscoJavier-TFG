@@ -4,7 +4,7 @@ import re
 import uuid
 from typing import Annotated
 
-from pydantic import AfterValidator, WithJsonSchema
+from pydantic import AfterValidator, Field, WithJsonSchema
 
 from cuaderno.esquemas.base import DatoNoValido, Esquema
 
@@ -48,3 +48,12 @@ class Credenciales(Esquema):
 class Cuenta(Esquema):
     correo: str
     explotacion_id: uuid.UUID
+
+
+class SolicitudRecuperacion(Esquema):
+    correo: Correo
+
+
+class ConfirmacionRecuperacion(Esquema):
+    token: str = Field(min_length=32, max_length=128)
+    contrasena: Contrasena

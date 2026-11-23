@@ -1,14 +1,19 @@
-"""Rutas de cuenta y sesión (contrato: /cuenta, /cuenta/yo, /sesion; REQ-20)."""
+"""Rutas de cuenta, sesión y recuperación (contrato: /cuenta*, /sesion; REQ-20, REQ-21)."""
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from cuaderno.db import sesion as sesion_bd
 from cuaderno.esquemas.base import ErrorValidacion, Mensaje
-from cuaderno.esquemas.cuenta import Credenciales, Cuenta
+from cuaderno.esquemas.cuenta import (
+    ConfirmacionRecuperacion,
+    Credenciales,
+    Cuenta,
+    SolicitudRecuperacion,
+)
 from cuaderno.modelos import Explotacion, Usuario
 from cuaderno.reloj import Reloj, obtener_reloj
 from cuaderno.servicios import cuentas, sesiones
@@ -95,3 +100,51 @@ def cerrar_sesion(
     respuesta = Response(status_code=status.HTTP_204_NO_CONTENT)
     sesiones.borrar_cookie(respuesta)
     return respuesta
+
+
+MENSAJE_RECUPERACION = (
+    "Si hay una cuenta con ese correo, te hemos enviado un enlace para restablecer la contraseña. "
+    "Caduca en 1 hora."
+)
+
+
+@router.post(
+    "/cuenta/recuperacion",
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="Solicitar el enlace de restablecimiento por correo (REQ-21)",
+    responses={422: _VALIDACION},
+)
+def solicitar_recuperacion(
+    datos: SolicitudRecuperacion, tareas: BackgroundTasks, s: SesionBD, reloj: RelojAPI
+) -> Mensaje:
+    """Responde siempre igual; el correo se envía después de responder (R10)."""
+    envio = cuentas.solicitar_recuperacion(s, datos.correo, reloj.ahora())
+    s.commit()
+    if envio is not None:
+        tareas.add_task(cuentas.enviar_correo_recuperacion, envio)
+    return Mensaje(mensaje=MENSAJE_RECUPERACION)
+
+
+@router.post(
+    "/cuenta/recuperacion/confirmar",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    summary="Fijar una contraseña nueva con el token del enlace (REQ-21)",
+    responses={
+        400: {"model": Mensaje, "description": "Enlace no válido o caducado"},
+        422: _VALIDACION,
+    },
+)
+def confirmar_recuperacion(
+    datos: ConfirmacionRecuperacion, s: SesionBD, reloj: RelojAPI
+) -> Response:
+    """Cambia la contraseña y cierra todas las sesiones; no inicia sesión."""
+    try:
+        cuentas.confirmar_recuperacion(s, datos.token, datos.contrasena, reloj.ahora())
+    except cuentas.EnlaceNoValido as error:
+        s.rollback()
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "El enlace no es válido o ha caducado. Pide otro."
+        ) from error
+    s.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

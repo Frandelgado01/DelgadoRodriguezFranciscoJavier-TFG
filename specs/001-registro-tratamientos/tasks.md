@@ -146,7 +146,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   tokens, no se inicia sesión y se borra la fila de `intento_acceso`; la página de restablecimiento envía
   `Referrer-Policy: no-referrer`; el correo es el único dato personal de la cuenta. Contrato:
   `POST /cuenta/recuperacion` y `POST /cuenta/recuperacion/confirmar`. (REQ-21)
-- [ ] T-12 Implementar REQ-21. Migración y modelo `token_restablecimiento` en
+- [X] T-12 Implementar REQ-21. Migración y modelo `token_restablecimiento` en
   `backend/src/cuaderno/modelos/cuentas.py` (`hash_token` BYTEA PK; `usuario_id` FK NOT NULL; `creado_en` y
   `expira_en` TIMESTAMPTZ NOT NULL; `usado_en` TIMESTAMPTZ NULL, un solo uso). Servicios en
   `backend/src/cuaderno/servicios/correo.py` (envío SMTP con `smtplib` según
