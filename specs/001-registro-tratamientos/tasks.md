@@ -153,7 +153,7 @@ validación compartidos, prueba de contrato, cliente de API tipado y almacenamie
   `SMTP_HOST`, `SMTP_PORT` y `CORREO_REMITENTE`) y en `servicios/cuentas.py` y `api/cuenta.py` (token aleatorio
   guardado como hash, caducidad de 1 hora, límite de 3 por hora, envío en `BackgroundTasks` para responder igual
   exista o no la cuenta). Pasan las pruebas de T-11. (REQ-21)
-- [ ] T-13 Escribir las pruebas de REQ-22 (deben fallar) en `backend/tests/integration/test_limite_intentos.py`
+- [X] T-13 Escribir las pruebas de REQ-22 (deben fallar) en `backend/tests/integration/test_limite_intentos.py`
   y ampliar `test_contrato_cuenta.py` (429 en `POST /sesion`), siguiendo los criterios de la spec: 5 fallos
   consecutivos en 15 minutos → el sexto intento, aunque la contraseña sea correcta, recibe 429 con `Retry-After`
   y el mensaje "Has fallado la contraseña 5 veces. Espera 15 minutos o recupera tu contraseña."; pasados los
