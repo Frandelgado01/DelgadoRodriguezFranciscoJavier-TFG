@@ -370,6 +370,39 @@ describe("productos (REQ-16, REQ-17)", () => {
   });
 });
 
+describe("reintento del alta de un producto (REQ-16, REQ-06; R4)", () => {
+  async function abrirYRellenar() {
+    await userEvent.click(await seccion("Productos fitosanitarios").findByRole("button", { name: "Añadir producto" }));
+    const formulario = within(screen.getByRole("form", { name: "Nuevo producto" }));
+    await escribir("Nombre comercial", "Cobre Nordox 75 WG", formulario);
+    await escribir("Número de registro", "ES-00123", formulario);
+    return formulario;
+  }
+  const ids = () => servidor.cambios().map((cambio) => (cambio.cuerpo as Record<string, string>)["id"]);
+
+  it("si se pierde la respuesta, volver a guardar envía el mismo id", async () => {
+    render(<Explotacion />);
+    const formulario = await abrirYRellenar();
+    servidor.siguiente = new TypeError("Failed to fetch");
+    await userEvent.click(formulario.getByRole("button", { name: "Guardar" }));
+    await formulario.findByText(/No hay conexión/);
+    await userEvent.click(formulario.getByRole("button", { name: "Guardar" }));
+    await seccion("Productos fitosanitarios").findByText("Cobre Nordox 75 WG");
+    expect(ids()).toHaveLength(2);
+    expect(ids()[1]).toBe(ids()[0]);
+  });
+
+  it("cada alta nueva lleva un id distinto", async () => {
+    render(<Explotacion />);
+    for (let alta = 1; alta <= 2; alta += 1) {
+      const formulario = await abrirYRellenar();
+      await userEvent.click(formulario.getByRole("button", { name: "Guardar" }));
+      await waitFor(() => expect(screen.queryByRole("form", { name: "Nuevo producto" })).toBeNull());
+    }
+    expect(new Set(ids()).size).toBe(2);
+  });
+});
+
 describe("sin conexión", () => {
   it("muestra los datos guardados en el dispositivo y avisa de que para cambiarlos hace falta conexión", async () => {
     await base.parcelas.put({ ...PARCELA });

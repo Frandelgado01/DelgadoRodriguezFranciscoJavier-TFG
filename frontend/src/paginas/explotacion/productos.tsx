@@ -1,5 +1,6 @@
 // Productos fitosanitarios (T-29; REQ-16). El id lo genera el dispositivo (R4), como cuando se dan de alta desde
-// el registro sin conexión. No se modifican: el contrato no tiene PUT /productos/{id}.
+// el registro sin conexión. Se genera al abrir el formulario y no al guardar: si se pierde la respuesta, volver a
+// guardar envía el mismo id y no crea otro producto. No se modifican: el contrato no tiene PUT /productos/{id}.
 import type { Esquemas } from "../../api/cliente";
 import { Campo } from "../../componentes/Campo";
 import type { Maestro } from "../../db/esquema";
@@ -39,9 +40,9 @@ export const PRODUCTOS: Definicion<Producto> = {
   vacio: "Aún no has dado de alta ningún producto.",
   describir: (producto) => ({ titulo: producto.nombreComercial, detalle: `Nº de registro ${producto.numeroRegistro}` }),
   ordenar: (a, b) => a.nombreComercial.localeCompare(b.nombreComercial, "es"),
-  valoresIniciales: () => ({ nombreComercial: "", numeroRegistro: "" }),
+  valoresIniciales: () => ({ id: crypto.randomUUID(), nombreComercial: "", numeroRegistro: "" }),
   aCuerpo: (v) => ({
-    id: crypto.randomUUID(),
+    id: texto(v["id"]),
     nombreComercial: texto(v["nombreComercial"]),
     numeroRegistro: texto(v["numeroRegistro"]),
   }),
