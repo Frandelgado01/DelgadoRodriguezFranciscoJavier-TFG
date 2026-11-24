@@ -95,6 +95,7 @@ def test_req15_modificar_una_persona_inexistente_o_de_otra_explotacion_responde_
     [
         pytest.param({"nombre": ""}, "nombre", id="nombre-vacio"),
         pytest.param({"nombre": "   "}, "nombre", id="nombre-en-blanco"),
+        pytest.param({"nombre": "a\u0000b"}, "nombre", id="nombre-con-caracter-nulo"),
         pytest.param({"nombre": "x" * 151}, "nombre", id="nombre-largo"),
         pytest.param({"tipo": "tecnico"}, "tipo", id="tipo"),
         pytest.param({"numeroCarne": ""}, "numeroCarne", id="carne-vacio"),

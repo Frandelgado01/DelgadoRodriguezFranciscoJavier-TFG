@@ -191,6 +191,17 @@
     {
       "req": "REQ-20",
       "regla": "correo",
+      "descripcion": "con un carácter nulo dentro",
+      "entrada": "a\u0000b@example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
       "descripcion": "254 caracteres (máximo)",
       "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.es",
       "esperado": null

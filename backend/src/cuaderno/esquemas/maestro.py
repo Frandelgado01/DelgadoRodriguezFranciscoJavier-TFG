@@ -4,24 +4,32 @@ from datetime import date
 from typing import Annotated, Literal
 
 from pydantic import BeforeValidator, Field
+from pydantic_core import PydanticCustomError
 
 from cuaderno.esquemas.base import Esquema
 
 EstadoMaestro = Literal["activa", "baja"]
 
 
+def _sin_caracter_nulo(valor: str) -> str:
+    """PostgreSQL no puede guardar el carácter nulo (U+0000) en un texto."""
+    if "\0" in valor:
+        raise PydanticCustomError("caracter_nulo", "El texto contiene el carácter nulo")
+    return valor
+
+
 def en_blanco_a_nulo(valor: object) -> object:
     """Un texto opcional vacío o solo con espacios se guarda como "sin dato"; si no, sin espacios
     a los lados."""
     if isinstance(valor, str):
-        valor = valor.strip()
+        valor = _sin_caracter_nulo(valor).strip()
         return valor or None
     return valor
 
 
 def sin_espacios(valor: object) -> object:
     """Quita los espacios de los lados de un texto obligatorio (así "  " cuenta como vacío)."""
-    return valor.strip() if isinstance(valor, str) else valor
+    return _sin_caracter_nulo(valor).strip() if isinstance(valor, str) else valor
 
 
 Texto = Annotated[str, BeforeValidator(sin_espacios)]

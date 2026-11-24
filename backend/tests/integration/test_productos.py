@@ -126,6 +126,7 @@ def test_req16_sin_sesion_responde_401(cliente: TestClient) -> None:
         pytest.param({"nombreComercial": ""}, "nombreComercial", id="nombre-vacio"),
         pytest.param({"nombreComercial": "x" * 151}, "nombreComercial", id="nombre-largo"),
         pytest.param({"numeroRegistro": " "}, "numeroRegistro", id="registro-en-blanco"),
+        pytest.param({"numeroRegistro": "1\u0000"}, "numeroRegistro", id="registro-nulo"),
         pytest.param({"numeroRegistro": "x" * 31}, "numeroRegistro", id="registro-largo"),
     ],
 )

@@ -38,10 +38,10 @@ def validar_contrasena(valor: str) -> ErrorRegla | None:
 def validar_correo(valor: str) -> ErrorRegla | None:
     """Forma nombre@dominio.ext, sin espacios dentro y de 254 caracteres como mucho (REQ-20).
 
-    Los espacios de los lados no cuentan.
+    Los espacios de los lados no cuentan. Se rechaza el carácter nulo, que la base no puede guardar.
     """
     valor = valor.strip()
-    if len(valor) <= CORREO_MAXIMO and _FORMATO_CORREO.fullmatch(valor):
+    if len(valor) <= CORREO_MAXIMO and "\0" not in valor and _FORMATO_CORREO.fullmatch(valor):
         return None
     return {
         "campo": "correo",

@@ -238,6 +238,8 @@ RECHAZOS = [
     pytest.param({"superficie": -1.5}, "superficie", id="superficie-negativa"),
     pytest.param({"superficie": 0.00004}, "superficie", id="superficie-se-redondea-a-0"),
     pytest.param({"superficie": 999_999.99999}, "superficie", id="superficie-se-redondea-al-tope"),
+    pytest.param({"nombre": "a\u0000b"}, "nombre", id="nombre-con-caracter-nulo"),
+    pytest.param({"usoSigpac": "V\u0000"}, "usoSigpac", id="uso-con-caracter-nulo"),
     pytest.param({"aprovechamiento": "huerta"}, "aprovechamiento", id="aprovechamiento"),
     pytest.param({"cultivoEspecie": None}, "cultivoEspecie", id="lenoso-sin-especie"),
     pytest.param({"cultivoVariedad": None}, "cultivoVariedad", id="lenoso-sin-variedad"),
@@ -281,7 +283,7 @@ def test_req14_datos_no_validos_responden_422_con_mensaje_llano(
     assert cliente.get("/api/parcelas").json() == []
 
 
-@pytest.mark.parametrize(("cambios", "campo"), RECHAZOS[:6])
+@pytest.mark.parametrize(("cambios", "campo"), RECHAZOS[:8])
 def test_req14_put_con_datos_no_validos_responde_422(
     cliente: TestClient, cambios: dict[str, Any], campo: str
 ) -> None:

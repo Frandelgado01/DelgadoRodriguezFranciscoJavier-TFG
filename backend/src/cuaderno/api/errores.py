@@ -44,6 +44,8 @@ def _mensaje(tipo: str, ctx: dict[str, Any]) -> str:
             return "No puede quedar vacío."
         case "string_too_long":
             return f"Puede tener como mucho {ctx['max_length']} caracteres."
+        case "caracter_nulo":
+            return "Tiene un carácter que no se puede guardar. Bórralo y vuelve a escribirlo."
         case "literal_error":
             opciones = str(ctx["expected"]).replace("'", "").replace(" or ", " o ")
             return f"Elige una de estas opciones: {opciones}."

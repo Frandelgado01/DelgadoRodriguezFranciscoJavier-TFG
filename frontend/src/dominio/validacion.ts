@@ -31,10 +31,11 @@ export function validarContrasena(valor: string): ErrorRegla | null {
   };
 }
 
-/** Forma nombre@dominio.ext, sin espacios dentro y de 254 caracteres como mucho (REQ-20). */
+/** Forma nombre@dominio.ext, sin espacios ni el carácter nulo y de 254 caracteres como mucho (REQ-20). */
 export function validarCorreo(valor: string): ErrorRegla | null {
   const correo = valor.trim();
-  if (contarCaracteres(correo) <= CORREO_MAXIMO && FORMATO_CORREO.test(correo)) return null;
+  const formato = FORMATO_CORREO.test(correo) && !correo.includes("\0");
+  if (contarCaracteres(correo) <= CORREO_MAXIMO && formato) return null;
   return {
     campo: "correo",
     mensaje: "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
