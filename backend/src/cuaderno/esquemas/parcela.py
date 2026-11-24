@@ -5,9 +5,10 @@ cada rechazo salga junto al campo que hay que corregir.
 """
 
 import uuid
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field, ValidationInfo, field_validator
+from pydantic import AfterValidator, Field, ValidationInfo, field_validator
+from pydantic_core import PydanticKnownError
 
 from cuaderno.esquemas.base import DatoNoValido, Esquema
 from cuaderno.esquemas.maestro import EstadoBaja, Texto, TextoOpcional
@@ -18,6 +19,24 @@ REQ = "REQ-14"
 # un error de la base.
 _SMALLINT = 32767
 _INTEGER = 2147483647
+_SUPERFICIE_TOPE = 1_000_000
+
+
+def _con_cuatro_decimales(valor: float) -> float:
+    """La superficie tal como se guarda; se rechaza si al redondearla sale del rango permitido."""
+    guardada = round(valor, 4)
+    if guardada <= 0:
+        raise PydanticKnownError("greater_than", {"gt": 0})
+    if guardada >= _SUPERFICIE_TOPE:
+        raise PydanticKnownError("less_than", {"lt": _SUPERFICIE_TOPE})
+    return guardada
+
+
+Superficie = Annotated[
+    float,
+    Field(gt=0, lt=_SUPERFICIE_TOPE, description="ha"),
+    AfterValidator(_con_cuatro_decimales),
+]
 
 
 class ReferenciaSigpac(Esquema):
@@ -37,7 +56,7 @@ class ParcelaEntrada(Esquema):
 
     nombre: TextoOpcional = None
     sigpac: ReferenciaSigpac
-    superficie: float = Field(gt=0, lt=1_000_000, description="ha")
+    superficie: Superficie
     uso_sigpac: Texto = Field(min_length=1, max_length=10)
     aprovechamiento: Literal["forestal", "pastos", "cultivo"]
     cultivo_lenoso: bool

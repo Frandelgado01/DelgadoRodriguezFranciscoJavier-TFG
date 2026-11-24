@@ -236,6 +236,8 @@ def test_req14_modificar_una_parcela_inexistente_o_de_otra_explotacion_responde_
 RECHAZOS = [
     pytest.param({"superficie": 0}, "superficie", id="superficie-cero"),
     pytest.param({"superficie": -1.5}, "superficie", id="superficie-negativa"),
+    pytest.param({"superficie": 0.00004}, "superficie", id="superficie-se-redondea-a-0"),
+    pytest.param({"superficie": 999_999.99999}, "superficie", id="superficie-se-redondea-al-tope"),
     pytest.param({"aprovechamiento": "huerta"}, "aprovechamiento", id="aprovechamiento"),
     pytest.param({"cultivoEspecie": None}, "cultivoEspecie", id="lenoso-sin-especie"),
     pytest.param({"cultivoVariedad": None}, "cultivoVariedad", id="lenoso-sin-variedad"),
@@ -279,7 +281,7 @@ def test_req14_datos_no_validos_responden_422_con_mensaje_llano(
     assert cliente.get("/api/parcelas").json() == []
 
 
-@pytest.mark.parametrize(("cambios", "campo"), RECHAZOS[:4])
+@pytest.mark.parametrize(("cambios", "campo"), RECHAZOS[:6])
 def test_req14_put_con_datos_no_validos_responde_422(
     cliente: TestClient, cambios: dict[str, Any], campo: str
 ) -> None:
@@ -287,6 +289,19 @@ def test_req14_put_con_datos_no_validos_responde_422(
     id_ = alta_parcela(cliente).json()["id"]
     respuesta = cliente.put(f"/api/parcelas/{id_}", json=parcela_valida(**cambios))
     assert campo in errores_de(respuesta)
+
+
+@pytest.mark.parametrize(
+    ("enviada", "guardada"),
+    [(0.00005, 0.0001), (4.20004, 4.2), (4.20006, 4.2001), (999_999.9999, 999_999.9999)],
+)
+def test_req14_la_superficie_se_guarda_con_cuatro_decimales(
+    cliente: TestClient, enviada: float, guardada: float
+) -> None:
+    entrar(cliente)
+    respuesta = alta_parcela(cliente, superficie=enviada)
+    assert respuesta.status_code == 201, respuesta.text
+    assert respuesta.json()["superficie"] == guardada
 
 
 # --- Referencia SIGPAC única entre las parcelas activas ---
