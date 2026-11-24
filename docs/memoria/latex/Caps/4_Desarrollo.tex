@@ -2,31 +2,215 @@
 % Índice v4, cap. 4: aplica el ciclo del cap. 3 al Cuaderno de Campo. Cada
 % apartado muestra artefactos, iteraciones con la IA y decisiones del alumno.
 % Se redacta a partir de docs/proceso/registro-iteraciones.md, no de memoria.
+% BORRADOR del agente (2026-11-24), con datos hasta la aprobación del hito H2 de la
+% 001 (commit b7662db): el alumno lo revisa y lo reescribe con su voz.
+
+Este capítulo aplica el ciclo del capítulo~\ref{cap:Metodologia} al Cuaderno de Campo. Los datos proceden del registro del proceso y del historial del repositorio. \pendiente{capítulo en curso: recoge la funcionalidad 001 hasta el hito H2 (24 de noviembre de 2026); se completará con los hitos H3 a H7 y con las funcionalidades 002 y 006}
 
 \section{Constitución y arquitectura}\label{sec:Constitucion}
-% constitution.md (v1.0.0, 2026-10-23) y la justificación de cada principio;
-% arquitectura (frontend PWA, API FastAPI, PostgreSQL + pgvector, RAG, servicios
-% externos) con diagrama de componentes; despliegue local con Docker + demo.
-\pendiente{constitución, arquitectura y despliegue}
+
+\subsection{Constitución}\label{subsec:ConstitucionProyecto}
+
+La constitución se redactó el 23 de octubre de 2026 con el comando \texttt{/speckit-constitution}, a partir de los acuerdos con el tutor y del índice de la memoria. Contiene siete principios, cada uno con su motivo (tabla~\ref{tab:Constitucion}), además de las restricciones técnicas, las puertas de calidad y las reglas de gobernanza.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Principios de la constitución (versión 2.0.0) y su motivo. Elaboración propia.}
+	\label{tab:Constitucion}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.32\linewidth}>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Principio} & \textbf{Motivo} \\
+		\midrule
+		I. La especificación es la fuente de verdad & Hace el sistema mantenible y auditable ante cambios normativos \\
+		II. Humano en el bucle & El alumno responde del trabajo: lo que no entiende no lo puede defender \\
+		III. Pruebas primero y trazabilidad & La cadena de requisito a prueba es la evidencia de que se cumple lo especificado \\
+		IV. Conformidad normativa con fuente & Un error normativo puede costar al agricultor sanciones o ayudas \\
+		V. Centrado en el agricultor & El objetivo es reducir el tiempo y la fricción que supone la normativa \\
+		VI. Seguridad y privacidad & El código generado por IA puede introducir dependencias inseguras o exponer datos \\
+		VII. Simplicidad & El alcance es limitado y el código simple es más fácil de revisar \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La constitución ha tenido cuatro versiones. La 1.0.0 fue la inicial. La 1.1.0 incorporó los umbrales de rendimiento al planificar la primera funcionalidad, y la 1.1.1 fijó el límite de tres intentos de corrección por tarea, ambas el 27 de octubre. La 2.0.0, del 9 de noviembre, redefinió dos principios a raíz de la tutoría: el tutor pasa a dar su visto bueno a la especificación y al plan de cada funcionalidad, y el alcance del producto se reduce al registro de tratamientos, las consultas con RAG y el registro en lenguaje natural.
+
+\subsection{Arquitectura}\label{subsec:Arquitectura}
+
+El Cuaderno de Campo es una aplicación cliente-servidor en tres capas (figura~\ref{fig:Arquitectura}). El agricultor usa una aplicación web progresiva (PWA) que guarda los registros en el propio dispositivo cuando no hay cobertura; una API REST valida los datos y aplica las reglas de negocio; y una base de datos PostgreSQL los conserva. La misma base de datos almacenará los vectores del RAG mediante la extensión pgvector, de modo que no hace falta un segundo sistema. La elección de cada tecnología se justifica en el apartado~\ref{sec:Tecnologias}.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		caja/.style={draw, rounded corners=2pt, align=center, font=\small, minimum height=1.1cm},
+		futuro/.style={caja, dashed},
+		flecha/.style={<->, >=latex, thick},
+		ida/.style={->, >=latex, thick},
+		nota/.style={font=\footnotesize, align=center}
+	]
+		\node[caja, minimum width=3.2cm, minimum height=2.5cm] (pwa) at (0,0) {\textbf{PWA}\\React + TypeScript\\IndexedDB (Dexie)\\\emph{service worker}};
+		\node[caja, minimum width=2.3cm] (web) at (4.5,0) {\textbf{web}\\Caddy};
+		\node[caja, minimum width=2.6cm] (api) at (8.4,0) {\textbf{api}\\FastAPI};
+		\node[caja, minimum width=2.6cm] (db) at (8.4,-2.6) {\textbf{db}\\PostgreSQL\\+ pgvector};
+		\node[caja, minimum width=2.7cm] (mail) at (8.4,2.4) {\textbf{mailpit}\\correo de pruebas};
+		\node[futuro, minimum width=2.7cm] (worker) at (4.5,-2.6) {\textbf{worker}\\avisos de plazo};
+		\node[futuro, minimum width=2.5cm] (ia) at (12.2,0) {API de Claude y\\\emph{embeddings}\\(002 y 006)};
+		\draw[flecha] (pwa) -- node[nota, above] {HTTPS} (web);
+		\draw[flecha] (web) -- node[nota, above] {/api} (api);
+		\draw[flecha] (api) -- node[nota, right] {SQL} (db);
+		\draw[ida] (api) -- node[nota, right] {SMTP} (mail);
+		\draw[flecha, dashed] (worker) -- (db);
+		\draw[flecha, dashed] (api) -- (ia);
+		\draw[dotted, thick] (2.9,-3.6) rectangle (10.35,3.3);
+		\node[nota] at (4.3,3.0) {Docker Compose};
+	\end{tikzpicture}
+	\caption{Arquitectura del Cuaderno de Campo. En línea discontinua, los componentes planificados y aún no construidos. Elaboración propia.}
+	\label{fig:Arquitectura}
+\end{figure}
+
+El despliegue es local, con Docker Compose, por acuerdo con el tutor. El servicio \texttt{web} (Caddy) sirve la PWA y hace de proxy de la API, de modo que ambas comparten origen; además, proporciona HTTPS con una autoridad de certificación propia \citep{caddy-https}, necesaria porque los \emph{service workers} solo funcionan en un contexto seguro \citep{mdn-service-worker}. El servicio \texttt{mailpit} recoge los correos sin enviarlos, lo que permite probar la recuperación de contraseña sin cuentas externas.
 
 \section{Fase de ideación con Claude: especificar y clarificar}\label{sec:Ideacion}
-% Iteraciones hasta spec.md; REQ-xx, historias y criterios de aceptación,
-% incluidos los del RAG. El MD completo va en el anexo A.
-\pendiente{especificación y clarificación}
+
+Antes de especificar la primera funcionalidad se estudió la normativa aplicable en fuentes oficiales, porque el principio IV obliga a citar el artículo del que procede cada requisito. Ese estudio descartó dos suposiciones iniciales: ninguna de las normas consultadas impone un registro de cosechas en el cuaderno, y las labores solo son obligatorias para quien se acoge a los ecorregímenes.
+
+La especificación 001, \emph{Registro de tratamientos fitosanitarios}, contiene cuatro historias de usuario, 21 requisitos y siete criterios de éxito medibles. La tabla~\ref{tab:IteracionesSpec} resume cómo se llegó a ella.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Evolución de la especificación 001. Elaboración propia a partir del registro del proceso.}
+	\label{tab:IteracionesSpec}
+	\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}Xl@{}}
+		\toprule
+		\textbf{Fecha} & \textbf{Paso} & \textbf{Resultado} & \textbf{\emph{Commit}} \\
+		\midrule
+		26/10 & Especificar & Borrador con dos dudas de alcance, resueltas por el alumno; REQ-01 a REQ-17 & \texttt{ff63fdb} \\
+		26/10 & Revisión contra la normativa & Siete cambios aceptados por el alumno & \texttt{ed9dbdb} \\
+		27/10 & Clarificar & Cinco preguntas; REQ-20 y REQ-21 (cuenta y recuperación). Aprobación de la especificación & \texttt{f8b58a0} \\
+		27/10 & Revisión del plan & REQ-22 (límite de intentos) & \texttt{63f3a66} \\
+		27/10 & Análisis y contraste con el BOE & Tres diferencias con la norma, corregidas & \texttt{3a04ea4} \\
+		14/11 & Propuesta del tutor & REQ-23 (dosis por hectárea) & \texttt{6125ffb} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Tres episodios ilustran el papel de cada parte:
+
+\begin{itemize}
+	\item \textbf{El alumno se aparta de la recomendación de la IA.} Al clarificar el canal de los avisos de plazo, el agente recomendaba mostrarlos solo dentro de la aplicación. El alumno decidió enviarlos también por correo electrónico, porque el servidor ya necesitaba enviar correos para recuperar la contraseña y el coste añadido era bajo.
+	\item \textbf{Un error del proceso detectado tarde.} La especificación se aprobó antes de contrastarla literalmente con el Boletín Oficial del Estado (BOE). El contraste, hecho después, encontró tres diferencias: los tres años de conservación cuentan desde la emisión del registro y no desde el tratamiento; la parcela se identifica por un número de orden correlativo; y la norma emplea el término <<aprovechamiento>>. Se corrigieron y se añadió al proceso la regla de contrastar antes de aprobar.
+	\item \textbf{Un cambio de requisito empieza en la especificación.} Los perfiles de usuario y el guion de preguntas recogían los datos del Reglamento de Ejecución (UE) 2023/564, que la especificación no contemplaba. El alumno lo consultó y el tutor propuso incorporar solo la dosis por hectárea, calculada como la cantidad de cada producto entre la superficie tratada total. El cambio se hizo primero en la especificación (REQ-23), tras contrastar el reglamento con su publicación oficial, y después en el plan (\texttt{d5dd41d}) y en las tareas (\texttt{fa55163}), con la aprobación del alumno en cada paso. Las pruebas y el código corresponden al hito H4. \pendiente{actualizar al cerrar H4}
+\end{itemize}
+
+\pendiente{especificación de las funcionalidades 002 (criterios del RAG) y 006}
 
 \section{Fase de generación con Claude Code en VS Code}\label{sec:Generacion}
-% Preparación (CLAUDE.md, Spec Kit, hooks); plan.md y tasks.md con correcciones;
-% implementación en bucle; estructura resultante y construcción del RAG.
-\pendiente{planificación, tareas e implementación}
+
+\subsection{Preparación}\label{subsec:Preparacion}
+
+El repositorio se preparó con Spec Kit (\texttt{specify-cli} 1.2.0), que instala las fases como \emph{skills} de Claude Code, y con un fichero \texttt{CLAUDE.md} que recoge el contexto, las reglas del registro, la trazabilidad y el formato de la memoria. Se configuró un único \emph{hook}, que recuerda al agente en cada petición la obligación de mantener el registro. No se han configurado \emph{hooks} que lancen pruebas tras cada edición: la verificación recae en la ejecución de las pruebas dentro de cada tarea y en el pipeline.
+
+\subsection{Plan}\label{subsec:Plan001}
+
+El plan de la 001 respondió a nueve preguntas preparadas de antemano sobre estructura, funcionamiento sin conexión, idempotencia, conflictos, modelo de datos, contrato, validaciones, sesión y avisos. Sus decisiones, numeradas de R1 a R15, recogen el motivo, las alternativas y las fuentes. Las más relevantes son las siguientes:
+
+\begin{itemize}
+	\item \textbf{Funcionamiento sin conexión (R3).} Los datos y una cola de operaciones se guardan en IndexedDB, y la cola se vacía al abrir la aplicación, al recuperar la red y de forma periódica. No se usa la API de sincronización en segundo plano porque Safari y Firefox no la implementan \citep{caniuse-background-sync}.
+	\item \textbf{Idempotencia y conflictos (R4 y R5).} El cliente genera los identificadores, de modo que un reintento no duplica un registro. Si dos dispositivos modifican el mismo tratamiento, no se sobrescribe ninguna versión: ambas se conservan y el agricultor elige.
+	\item \textbf{Reglas sin divergencias (R8).} La PWA valida sin conexión y la API vuelve a validar. Las reglas se implementan en las dos capas y se prueban con un mismo fichero de casos.
+	\item \textbf{Sesión y contraseñas (R9).} Las contraseñas se protegen con Argon2id y la sesión usa un \emph{token} opaco del que la base de datos solo guarda su resumen criptográfico, siguiendo las guías de OWASP \citep{owasp-password-storage,owasp-session}.
+	\item \textbf{Dosis por hectárea (R15).} No se almacena: se calcula a partir de la cantidad y las superficies, con aritmética exacta para que las dos capas redondeen igual.
+\end{itemize}
+
+El alumno revisó el plan y tomó cuatro decisiones: mantener la contraseña de 15 caracteres como mínimo, incorporar el límite de intentos, aceptar los umbrales de rendimiento y aplazar las diferencias con las variables del SIEX. Después fijó Chrome para Android como plataforma de referencia. El funcionamiento en iOS queda como compatible por diseño, pero no verificado.
+
+\subsection{Tareas}\label{subsec:Tareas001}
+
+La descomposición inicial produjo 70 tareas. El análisis de coherencia previo a la implementación encontró nueve hallazgos (cuatro altos, tres medios y dos bajos), que se corrigieron y añadieron una tarea; REQ-23 sumó otras seis, hasta un total de \textbf{77}. Ante la dificultad del alumno para seguir las 70 tareas iniciales, se buscó un seguimiento más manejable. La solución no fue agruparlas, porque se habría perdido la evidencia de que la prueba va primero, sino organizar la revisión en siete hitos con un criterio comprobable cada uno.
+
+\subsection{Implementación}\label{subsec:Implementacion001}
+
+La tabla~\ref{tab:Hitos} recoge los hitos completados. Cada tarea es un \emph{commit}, y las que escriben pruebas van antes que las que implementan el requisito.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Hitos de la funcionalidad 001 completados a 24 de noviembre de 2026. Elaboración propia a partir del registro del proceso.}
+	\label{tab:Hitos}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		& \textbf{H1. Esqueleto} & \textbf{H2. Cuentas} \\
+		\midrule
+		Tareas & T-01 a T-06 & T-07 a T-19 \\
+		Requisitos & Infraestructura & REQ-20, REQ-21 y REQ-22 \\
+		Fechas de trabajo & 28 de octubre & 23 y 24 de noviembre \\
+		Intentos de corrección & 1 (T-06) & 1 (T-10) \\
+		Líneas del agente & No se midieron & 3\,765 añadidas y 65 borradas \\
+		Líneas del alumno & No se midieron & 0 \\
+		Pipeline al cerrar & Verde & Verde \\
+		Aprobación del alumno & 9 de noviembre & 24 de noviembre \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+El recuento de líneas empezó en el hito H2, con la medición del proceso aprobada el 23 de noviembre, y excluye los ficheros generados, los de bloqueo, los iconos y el propio fichero de tareas. Los dos intentos de corrección tuvieron causas concretas: en T-06, una conexión que se bloqueaba al usar \texttt{localhost} en Windows, resuelta con la dirección \texttt{127.0.0.1}; en T-10, un tipo de respuesta que FastAPI no admitía. El hito H2 incluye una desviación anotada: una comprobación prevista en T-11 se trasladó a T-13 porque la tabla de la que dependía no existía hasta T-14.
+
+\pendiente{hitos H3 a H7 de la 001; construcción del RAG (002) y del registro en lenguaje natural (006)}
 
 \section{Fase de despliegue y testing}\label{sec:Testing}
-% Pipeline CI/CD; E2E con Playwright y tabla REQ -> prueba; rendimiento con k6;
-% evaluación del RAG (fidelidad y relevancia).
-\pendiente{pipeline, pruebas y evaluación del RAG}
+
+\subsection{Pipeline}\label{subsec:Pipeline}
+
+El pipeline de GitHub Actions se ejecuta en cada cambio de la PR y consta, a la fecha, de dos trabajos (tabla~\ref{tab:Pipeline}). El del \emph{backend} levanta PostgreSQL y Mailpit con las mismas imágenes que el entorno local, por lo que las pruebas de integración no simulan la base de datos ni el correo.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Comprobaciones del pipeline a 24 de noviembre de 2026. Elaboración propia.}
+	\label{tab:Pipeline}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Comprobación} & \textbf{Backend} & \textbf{Frontend} \\
+		\midrule
+		Estilo y análisis estático & Ruff, con reglas de seguridad & ESLint \\
+		Tipos & mypy estricto & TypeScript estricto \\
+		Dependencias & pip-audit (falla con cualquier vulnerabilidad conocida) & npm audit (falla con altas o críticas) \\
+		Pruebas & pytest & Vitest \\
+		Coherencia & El OpenAPI versionado es el que genera la API & Los tipos versionados corresponden al OpenAPI \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La auditoría de dependencias tuvo un efecto real: entre el 14 y el 23 de noviembre el pipeline estuvo en rojo por una vulnerabilidad publicada en una dependencia indirecta (\texttt{opentelemetry-api}), sin relación con los cambios de esos días, que solo afectaban a documentos. No se advirtió hasta empezar el hito H2, cuando se actualizó la dependencia (\texttt{62e619d}). El episodio muestra que una puerta automática solo es útil si alguien atiende a su resultado.
+
+\subsection{Pruebas}\label{subsec:Pruebas}
+
+Al cerrar el hito H2, el proyecto tiene 99 pruebas en el \emph{backend} y 60 en el \emph{frontend}, y todas pasan. La tabla~\ref{tab:ReqPrueba} relaciona los requisitos implementados con sus pruebas. Los \emph{commits} que escriben las pruebas de cada requisito (T-09, T-11 y T-13) dejaron el pipeline en rojo, y los que lo implementan (T-10, T-12 y T-14) lo devolvieron a verde, de modo que el propio historial evidencia que la prueba se escribió antes.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Requisitos implementados a 24 de noviembre de 2026 y pruebas que los citan. Elaboración propia.}
+	\label{tab:ReqPrueba}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}l>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Requisito} & \textbf{Tareas} & \textbf{Ficheros de prueba} \\
+		\midrule
+		REQ-20. Cuenta y sesión & T-09, T-10, T-17, T-19 & \texttt{test\_cuenta\_sesion.py}, \texttt{test\_contrato\_cuenta.py}, \texttt{casos-validacion.json}, \texttt{cuenta.test.tsx} \\
+		REQ-21. Recuperación de la contraseña & T-11, T-12, T-19 & \texttt{test\_recuperacion.py}, \texttt{cuenta.test.tsx} \\
+		REQ-22. Límite de intentos & T-13, T-14, T-19 & \texttt{test\_limite\_intentos.py}, \texttt{cuenta.test.tsx} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Además, antes de aprobar el hito se comprobó su criterio sobre el entorno desplegado, por HTTPS y con el correo de pruebas, mediante un guion con 24 comprobaciones, todas correctas, y el alumno recorrió la base de datos, el correo y las pantallas.
+
+\pendiente{pruebas E2E con Playwright, rendimiento con k6 y evaluación del RAG (fidelidad y relevancia)}
 
 \section{Resultados del proceso}\label{sec:ResultadosProceso}
 % Métricas del registro y del repositorio: iteraciones, código corregido,
 % cambios de la spec tras su aprobación, intentos de corrección por tarea, días
 % con actividad por fase (fechas distintas con registro o commits, no duración
 % entre fechas), cobertura y resultados de pruebas, con su análisis.
-\pendiente{métricas del proceso}
+\pendiente{métricas del proceso y su análisis, al cerrar las funcionalidades}

@@ -25,7 +25,26 @@
 % plazo de seguridad, 004 fertilización y plan de abonado, 005 labores de
 % ecorregímenes y 007 exportación compatible con el SIEX (y, después, la
 % integración real con el SIEX). Base: docs/proceso/hoja-de-ruta.md.
-\pendiente{próximos pasos}
+% BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
+Para centrar el trabajo en el RAG, su parte principal y la de mayor incertidumbre técnica, se acordó con el tutor implementar tres de las siete funcionalidades previstas. Las cuatro restantes no se han descartado: se exponen aquí con su base normativa y en el orden en que se abordarían.
+
+\subsection{Funcionalidades previstas}\label{subsec:FuncionalidadesPrevistas}
+
+\begin{enumerate}
+	\item \textbf{Cosechas con comprobación del plazo de seguridad (003).} Respondería a la pregunta <<¿puedo cosechar ya?>> sobre los tratamientos reales de cada parcela. No deriva de una obligación de registro, ya que el anexo~III del Real Decreto 1311/2012 no incluye campos de cosecha \citep{rd1311-2012}; se plantea como un registro voluntario de apoyo al cumplimiento. El plazo de seguridad procede de la etiqueta de cada producto, a la que remite el Registro de Productos Fitosanitarios \citep{mapa-registro-fitosanitarios}. Iría en primer lugar porque reutiliza los datos de producto del RAG.
+	\item \textbf{Fertilización y plan de abonado (004).} El Real Decreto 1051/2022 obliga a anotar los aportes de nutrientes, materia orgánica y agua de riego en el plazo de un mes \citep{rd1051-2022}, y el Decreto 80/2025 añade condiciones en las zonas vulnerables a nitratos de Castilla-La Mancha \citep{decreto80-2025clm}. Incluiría los datos de la explotación que la primera funcionalidad dejó fuera, como las características del suelo.
+	\item \textbf{Labores de ecorregímenes con avisos de plazo (005).} Las prácticas comprometidas en los ecorregímenes deben anotarse, en general, en el plazo de un mes \citep{rd1048-2022}. Reutilizaría el cálculo de plazos y los avisos de la primera funcionalidad.
+	\item \textbf{Exportación compatible con el SIEX (007).} El cuaderno se exportaría con el contenido del anexo~II del Real Decreto 1054/2022 \citep{rd1054-2022} y según la documentación técnica del SIEX \citep{fega-doc-tecnica-siex}. Iría al final, porque exporta lo que las demás registran. Exige resolver diferencias ya identificadas, como los códigos de catálogo de cultivos y plagas o los datos de identificación del aplicador y del asesor, que la primera funcionalidad no recoge. La integración real con el SIEX sería un paso posterior.
+\end{enumerate}
+
+\subsection{Mejoras de uso}\label{subsec:MejorasUso}
+
+\begin{itemize}
+	\item \textbf{Cuenta de asesor}, con acceso a los cuadernos de varias explotaciones y modo de consulta. Surgió al analizar los perfiles de usuario supuestos (apartado~\ref{sec:Motivacion}).
+	\item \textbf{Importación de los tratamientos} que realizan empresas de servicios, para no copiarlos a mano. Tiene el mismo origen.
+	\item \textbf{Verificación en iOS.} El diseño no depende de funciones ausentes en Safari, pero solo se prueba en Chrome para Android.
+	\item \textbf{Validación con agricultores reales}, más amplia que la sesión prevista en la primera funcionalidad. \pendiente{actualizar cuando se haya realizado esa sesión (T-71)}
+\end{itemize}
 
 \subsection{Datos pendientes del Reglamento de Ejecución (UE) 2023/564}\label{subsec:PendientesReglamento2023564}
 % Borrador del agente (2026-11-14), pendiente de revisión y reescritura del

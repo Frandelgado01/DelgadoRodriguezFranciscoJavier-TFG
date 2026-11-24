@@ -1,36 +1,161 @@
 \chapter{Metodología: Spec-Driven Development}\label{cap:Metodologia}
 % Índice v4, cap. 3: el proceso de forma general, sin resultados (van en el cap. 4).
+% BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
+
+Este capítulo describe el proceso seguido de forma general. Los artefactos concretos y los resultados de aplicarlo al Cuaderno de Campo se presentan en el capítulo~\ref{cap:Desarrollo}.
 
 \section{Principios}\label{sec:Principios}
-% SDD spec-anchored (acordado con el tutor): la especificación es la fuente de
-% verdad y se mantiene viva; no se promete regenerar código idéntico; la
-% conformidad la garantizan las pruebas y /speckit-converge.
-% Separación qué/cómo; cambios primero en la especificación; humano en el bucle;
-% criterios de aceptación convertidos en pruebas antes de implementar.
-\pendiente{principios de SDD spec-anchored}
+% SDD spec-anchored (acordado con el tutor, 2026-10-23); constitución v2.0.0.
+
+El proceso adopta el nivel \emph{spec-anchored} de los tres que distingue \citet{bockeler2025sdd}: la especificación se conserva y se mantiene viva durante toda la evolución del producto. Se apoya en cinco principios:
+
+\begin{enumerate}
+	\item \textbf{La especificación es la fuente de verdad.} Todo comportamiento del sistema se describe en una especificación versionada antes de implementarse. No se promete regenerar un código idéntico a partir de ella, porque los modelos de lenguaje no son deterministas; la conformidad se demuestra con pruebas y con una comprobación final de convergencia entre el código y los artefactos.
+	\item \textbf{El qué se separa del cómo.} La especificación recoge necesidades, requisitos y criterios de aceptación sin detalles técnicos. La arquitectura, el modelo de datos y las tecnologías pertenecen al plan.
+	\item \textbf{Los cambios empiezan en la especificación.} Un cambio de requisito se hace primero en la especificación y se propaga, por este orden, al plan, a las tareas, a las pruebas y al código.
+	\item \textbf{Humano en el bucle.} El alumno aprueba de forma explícita cada artefacto antes de pasar a la fase siguiente, y el tutor da su visto bueno a la especificación y al plan de cada funcionalidad antes de implementarla. El agente propone, explica, genera y verifica, pero no cambia de fase por su cuenta.
+	\item \textbf{Las pruebas van primero.} Los criterios de aceptación se convierten en pruebas antes de implementar cada tarea: la prueba falla primero y pasa después.
+\end{enumerate}
+
+A ellos se añade una regla propia del dominio: ninguna especificación se aprueba sin contrastar literalmente cada norma que cita con su publicación oficial. La regla se incorporó durante el desarrollo, a raíz de un error que se describe en el apartado~\ref{sec:Ideacion}.
 
 \section{Artefactos}\label{sec:Artefactos}
-% Tabla: constitution.md, spec.md, plan.md, tasks.md y CLAUDE.md, con a qué
-% responde cada uno, quién lo produce y quién lo aprueba.
-\pendiente{tabla de artefactos}
+
+La tabla~\ref{tab:Artefactos} resume los artefactos del proceso. Todos son ficheros de texto versionados en el mismo repositorio que el código, de manera que sus cambios se revisan con las mismas herramientas.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Artefactos de SDD, pregunta a la que responden y responsables. Elaboración propia.}
+	\label{tab:Artefactos}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+		\toprule
+		\textbf{Artefacto} & \textbf{Responde a} & \textbf{Lo produce} & \textbf{Lo aprueba} \\
+		\midrule
+		\texttt{constitution.md} & Principios no negociables, restricciones técnicas y puertas de calidad de todo el proyecto & Alumno con Claude & Alumno; tutor si afecta a un principio \\
+		\texttt{spec.md} & Qué se construye y por qué: historias de usuario, requisitos \texttt{REQ-xx} y criterios Dado/Cuando/Entonces & Claude Code & Alumno y tutor \\
+		\texttt{plan.md} y anejos & Cómo se construye: decisiones técnicas con sus fuentes, modelo de datos, contrato de la API y guía de validación & Claude Code & Alumno y tutor \\
+		\texttt{tasks.md} & En qué orden: tareas \texttt{T-xx} con sus dependencias, enlazadas a su requisito y agrupadas en hitos & Claude Code & Alumno \\
+		\texttt{CLAUDE.md} & Convenciones que debe respetar cualquier sesión del agente & Alumno con Claude & Alumno \\
+		Registro del proceso & Qué se hizo, con qué petición, qué se corrigió y qué se decidió & Claude Code & Alumno \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La constitución prevalece sobre los demás documentos y tiene su propio versionado semántico: cambia la versión mayor si se redefine un principio, la menor si se añade o amplía una sección y la de parche si solo se aclara la redacción. Cada plan debe superar una comprobación de conformidad con ella antes de generar las tareas.
 
 \section{Fases del ciclo}\label{sec:Fases}
-% Siete fases; la implementación es un bucle (loop engineering) con límite de
-% iteraciones y /speckit-converge como criterio de parada (acordado con el tutor).
-% Cada funcionalidad recorre las fases 2-7 en una rama corta.
-\pendiente{fases del ciclo y diagrama}
+
+El ciclo consta de siete fases (figura~\ref{fig:CicloSDD}). La constitución se elabora una vez para todo el proyecto; las seis restantes se recorren para cada funcionalidad, en una rama corta que se fusiona mediante una \emph{pull request} (PR). Las fases se apoyan en los comandos de GitHub Spec Kit \citep{github2026speckit,github2026speckitquickstart}.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		fase/.style={draw, rounded corners=2pt, align=center, minimum width=2.75cm, minimum height=1.05cm, font=\small},
+		flecha/.style={->, >=latex, thick},
+		nota/.style={font=\footnotesize, align=center}
+	]
+		\node[fase] (c)  at (0,0)      {1. Constitución};
+		\node[fase] (e)  at (3.7,0)    {2. Especificar};
+		\node[fase] (cl) at (7.4,0)    {3. Clarificar};
+		\node[fase] (p)  at (11.1,0)   {4. Planificar};
+		\node[fase] (t)  at (11.1,-2.4) {5. Tareas};
+		\node[fase] (i)  at (7.4,-2.4)  {6. Implementar\\(bucle)};
+		\node[fase] (v)  at (3.7,-2.4)  {7. Validar};
+		\node[fase] (m)  at (0,-2.4)    {Fusión en\\\texttt{main}};
+		\draw[flecha] (c) -- (e);
+		\draw[flecha] (e) -- (cl);
+		\draw[flecha] (cl) -- (p);
+		\draw[flecha] (p) -- (t);
+		\draw[flecha] (t) -- (i);
+		\draw[flecha] (i) -- (v);
+		\draw[flecha] (v) -- (m);
+		\draw[flecha, dashed] (v) -- node[nota, left] {requisito\\mal definido} (e);
+		\draw[flecha, dashed] (v.south) -- ++(0,-0.55) -| node[nota, pos=0.25, below] {quedan tareas por converger} (i.south);
+	\end{tikzpicture}
+	\caption{Ciclo de SDD aplicado a cada funcionalidad. El paso entre fases requiere la aprobación del alumno. Elaboración propia.}
+	\label{fig:CicloSDD}
+\end{figure}
+
+\begin{enumerate}
+	\item \textbf{Constitución.} Se fijan los principios, las restricciones técnicas y las puertas de calidad.
+	\item \textbf{Especificar.} Se describe la funcionalidad con historias de usuario, requisitos numerados, criterios de aceptación y criterios de éxito medibles. Cada requisito derivado de una norma cita su artículo.
+	\item \textbf{Clarificar.} El agente formula preguntas sobre los puntos ambiguos y las respuestas del alumno se integran en la especificación.
+	\item \textbf{Planificar.} Se toman las decisiones técnicas, cada una con su motivo, sus alternativas y sus fuentes, y se diseñan el modelo de datos y el contrato de la API.
+	\item \textbf{Descomponer en tareas.} El plan se divide en tareas de un solo \emph{commit}, ordenadas por dependencias y agrupadas en hitos. Antes de aprobarlas, un análisis de solo lectura busca contradicciones y huecos entre la especificación, el plan y las tareas.
+	\item \textbf{Implementar.} El agente ejecuta las tareas de un hito en un bucle de implementar, probar y corregir, y se detiene en el punto de control del hito para que el alumno lo revise.
+	\item \textbf{Validar.} Se ejecutan las pruebas unitarias, de integración, E2E y de rendimiento y, cuando corresponde, las evaluaciones del RAG. El comando \texttt{/speckit-converge} contrasta el código con los artefactos. Si un fallo se debe a un requisito mal definido, se vuelve a la fase de especificación.
+\end{enumerate}
+
+La fase de implementación aplica el \emph{loop engineering} descrito en el apartado~\ref{subsec:LoopEngineering} con tres límites. El primero es el número de intentos: tras tres correcciones sin que pasen las pruebas de una tarea, el agente se detiene sin hacer \emph{commit} y consulta al alumno. El segundo es el hito: el agente no empieza el siguiente sin aprobación. El tercero es el criterio de parada de la funcionalidad, que se da por terminada cuando \texttt{/speckit-converge} no encuentra tareas pendientes. El límite de tres intentos es una propuesta del agente aceptada por el alumno, sin una fuente que lo respalde.
+
+Una PR solo se fusiona en la rama principal si el pipeline está en verde, si la convergencia no deja tareas pendientes y si el alumno la ha revisado.
 
 \section{Trazabilidad y registro del proceso}\label{sec:Trazabilidad}
-% Base: docs/conceptos/03-git-github-y-trazabilidad.md
-% Cadena REQ-xx -> T-xx -> commit -> prueba; registro de prompts e iteraciones;
-% métricas del proceso.
-\pendiente{trazabilidad y métricas del proceso}
+% Base: docs/conceptos/03-git-github-y-trazabilidad.md y docs/proceso/medicion-proceso.md
+
+La \textbf{trazabilidad} es la capacidad de seguir un requisito hacia delante, hasta el código y las pruebas que lo implementan y verifican, y hacia atrás, desde una prueba hasta el requisito que la justifica. En este trabajo se apoya en convenciones de texto que se pueden consultar con las herramientas del propio repositorio (tabla~\ref{tab:Trazabilidad}). \pendiente{citar la sección de ISO/IEC/IEEE 29148 sobre trazabilidad tras consultarla en la biblioteca}
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Cadena de trazabilidad con un ejemplo real del proyecto. Elaboración propia.}
+	\label{tab:Trazabilidad}
+	\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Eslabón} & \textbf{Convención} & \textbf{Ejemplo} \\
+		\midrule
+		Requisito & \texttt{REQ-xx} en \texttt{spec.md} & REQ-22: límite de intentos de inicio de sesión \\
+		Tarea & \texttt{T-xx} en \texttt{tasks.md}, con su requisito & T-13 (pruebas) y T-14 (implementación) \\
+		\emph{Commit} & El mensaje empieza por la tarea & \texttt{9c5766c} (T-13) y \texttt{5088525} (T-14) \\
+		Prueba & Cita el requisito en su nombre o documentación & \texttt{test\_limite\_intentos.py} \\
+		Resultado & Ejecución del pipeline en la PR & Rojo en T-13 (prueba primero) y verde en T-14 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La estrategia de ramas sigue el desarrollo basado en tronco (\emph{trunk-based development}), en el que los cambios se integran con frecuencia en una rama principal y las demás ramas, si existen, son de vida corta \citep{hammant2026tbd}. Cada funcionalidad tiene su rama, y la documentación y la memoria pueden integrarse directamente en la principal.
+
+El \textbf{registro del proceso} es un documento versionado con dos tablas. La de \emph{sesiones} recoge, para cada sesión de trabajo con la IA, la fecha, la fase, la herramienta, el artefacto, la petición resumida, el número de iteraciones, la corrección manual y el \emph{commit}. La de \emph{decisiones} recoge qué aceptó, rechazó o cambió el alumno, con las alternativas y el motivo. De él y del historial de Git se obtienen las \textbf{métricas del proceso}, que se limitan a datos comprobables en el repositorio:
+
+\begin{itemize}
+	\item iteraciones por artefacto y cambios de la especificación posteriores a su aprobación;
+	\item intentos de corrección por tarea, que el agente anota en cada \emph{commit} de implementación, y paradas por agotar el límite;
+	\item líneas corregidas a mano por el alumno, que van en \emph{commits} separados para poder contarlas;
+	\item días con actividad por fase, es decir, fechas distintas con alguna sesión o algún \emph{commit}; no se usa el tiempo transcurrido entre fechas, porque los días sin actividad no son tiempo dedicado;
+	\item resultado del pipeline al cerrar cada hito, pruebas y cobertura.
+\end{itemize}
+
+El registro no recoge el tiempo del alumno ni el consumo de la IA durante el desarrollo, lo que limita las conclusiones sobre el coste (capítulo~\ref{cap:Costes}).
 
 \section{Riesgos del desarrollo con IA y su control}\label{sec:Riesgos}
-% Alucinaciones, dependencias inseguras, secretos y deuda técnica; revisión
-% humana, análisis estático y de dependencias, pruebas obligatorias y límites.
-\pendiente{riesgos y medidas de control}
+
+La tabla~\ref{tab:Riesgos} recoge los principales riesgos del desarrollo con agentes de IA, algunos de ellos señalados por la bibliografía del apartado~\ref{sec:Paradigmas}, y las medidas adoptadas.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Riesgos del desarrollo con IA y medidas de control. Elaboración propia.}
+	\label{tab:Riesgos}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Riesgo} & \textbf{Medida de control} \\
+		\midrule
+		Alucinaciones normativas o técnicas & Cita obligatoria de la fuente; contraste literal de las normas con su publicación oficial; lo no verificado se marca como pendiente y no se inventan datos \\
+		Especificación ambigua o incoherente & Fase de clarificación, análisis de coherencia previo a la implementación y aprobación del alumno \\
+		Errores sin supervisión \citep{osmani2026loop} & Pruebas antes del código, límite de tres intentos por tarea y parada en cada hito \\
+		Deuda de comprensión y rendición cognitiva \citep{osmani2026loop,belcic2026loop} & Guía de conceptos previa a cada fase, tareas pequeñas y regla de no avanzar si el alumno no entiende un artefacto \\
+		Dependencias inseguras & Versiones fijadas en ficheros de bloqueo y auditoría de dependencias en el pipeline, que bloquea la fusión ante vulnerabilidades altas o críticas \\
+		Código inseguro & Análisis estático con reglas de seguridad y tipado estricto en el pipeline \\
+		Exposición de secretos y datos personales & Claves fuera del repositorio, en un fichero ignorado por Git, y minimización de datos \\
+		Complejidad innecesaria & Principio de simplicidad de la constitución: toda complejidad añadida se justifica en el plan \\
+		Pérdida de contexto entre sesiones & El repositorio actúa como memoria del proyecto: reglas, artefactos y registro versionados \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
 
 \section{Planificación temporal}\label{sec:Planificacion}
-% Iteraciones por funcionalidad en un diagrama de Gantt.
-\pendiente{diagrama de Gantt}
+% Iteraciones por funcionalidad en un diagrama de Gantt. Falta la fecha de entrega
+% (docs/proceso/hoja-de-ruta.md, "Calendario").
+
+Las funcionalidades se abordan en este orden: primero el registro de tratamientos (001), que es la obligación más exigente y deja montada la base del proyecto sin depender de la IA; después las consultas normativas con RAG (002), núcleo del trabajo y parte con más incertidumbre técnica; y, por último, el registro en lenguaje natural (006), que reutiliza el registro de la primera y la infraestructura de IA de la segunda. \pendiente{diagrama de Gantt, cuando se conozca la fecha de entrega}
