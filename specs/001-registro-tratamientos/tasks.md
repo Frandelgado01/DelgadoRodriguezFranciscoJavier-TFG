@@ -232,7 +232,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   CHECK (`estado = 'baja'`) = (`fecha_baja IS NOT NULL`); índice único parcial por explotación y referencia
   SIGPAC `WHERE estado = 'activa'`), más `esquemas/parcela.py` y `api/parcelas.py`. Pasan las pruebas de T-20.
   (REQ-14)
-- [ ] T-22 [P] [US4] Escribir las pruebas de REQ-15 (deben fallar) en
+- [X] T-22 [P] [US4] Escribir las pruebas de REQ-15 (deben fallar) en
   `backend/tests/integration/test_personas_equipos.py` y `backend/tests/contract/test_contrato_personas_equipos.py`:
   alta, listado y modificación de personas (`nombre` 1–150 car.; `tipo` IN (`aplicador`, `asesor`);
   `numero_carne` 1–30 car.) y de equipos (`descripcion` 1–150 car.; `fecha_adquisicion_o_inspeccion` NOT NULL y
