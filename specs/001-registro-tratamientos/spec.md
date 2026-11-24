@@ -36,6 +36,10 @@
   3. Sin diferencias en el resto de columnas aplicables: nombre y número de autorización del producto (REQ-01 g),
      fecha (REQ-01 a), número de hectáreas tratadas (REQ-01 f) y unidad de terreno SIGPAC de la parcela
      (REQ-14 b).
+- 2026-11-24, revisión previa a H4 (propuesta del agente, aprobada por el alumno; pendiente del visto bueno del
+  tutor): se amplía REQ-06 con dos reglas que faltaban, la pertenencia de los registros del dispositivo a su cuenta y
+  qué ocurre con un registro que el servidor rechaza, y se añaden sus casos límite. No cambia ningún dato del
+  registro ni su base normativa.
 
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
@@ -211,6 +215,13 @@ comprobar que aparecen como opciones al registrar un tratamiento.
 - **Sincronización con conflicto**: si un tratamiento se modificó sin conexión en un dispositivo y también en
   otro, el sistema no pierde ninguna versión: conserva ambas en el historial y pide al agricultor que elija la
   vigente.
+- **Otra cuenta en el mismo dispositivo**: si alguien sale con registros sin enviar y otra persona entra con su
+  cuenta en el mismo dispositivo, esta no ve los datos de la primera ni envía sus registros, que siguen guardados y
+  se envían cuando la primera vuelve a entrar con conexión (REQ-06, REQ-20).
+- **Registro rechazado al sincronizar**: si el servidor rechaza un registro guardado sin conexión (por ejemplo,
+  porque su parcela se dio de baja desde otro dispositivo), el agricultor ve el motivo y puede corregirlo o
+  descartarlo, y los demás se envían. Descartar pide confirmación y solo afecta a registros que nunca llegaron al
+  servidor, así que no altera la conservación de REQ-13.
 - **Plazo que acaba en un mes más corto**: un tratamiento del 31 de enero vence el 28 de febrero (29 en año
   bisiesto); uno del 30 de marzo vence el 30 de abril (REQ-07).
 - **Aviso por correo de un tratamiento sin sincronizar**: el servidor solo conoce los tratamientos
@@ -257,7 +268,10 @@ Cada requisito cita la norma de la que deriva (principio IV de la constitución)
   cambie después. *Fuente: RD 1311/2012, anexo III, parte I, secciones A y B (e).*
 - **REQ-06**: El registro de tratamientos MUST funcionar sin conexión: los tratamientos registrados o
   modificados sin conexión se guardan en el dispositivo, se identifican como pendientes de sincronizar y se
-  sincronizan sin pérdida al recuperar la conexión. *Apoyo: constitución, principio V.*
+  sincronizan sin pérdida al recuperar la conexión. Los registros guardados en un dispositivo pertenecen a la cuenta
+  con la que se hicieron: solo se muestran y se envían con esa cuenta. Si el servidor rechaza un registro, MUST
+  conservarse en el dispositivo, mostrarse con el motivo en lenguaje llano y poder corregirse o descartarse, sin
+  impedir el envío de los demás. *Apoyo: constitución, principios V y VI.*
 - **REQ-23**: El cuaderno MUST mostrar, para cada producto de un tratamiento, su **dosis por hectárea**,
   calculada como la cantidad de ese producto dividida entre la **superficie tratada total** del tratamiento (la
   suma de las superficies tratadas de todas sus parcelas), en kg/ha si la cantidad está en kg y en l/ha si está en
