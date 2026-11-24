@@ -195,7 +195,9 @@ obligación legal. Pendiente: verificar las obligaciones de trazabilidad del Reg
    ([apliagri](https://apliagri.castillalamancha.es/cuaderno-digital-y-registro-de-explotaciones-agricolas)).
 5. Texto del Reglamento de Ejecución (UE) 2023/564 (contenido y formato del registro electrónico).
 6. Qué campos ofrece la base de datos del Registro de Productos Fitosanitarios (usos, dosis, plazo de seguridad) y
-   si hay datos descargables.
+   si hay datos descargables. **Resuelto en parte (2026-11-24):** hay un listado oficial de productos autorizados
+   para el cuaderno de explotación en JSON, con un documento que describe sus campos (https://servicio.mapa.gob.es/regfiweb,
+   «Resúmenes»). Falta abrir esa descripción y ver si incluye el plazo de seguridad (módulo 06, § 2.1).
 7. Trazabilidad: Reglamento (CE) 178/2002, art. 18.
 
 ## Preguntas de autocomprobación
