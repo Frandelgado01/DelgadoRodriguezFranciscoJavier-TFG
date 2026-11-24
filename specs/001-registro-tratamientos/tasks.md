@@ -204,7 +204,7 @@ disponibles en el móvil.
 **Prueba independiente**: dar de alta una parcela con su referencia SIGPAC, un aplicador y un equipo, y
 comprobar que aparecen en las listas (spec, historia 4).
 
-- [ ] T-20 [US4] Escribir las pruebas de REQ-14 (deben fallar) en `backend/tests/integration/test_parcelas.py`
+- [X] T-20 [US4] Escribir las pruebas de REQ-14 (deben fallar) en `backend/tests/integration/test_parcelas.py`
   y `backend/tests/contract/test_contrato_parcelas.py`: alta con todos los datos de A.2 (escenario 1: *Vitis
   vinifera*, Airén, leñoso, 4,2 ha) → 201 y aparece en `GET /parcelas` con su `numeroOrden`; **número de orden**
   (A.2.a): la primera parcela de la explotación recibe 1 y las siguientes 2, 3…; cada explotación tiene su
