@@ -243,7 +243,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   `backend/src/cuaderno/modelos/persona.py` y `modelos/equipo.py` con las restricciones de data-model (las de
   T-22, más `estado` CHECK IN (`activa`, `baja`) y `fecha_baja` como en `parcela`), y `esquemas/` y
   `api/personas.py` y `api/equipos.py`. Pasan las pruebas de T-22. (REQ-15)
-- [ ] T-24 [P] [US4] Escribir las pruebas de REQ-16 (deben fallar) en `backend/tests/integration/test_productos.py`
+- [X] T-24 [P] [US4] Escribir las pruebas de REQ-16 (deben fallar) en `backend/tests/integration/test_productos.py`
   y `backend/tests/contract/test_contrato_productos.py`: alta con `id` generado por el cliente,
   `nombre_comercial` (1–150 car.) y `numero_registro` (1–30 car.) → 201; reintento con el mismo `id` y el mismo
   contenido → 200 con el producto; mismo `id` y distinto contenido → 409; se admiten dos productos con el mismo
