@@ -201,6 +201,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/productos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listar productos fitosanitarios (REQ-16) */
+        get: operations["listar_productos_productos_get"];
+        put?: never;
+        /**
+         * Dar de alta un producto, también desde el registro y sin conexión (REQ-16, REQ-06)
+         * @description Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.
+         */
+        post: operations["crear_producto_productos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -442,6 +463,39 @@ export interface components {
             tipo: "aplicador" | "asesor";
             /** Numerocarne */
             numeroCarne: string;
+        };
+        /** Producto */
+        Producto: {
+            /**
+             * Estado
+             * @enum {string}
+             */
+            estado: "activa" | "baja";
+            /** Fechabaja */
+            fechaBaja?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             * @description Generado por el cliente (R4)
+             */
+            id: string;
+            /** Nombrecomercial */
+            nombreComercial: string;
+            /** Numeroregistro */
+            numeroRegistro: string;
+        };
+        /** ProductoEntrada */
+        ProductoEntrada: {
+            /**
+             * Id
+             * Format: uuid
+             * @description Generado por el cliente (R4)
+             */
+            id: string;
+            /** Nombrecomercial */
+            nombreComercial: string;
+            /** Numeroregistro */
+            numeroRegistro: string;
         };
         /**
          * ReferenciaSigpac
@@ -984,6 +1038,77 @@ export interface operations {
             };
             /** @description No existe en la explotación del usuario */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Datos no válidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorValidacion"];
+                };
+            };
+        };
+    };
+    listar_productos_productos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Producto"][];
+                };
+            };
+        };
+    };
+    crear_producto_productos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductoEntrada"];
+            };
+        };
+        responses: {
+            /** @description Ya existía con el mismo contenido (reintento) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Producto"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Producto"];
+                };
+            };
+            /** @description Existe otro producto con ese id y distinto contenido */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

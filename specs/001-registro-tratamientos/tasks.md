@@ -249,7 +249,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   contenido → 200 con el producto; mismo `id` y distinto contenido → 409; se admiten dos productos con el mismo
   número de registro (sin restricción de unicidad); el producto se reutiliza en el listado. Contrato:
   `GET`/`POST /productos`. (REQ-16, REQ-06)
-- [ ] T-25 [US4] Implementar REQ-16: migración y modelo `producto` en `backend/src/cuaderno/modelos/producto.py`,
+- [X] T-25 [US4] Implementar REQ-16: migración y modelo `producto` en `backend/src/cuaderno/modelos/producto.py`,
   `esquemas/producto.py` y `api/productos.py`, con creación idempotente por `id` (R4). Pasan las pruebas de
   T-24. (REQ-16, REQ-06)
 - [ ] T-26 [US4] Escribir las pruebas de REQ-17 (deben fallar) en `backend/tests/integration/test_bajas.py` y

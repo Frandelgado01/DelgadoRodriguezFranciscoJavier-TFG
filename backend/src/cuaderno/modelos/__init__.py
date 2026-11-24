@@ -13,6 +13,7 @@ from cuaderno.modelos.cuentas import (
 from cuaderno.modelos.equipo import Equipo
 from cuaderno.modelos.parcela import Parcela
 from cuaderno.modelos.persona import Persona
+from cuaderno.modelos.producto import Producto
 
 __all__ = [
     "Equipo",
@@ -20,6 +21,7 @@ __all__ = [
     "IntentoAcceso",
     "Parcela",
     "Persona",
+    "Producto",
     "Sesion",
     "TokenRestablecimiento",
     "Usuario",

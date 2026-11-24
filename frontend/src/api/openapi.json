@@ -704,6 +704,101 @@
           }
         }
       }
+    },
+    "/productos": {
+      "get": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Listar productos fitosanitarios (REQ-16)",
+        "operationId": "listar_productos_productos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Producto"
+                  },
+                  "type": "array",
+                  "title": "Response Listar Productos Productos Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Dar de alta un producto, también desde el registro y sin conexión (REQ-16, REQ-06)",
+        "description": "Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.",
+        "operationId": "crear_producto_productos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductoEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Ya existía con el mismo contenido (reintento)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Existe otro producto con ese id y distinto contenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1349,6 +1444,85 @@
           "numeroCarne"
         ],
         "title": "PersonaEntrada"
+      },
+      "Producto": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "nombreComercial": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombrecomercial"
+          },
+          "numeroRegistro": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numeroregistro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "id",
+          "nombreComercial",
+          "numeroRegistro"
+        ],
+        "title": "Producto"
+      },
+      "ProductoEntrada": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "nombreComercial": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombrecomercial"
+          },
+          "numeroRegistro": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numeroregistro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nombreComercial",
+          "numeroRegistro"
+        ],
+        "title": "ProductoEntrada"
       },
       "ReferenciaSigpac": {
         "properties": {
