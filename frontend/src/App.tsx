@@ -3,12 +3,14 @@
 // Las páginas que no son de cuenta piden la sesión guardada en el dispositivo (sesion.ts), que no necesita
 // conexión: así el cuaderno se abre sin cobertura (REQ-06, REQ-20). Sin sesión, se muestra Entrar.
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { Enlace } from "./componentes/Enlace";
 import { esPublica, resolverRuta, type Pagina } from "./navegacion";
 import { CerrarSesion } from "./paginas/cuenta/CerrarSesion";
 import { CrearCuenta } from "./paginas/cuenta/CrearCuenta";
 import { Entrar } from "./paginas/cuenta/Entrar";
 import { Recuperar } from "./paginas/cuenta/Recuperar";
 import { Restablecer } from "./paginas/cuenta/Restablecer";
+import { Explotacion } from "./paginas/explotacion/Explotacion";
 import { leerSesion, type SesionLocal } from "./sesion";
 
 function suscribir(aviso: () => void): () => void {
@@ -20,7 +22,7 @@ function caminoActual(): string {
   return window.location.pathname;
 }
 
-// Páginas que llegan en los hitos siguientes (H3 a H6).
+// Páginas que llegan en los hitos siguientes (H4 a H6).
 const TITULOS: Record<Pagina, string> = {
   cuaderno: "Cuaderno",
   entrar: "Entrar",
@@ -46,9 +48,13 @@ function PaginaPublica({ pagina }: { pagina: Pagina }) {
 }
 
 function PaginaPrivada({ pagina }: { pagina: Pagina }) {
+  if (pagina === "explotacion") return <Explotacion />;
   return (
     <main>
       <h1>{TITULOS[pagina]}</h1>
+      <nav>
+        <Enlace a="/explotacion">Datos de la explotación</Enlace>
+      </nav>
       <CerrarSesion />
     </main>
   );

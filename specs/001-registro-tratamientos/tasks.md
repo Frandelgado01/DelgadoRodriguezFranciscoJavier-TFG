@@ -264,7 +264,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   `frontend/tests/sync/maestros.test.ts`: al iniciar sesión y tras vaciar la cola se sustituyen las copias
   locales de `parcelas`, `personas`, `equipos` y `productos` por las activas del servidor. Implementarla después
   en `frontend/src/sync/maestros.ts`. (REQ-14, REQ-15, REQ-16; R3)
-- [ ] T-29 [US4] Implementar las páginas de datos de la explotación en `frontend/src/paginas/explotacion/`
+- [X] T-29 [US4] Implementar las páginas de datos de la explotación en `frontend/src/paginas/explotacion/`
   (parcelas, personas, equipos y productos): listar, dar de alta, modificar y dar de baja, con conexión; las
   parcelas se listan y se identifican por su número de orden, con el nombre si lo tienen, y el formulario pide
   aprovechamiento y "cultivo leñoso" (especie y variedad obligatorias si se marca); los
