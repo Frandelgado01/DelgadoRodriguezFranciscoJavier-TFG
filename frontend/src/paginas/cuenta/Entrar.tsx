@@ -5,6 +5,7 @@ import { Campo } from "../../componentes/Campo";
 import { Enlace } from "../../componentes/Enlace";
 import { navegar } from "../../navegacion";
 import { guardarSesion } from "../../sesion";
+import { descargarMaestros } from "../../sync/maestros";
 import { erroresDeCampo, mensajeGeneral, type Errores } from "./comun";
 
 function mensajeEspera(segundos: number): string {
@@ -31,6 +32,9 @@ export function Entrar() {
       setEnviando(false);
       if (yo.ok) {
         await guardarSesion(yo.datos);
+        // Copia local de los datos de la explotación para trabajar sin conexión (R3); si falla, se reintenta
+        // al vaciar la cola.
+        await descargarMaestros();
         navegar("/");
         return;
       }

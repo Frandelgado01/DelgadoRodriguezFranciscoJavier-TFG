@@ -6,6 +6,7 @@ import { Campo } from "../../componentes/Campo";
 import { validarContrasena, validarCorreo } from "../../dominio/validacion";
 import { navegar } from "../../navegacion";
 import { guardarSesion } from "../../sesion";
+import { descargarMaestros } from "../../sync/maestros";
 import { AYUDA_CONTRASENA, erroresDeCampo, mensajeGeneral, type Errores } from "./comun";
 
 export function CrearCuenta() {
@@ -27,6 +28,7 @@ export function CrearCuenta() {
     setEnviando(false);
     if (resultado.ok) {
       await guardarSesion(resultado.datos);
+      await descargarMaestros();
       navegar("/");
       return;
     }

@@ -86,7 +86,14 @@ describe("crear cuenta (REQ-20)", () => {
     await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
 
     await waitFor(() => expect(window.location.pathname).toBe("/"));
-    expect(llamadas).toEqual([{ clave: "POST /api/cuenta", cuerpo: { correo: CUENTA.correo, contrasena: FRASE } }]);
+    expect(llamadas[0]).toEqual({ clave: "POST /api/cuenta", cuerpo: { correo: CUENTA.correo, contrasena: FRASE } });
+    // Después descarga los datos maestros (T-28); aquí fallan y no impiden abrir el cuaderno.
+    expect(llamadas.slice(1).map((l) => l.clave).sort()).toEqual([
+      "GET /api/equipos",
+      "GET /api/parcelas",
+      "GET /api/personas",
+      "GET /api/productos",
+    ]);
     expect(await leerSesion()).toEqual(CUENTA);
   });
 

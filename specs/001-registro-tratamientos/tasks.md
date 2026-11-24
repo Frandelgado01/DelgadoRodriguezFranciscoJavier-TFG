@@ -260,7 +260,7 @@ comprobar que aparecen en las listas (spec, historia 4).
 - [X] T-27 [US4] Implementar REQ-17: los endpoints de baja y el filtro `incluir_bajas` en
   `backend/src/cuaderno/api/parcelas.py`, `personas.py`, `equipos.py` y `productos.py`, sin ningún `DELETE`.
   Pasan las pruebas de T-26. (REQ-17)
-- [ ] T-28 [US4] Escribir las pruebas (deben fallar) de la descarga de los datos maestros a Dexie en
+- [X] T-28 [US4] Escribir las pruebas (deben fallar) de la descarga de los datos maestros a Dexie en
   `frontend/tests/sync/maestros.test.ts`: al iniciar sesión y tras vaciar la cola se sustituyen las copias
   locales de `parcelas`, `personas`, `equipos` y `productos` por las activas del servidor. Implementarla después
   en `frontend/src/sync/maestros.ts`. (REQ-14, REQ-15, REQ-16; R3)
