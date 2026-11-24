@@ -131,6 +131,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/parcelas/{id}/baja": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de baja una parcela (REQ-17) */
+        post: operations["dar_de_baja_parcela_parcelas__id__baja_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/personas": {
         parameters: {
             query?: never;
@@ -160,6 +177,23 @@ export interface paths {
         /** Modificar una persona (REQ-15) */
         put: operations["modificar_persona_personas__id__put"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/personas/{id}/baja": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de baja una persona (REQ-17) */
+        post: operations["dar_de_baja_persona_personas__id__baja_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -201,6 +235,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/equipos/{id}/baja": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de baja un equipo (REQ-17) */
+        post: operations["dar_de_baja_equipo_equipos__id__baja_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/productos": {
         parameters: {
             query?: never;
@@ -216,6 +267,23 @@ export interface paths {
          * @description Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.
          */
         post: operations["crear_producto_productos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/productos/{id}/baja": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dar de baja un producto (REQ-17) */
+        post: operations["dar_de_baja_producto_productos__id__baja_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -321,6 +389,11 @@ export interface components {
             mensaje: string;
             /** Segundosrestantes */
             segundosRestantes: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /**
          * Mensaje
@@ -524,6 +597,19 @@ export interface components {
              * Format: email
              */
             correo: string;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -749,7 +835,10 @@ export interface operations {
     };
     listar_parcelas_parcelas_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Incluir también los elementos dados de baja (REQ-17) */
+                incluir_bajas?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -763,6 +852,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Parcela"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -862,9 +960,52 @@ export interface operations {
             };
         };
     };
-    listar_personas_personas_get: {
+    dar_de_baja_parcela_parcelas__id__baja_post: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Parcela"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_personas_personas_get: {
+        parameters: {
+            query?: {
+                /** @description Incluir también los elementos dados de baja (REQ-17) */
+                incluir_bajas?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -878,6 +1019,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Persona"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -959,9 +1109,52 @@ export interface operations {
             };
         };
     };
-    listar_equipos_equipos_get: {
+    dar_de_baja_persona_personas__id__baja_post: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Persona"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_equipos_equipos_get: {
+        parameters: {
+            query?: {
+                /** @description Incluir también los elementos dados de baja (REQ-17) */
+                incluir_bajas?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -975,6 +1168,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Equipo"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1056,9 +1258,52 @@ export interface operations {
             };
         };
     };
-    listar_productos_productos_get: {
+    dar_de_baja_equipo_equipos__id__baja_post: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Equipo"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_productos_productos_get: {
+        parameters: {
+            query?: {
+                /** @description Incluir también los elementos dados de baja (REQ-17) */
+                incluir_bajas?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1072,6 +1317,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Producto"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1123,6 +1377,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorValidacion"];
+                };
+            };
+        };
+    };
+    dar_de_baja_producto_productos__id__baja_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Producto"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

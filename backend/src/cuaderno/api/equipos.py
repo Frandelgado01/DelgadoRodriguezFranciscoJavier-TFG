@@ -3,10 +3,19 @@
 import uuid
 
 from fastapi import APIRouter, status
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col
 
 from cuaderno import modelos
-from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, RelojAPI, SesionBD
+from cuaderno.api.comun import (
+    NO_ENCONTRADO,
+    VALIDACION,
+    ExplotacionActual,
+    IncluirBajas,
+    RelojAPI,
+    SesionBD,
+    dar_de_baja,
+    de_la_explotacion,
+)
 from cuaderno.api.errores import DatosNoValidos
 from cuaderno.esquemas.equipo import Equipo, EquipoEntrada
 from cuaderno.reloj import Reloj
@@ -33,12 +42,11 @@ def _guardar(s: Session, fila: modelos.Equipo) -> Equipo:
 
 
 @router.get("", summary="Listar equipos de aplicación (REQ-15)")
-def listar_equipos(s: SesionBD, explotacion: ExplotacionActual) -> list[Equipo]:
-    filas = s.exec(
-        select(modelos.Equipo)
-        .where(modelos.Equipo.explotacion_id == explotacion.id)
-        .order_by(col(modelos.Equipo.descripcion))
-    ).all()
+def listar_equipos(
+    s: SesionBD, explotacion: ExplotacionActual, incluir_bajas: IncluirBajas = False
+) -> list[Equipo]:
+    consulta = de_la_explotacion(modelos.Equipo, explotacion.id, incluir_bajas)
+    filas = s.exec(consulta.order_by(col(modelos.Equipo.descripcion))).all()
     return [Equipo.model_validate(e, from_attributes=True) for e in filas]
 
 
@@ -72,3 +80,15 @@ def modificar_equipo(
     _comprobar_fecha(datos, reloj)
     fila.sqlmodel_update(datos.model_dump())
     return _guardar(s, fila)
+
+
+@router.post(
+    "/{id}/baja",
+    summary="Dar de baja un equipo (REQ-17)",
+    responses={404: NO_ENCONTRADO},
+)
+def dar_de_baja_equipo(
+    id: uuid.UUID, s: SesionBD, explotacion: ExplotacionActual, reloj: RelojAPI
+) -> Equipo:
+    fila = dar_de_baja(s, modelos.Equipo, id, explotacion.id, reloj.hoy())
+    return Equipo.model_validate(fila, from_attributes=True)

@@ -3,10 +3,19 @@
 import uuid
 
 from fastapi import APIRouter, status
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col
 
 from cuaderno import modelos
-from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, SesionBD
+from cuaderno.api.comun import (
+    NO_ENCONTRADO,
+    VALIDACION,
+    ExplotacionActual,
+    IncluirBajas,
+    RelojAPI,
+    SesionBD,
+    dar_de_baja,
+    de_la_explotacion,
+)
 from cuaderno.esquemas.persona import Persona, PersonaEntrada
 from cuaderno.servicios.sesiones import buscar_en_explotacion
 
@@ -21,12 +30,11 @@ def _guardar(s: Session, fila: modelos.Persona) -> Persona:
 
 
 @router.get("", summary="Listar aplicadores y asesores (REQ-15)")
-def listar_personas(s: SesionBD, explotacion: ExplotacionActual) -> list[Persona]:
-    filas = s.exec(
-        select(modelos.Persona)
-        .where(modelos.Persona.explotacion_id == explotacion.id)
-        .order_by(col(modelos.Persona.nombre))
-    ).all()
+def listar_personas(
+    s: SesionBD, explotacion: ExplotacionActual, incluir_bajas: IncluirBajas = False
+) -> list[Persona]:
+    consulta = de_la_explotacion(modelos.Persona, explotacion.id, incluir_bajas)
+    filas = s.exec(consulta.order_by(col(modelos.Persona.nombre))).all()
     return [Persona.model_validate(p, from_attributes=True) for p in filas]
 
 
@@ -52,3 +60,15 @@ def modificar_persona(
     fila = buscar_en_explotacion(s, modelos.Persona, id, explotacion.id)
     fila.sqlmodel_update(datos.model_dump())
     return _guardar(s, fila)
+
+
+@router.post(
+    "/{id}/baja",
+    summary="Dar de baja una persona (REQ-17)",
+    responses={404: NO_ENCONTRADO},
+)
+def dar_de_baja_persona(
+    id: uuid.UUID, s: SesionBD, explotacion: ExplotacionActual, reloj: RelojAPI
+) -> Persona:
+    fila = dar_de_baja(s, modelos.Persona, id, explotacion.id, reloj.hoy())
+    return Persona.model_validate(fila, from_attributes=True)

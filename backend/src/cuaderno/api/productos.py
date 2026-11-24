@@ -1,11 +1,22 @@
 """Rutas de productos fitosanitarios (contrato: /productos*; REQ-16, REQ-06)."""
 
+import uuid
+
 from fastapi import APIRouter, HTTPException, Response, status
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import col, select
+from sqlmodel import col
 
 from cuaderno import modelos
-from cuaderno.api.comun import VALIDACION, ExplotacionActual, SesionBD
+from cuaderno.api.comun import (
+    NO_ENCONTRADO,
+    VALIDACION,
+    ExplotacionActual,
+    IncluirBajas,
+    RelojAPI,
+    SesionBD,
+    dar_de_baja,
+    de_la_explotacion,
+)
 from cuaderno.esquemas.base import Mensaje
 from cuaderno.esquemas.producto import Producto, ProductoEntrada
 
@@ -17,12 +28,11 @@ MENSAJE_ID_OCUPADO = (
 
 
 @router.get("", summary="Listar productos fitosanitarios (REQ-16)")
-def listar_productos(s: SesionBD, explotacion: ExplotacionActual) -> list[Producto]:
-    filas = s.exec(
-        select(modelos.Producto)
-        .where(modelos.Producto.explotacion_id == explotacion.id)
-        .order_by(col(modelos.Producto.nombre_comercial))
-    ).all()
+def listar_productos(
+    s: SesionBD, explotacion: ExplotacionActual, incluir_bajas: IncluirBajas = False
+) -> list[Producto]:
+    consulta = de_la_explotacion(modelos.Producto, explotacion.id, incluir_bajas)
+    filas = s.exec(consulta.order_by(col(modelos.Producto.nombre_comercial))).all()
     return [Producto.model_validate(p, from_attributes=True) for p in filas]
 
 
@@ -73,4 +83,16 @@ def crear_producto(
         if not mismo:
             raise HTTPException(status.HTTP_409_CONFLICT, MENSAJE_ID_OCUPADO)
         respuesta.status_code = status.HTTP_200_OK
+    return Producto.model_validate(fila, from_attributes=True)
+
+
+@router.post(
+    "/{id}/baja",
+    summary="Dar de baja un producto (REQ-17)",
+    responses={404: NO_ENCONTRADO},
+)
+def dar_de_baja_producto(
+    id: uuid.UUID, s: SesionBD, explotacion: ExplotacionActual, reloj: RelojAPI
+) -> Producto:
+    fila = dar_de_baja(s, modelos.Producto, id, explotacion.id, reloj.hoy())
     return Producto.model_validate(fila, from_attributes=True)

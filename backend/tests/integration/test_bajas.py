@@ -6,6 +6,7 @@ Criterios de la spec (historia 4, escenario 4) y de data-model ("bajas lógicas"
 prueba con el registro (T-35).
 """
 
+import itertools
 import uuid
 from collections.abc import Callable
 from datetime import date
@@ -18,7 +19,7 @@ from sqlalchemy import Engine
 from tests.conftest import RelojFijo
 from tests.contract.contrato import openapi_generado
 from tests.integration.test_cuenta_sesion import consultar, iniciar_sesion
-from tests.integration.test_parcelas import alta_parcela, entrar
+from tests.integration.test_parcelas import alta_parcela, entrar, sigpac
 from tests.integration.test_personas_equipos import alta_equipo, alta_persona
 from tests.integration.test_productos import alta_producto, producto_valido
 
@@ -26,8 +27,16 @@ HOY = date(2026, 3, 15)  # "hoy" del reloj fijo de las pruebas (conftest)
 
 Alta = Callable[[TestClient], Any]
 
+_RECINTOS = itertools.count(1)
+
+
+def _alta_parcela(cliente: TestClient) -> Any:
+    """Cada parcela en otro recinto SIGPAC: dos activas no pueden compartir referencia (REQ-14)."""
+    return alta_parcela(cliente, sigpac=sigpac(recinto=next(_RECINTOS)))
+
+
 RECURSOS: list[Any] = [
-    pytest.param("parcelas", "parcela", lambda c: alta_parcela(c), id="parcela"),
+    pytest.param("parcelas", "parcela", _alta_parcela, id="parcela"),
     pytest.param("personas", "persona", lambda c: alta_persona(c), id="persona"),
     pytest.param("equipos", "equipo", lambda c: alta_equipo(c), id="equipo"),
     pytest.param(

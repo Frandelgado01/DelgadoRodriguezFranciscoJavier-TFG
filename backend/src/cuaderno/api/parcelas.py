@@ -6,10 +6,19 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col
 
 from cuaderno import modelos
-from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, SesionBD
+from cuaderno.api.comun import (
+    NO_ENCONTRADO,
+    VALIDACION,
+    ExplotacionActual,
+    IncluirBajas,
+    RelojAPI,
+    SesionBD,
+    dar_de_baja,
+    de_la_explotacion,
+)
 from cuaderno.esquemas.base import Mensaje
 from cuaderno.esquemas.parcela import Parcela, ParcelaEntrada, ReferenciaSigpac
 from cuaderno.servicios.sesiones import buscar_en_explotacion
@@ -96,12 +105,11 @@ def _siguiente_numero(s: Session, explotacion_id: uuid.UUID) -> int:
 
 
 @router.get("", summary="Listar parcelas (REQ-14)")
-def listar_parcelas(s: SesionBD, explotacion: ExplotacionActual) -> list[Parcela]:
-    filas = s.exec(
-        select(modelos.Parcela)
-        .where(modelos.Parcela.explotacion_id == explotacion.id)
-        .order_by(col(modelos.Parcela.numero_orden))
-    ).all()
+def listar_parcelas(
+    s: SesionBD, explotacion: ExplotacionActual, incluir_bajas: IncluirBajas = False
+) -> list[Parcela]:
+    consulta = de_la_explotacion(modelos.Parcela, explotacion.id, incluir_bajas)
+    filas = s.exec(consulta.order_by(col(modelos.Parcela.numero_orden))).all()
     return [a_esquema(p) for p in filas]
 
 
@@ -132,3 +140,14 @@ def modificar_parcela(
     parcela.sqlmodel_update(_columnas(datos))
     s.add(parcela)
     return _guardar(s, parcela)
+
+
+@router.post(
+    "/{id}/baja",
+    summary="Dar de baja una parcela (REQ-17)",
+    responses={404: NO_ENCONTRADO},
+)
+def dar_de_baja_parcela(
+    id: uuid.UUID, s: SesionBD, explotacion: ExplotacionActual, reloj: RelojAPI
+) -> Parcela:
+    return a_esquema(dar_de_baja(s, modelos.Parcela, id, explotacion.id, reloj.hoy()))

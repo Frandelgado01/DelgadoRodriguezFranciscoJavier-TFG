@@ -266,27 +266,51 @@
         ],
         "summary": "Listar parcelas (REQ-14)",
         "operationId": "listar_parcelas_parcelas_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Parcela"
                   },
-                  "type": "array",
                   "title": "Response Listar Parcelas Parcelas Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -294,15 +318,20 @@
         ],
         "summary": "Dar de alta una parcela (REQ-14)",
         "operationId": "crear_parcela_parcelas_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ParcelaEntrada"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -335,12 +364,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       }
     },
     "/parcelas/{id}": {
@@ -421,6 +445,64 @@
         }
       }
     },
+    "/parcelas/{id}/baja": {
+      "post": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Dar de baja una parcela (REQ-17)",
+        "operationId": "dar_de_baja_parcela_parcelas__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/personas": {
       "get": {
         "tags": [
@@ -428,27 +510,51 @@
         ],
         "summary": "Listar aplicadores y asesores (REQ-15)",
         "operationId": "listar_personas_personas_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Persona"
                   },
-                  "type": "array",
                   "title": "Response Listar Personas Personas Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -456,15 +562,20 @@
         ],
         "summary": "Dar de alta una persona (REQ-15)",
         "operationId": "crear_persona_personas_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PersonaEntrada"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -487,12 +598,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       }
     },
     "/personas/{id}": {
@@ -563,6 +669,64 @@
         }
       }
     },
+    "/personas/{id}/baja": {
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Dar de baja una persona (REQ-17)",
+        "operationId": "dar_de_baja_persona_personas__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/equipos": {
       "get": {
         "tags": [
@@ -570,27 +734,51 @@
         ],
         "summary": "Listar equipos de aplicación (REQ-15)",
         "operationId": "listar_equipos_equipos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Equipo"
                   },
-                  "type": "array",
                   "title": "Response Listar Equipos Equipos Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -598,15 +786,20 @@
         ],
         "summary": "Dar de alta un equipo (REQ-15)",
         "operationId": "crear_equipo_equipos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EquipoEntrada"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -629,12 +822,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       }
     },
     "/equipos/{id}": {
@@ -705,6 +893,64 @@
         }
       }
     },
+    "/equipos/{id}/baja": {
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Dar de baja un equipo (REQ-17)",
+        "operationId": "dar_de_baja_equipo_equipos__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/productos": {
       "get": {
         "tags": [
@@ -712,27 +958,51 @@
         ],
         "summary": "Listar productos fitosanitarios (REQ-16)",
         "operationId": "listar_productos_productos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Producto"
                   },
-                  "type": "array",
                   "title": "Response Listar Productos Productos Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -741,15 +1011,20 @@
         "summary": "Dar de alta un producto, también desde el registro y sin conexión (REQ-16, REQ-06)",
         "description": "Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.",
         "operationId": "crear_producto_productos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProductoEntrada"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -792,12 +1067,65 @@
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/productos/{id}/baja": {
+      "post": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Dar de baja un producto (REQ-17)",
+        "operationId": "dar_de_baja_producto_productos__id__baja_post",
         "security": [
           {
             "cookieSesion": []
           }
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -1026,6 +1354,19 @@
         ],
         "title": "EsperaAcceso",
         "description": "Respuesta 429 del inicio de sesión (REQ-22)."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
       },
       "Mensaje": {
         "properties": {
@@ -1596,6 +1937,46 @@
           "correo"
         ],
         "title": "SolicitudRecuperacion"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       }
     },
     "securitySchemes": {

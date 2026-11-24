@@ -257,7 +257,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   `/productos/{id}/baja`: la baja pone `estado = 'baja'` y `fecha_baja`; el elemento deja de salir en los
   listados salvo con `incluir_bajas=true`; nunca se borra la fila. (La parte "no se puede usar en tratamientos
   nuevos" se prueba en T-35.) (REQ-17)
-- [ ] T-27 [US4] Implementar REQ-17: los endpoints de baja y el filtro `incluir_bajas` en
+- [X] T-27 [US4] Implementar REQ-17: los endpoints de baja y el filtro `incluir_bajas` en
   `backend/src/cuaderno/api/parcelas.py`, `personas.py`, `equipos.py` y `productos.py`, sin ningún `DELETE`.
   Pasan las pruebas de T-26. (REQ-17)
 - [ ] T-28 [US4] Escribir las pruebas (deben fallar) de la descarga de los datos maestros a Dexie en
