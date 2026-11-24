@@ -258,6 +258,168 @@
           }
         }
       }
+    },
+    "/parcelas": {
+      "get": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Listar parcelas (REQ-14)",
+        "operationId": "listar_parcelas_parcelas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Parcela"
+                  },
+                  "type": "array",
+                  "title": "Response Listar Parcelas Parcelas Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Dar de alta una parcela (REQ-14)",
+        "operationId": "crear_parcela_parcelas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParcelaEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya hay una parcela activa con esa referencia SIGPAC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/parcelas/{id}": {
+      "put": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Modificar una parcela (REQ-14); no altera tratamientos anteriores (REQ-05)",
+        "operationId": "modificar_parcela_parcelas__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParcelaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya hay una parcela activa con esa referencia SIGPAC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -404,6 +566,379 @@
         ],
         "title": "Mensaje",
         "description": "Respuesta de error con un mensaje en lenguaje llano."
+      },
+      "Parcela": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "sigpac": {
+            "$ref": "#/components/schemas/ReferenciaSigpac"
+          },
+          "superficie": {
+            "type": "number",
+            "exclusiveMaximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficie",
+            "description": "ha"
+          },
+          "usoSigpac": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Usosigpac"
+          },
+          "aprovechamiento": {
+            "type": "string",
+            "enum": [
+              "forestal",
+              "pastos",
+              "cultivo"
+            ],
+            "title": "Aprovechamiento"
+          },
+          "cultivoLenoso": {
+            "type": "boolean",
+            "title": "Cultivolenoso"
+          },
+          "cultivoEspecie": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivovariedad"
+          },
+          "sistemaExplotacion": {
+            "type": "string",
+            "enum": [
+              "secano",
+              "regadio"
+            ],
+            "title": "Sistemaexplotacion"
+          },
+          "sistemaRiego": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemariego"
+          },
+          "protegido": {
+            "type": "boolean",
+            "title": "Protegido"
+          },
+          "tipoProteccion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipoproteccion"
+          },
+          "sistemaCertificacion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemacertificacion"
+          },
+          "marcoControlPlagas": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marcocontrolplagas"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "numeroOrden": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Numeroorden"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "sigpac",
+          "superficie",
+          "usoSigpac",
+          "aprovechamiento",
+          "cultivoLenoso",
+          "sistemaExplotacion",
+          "protegido",
+          "id",
+          "numeroOrden"
+        ],
+        "title": "Parcela",
+        "description": "Parcela guardada, con su número de orden (A.2.a), que asigna el servidor."
+      },
+      "ParcelaEntrada": {
+        "properties": {
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "sigpac": {
+            "$ref": "#/components/schemas/ReferenciaSigpac"
+          },
+          "superficie": {
+            "type": "number",
+            "exclusiveMaximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficie",
+            "description": "ha"
+          },
+          "usoSigpac": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Usosigpac"
+          },
+          "aprovechamiento": {
+            "type": "string",
+            "enum": [
+              "forestal",
+              "pastos",
+              "cultivo"
+            ],
+            "title": "Aprovechamiento"
+          },
+          "cultivoLenoso": {
+            "type": "boolean",
+            "title": "Cultivolenoso"
+          },
+          "cultivoEspecie": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivovariedad"
+          },
+          "sistemaExplotacion": {
+            "type": "string",
+            "enum": [
+              "secano",
+              "regadio"
+            ],
+            "title": "Sistemaexplotacion"
+          },
+          "sistemaRiego": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemariego"
+          },
+          "protegido": {
+            "type": "boolean",
+            "title": "Protegido"
+          },
+          "tipoProteccion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipoproteccion"
+          },
+          "sistemaCertificacion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemacertificacion"
+          },
+          "marcoControlPlagas": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marcocontrolplagas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sigpac",
+          "superficie",
+          "usoSigpac",
+          "aprovechamiento",
+          "cultivoLenoso",
+          "sistemaExplotacion",
+          "protegido"
+        ],
+        "title": "ParcelaEntrada",
+        "description": "Datos de la parcela que da el agricultor (A.2, apartados a–f). El número de orden no."
+      },
+      "ReferenciaSigpac": {
+        "properties": {
+          "provincia": {
+            "type": "integer",
+            "maximum": 99.0,
+            "minimum": 1.0,
+            "title": "Provincia"
+          },
+          "municipio": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 1.0,
+            "title": "Municipio"
+          },
+          "agregado": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 0.0,
+            "title": "Agregado"
+          },
+          "zona": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 0.0,
+            "title": "Zona"
+          },
+          "poligono": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Poligono"
+          },
+          "parcela": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Parcela"
+          },
+          "recinto": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Recinto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provincia",
+          "municipio",
+          "agregado",
+          "zona",
+          "poligono",
+          "parcela",
+          "recinto"
+        ],
+        "title": "ReferenciaSigpac",
+        "description": "Recinto SIGPAC (A.2.b; SIEX REA 12.2 a 12.8)."
       },
       "SolicitudRecuperacion": {
         "properties": {

@@ -7,7 +7,7 @@ migración de Alembic, que es la que crea el esquema.
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, LargeBinary, SmallInteger
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, LargeBinary, SmallInteger
 from sqlmodel import Field, SQLModel
 
 
@@ -33,6 +33,10 @@ class Explotacion(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     usuario_id: uuid.UUID = Field(
         sa_column=Column(ForeignKey("usuario.id", ondelete="RESTRICT"), nullable=False, unique=True)
+    )
+    # Contador del número de orden de las parcelas (REQ-14 a); nunca baja.
+    ultimo_numero_parcela: int = Field(
+        default=0, sa_column=Column(Integer, nullable=False, server_default="0")
     )
     creada_en: datetime = Field(sa_column=_instante())
 

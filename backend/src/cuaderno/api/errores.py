@@ -20,19 +20,57 @@ _UBICACIONES = {"body", "query", "path", "header", "cookie"}
 _METODOS_CON_CUERPO = {"POST", "PUT", "PATCH", "DELETE"}
 
 
+def _numero(valor: object) -> str:
+    """Número con coma decimal, como se escribe en español."""
+    return str(valor).replace(".", ",")
+
+
+def _mensaje(tipo: str, ctx: dict[str, Any]) -> str:
+    """Mensaje en lenguaje llano para los errores de tipo y de rango de Pydantic (principio V)."""
+    match tipo:
+        case "missing":
+            return "Falta este dato."
+        case "json_invalid":
+            return "Los datos enviados no son JSON válido."
+        case "greater_than":
+            return f"Tiene que ser mayor que {_numero(ctx['gt'])}."
+        case "greater_than_equal":
+            return f"Tiene que ser {_numero(ctx['ge'])} o más."
+        case "less_than":
+            return f"Tiene que ser menor que {_numero(ctx['lt'])}."
+        case "less_than_equal":
+            return f"Tiene que ser {_numero(ctx['le'])} o menos."
+        case "string_too_short":
+            return "No puede quedar vacío."
+        case "string_too_long":
+            return f"Puede tener como mucho {ctx['max_length']} caracteres."
+        case "literal_error":
+            opciones = str(ctx["expected"]).replace("'", "").replace(" or ", " o ")
+            return f"Elige una de estas opciones: {opciones}."
+        case "bool_type" | "bool_parsing":
+            return "Tiene que ser sí o no."
+        case "int_type" | "int_parsing" | "int_from_float":
+            return "Tiene que ser un número entero."
+        case "float_type" | "float_parsing" | "finite_number":
+            return "Tiene que ser un número."
+        case "date_type" | "date_parsing" | "date_from_datetime_parsing":
+            return "Tiene que ser una fecha (AAAA-MM-DD)."
+        case "uuid_type" | "uuid_parsing":
+            return "El identificador no es válido."
+        case _:
+            return "El dato no es válido."
+
+
 def _error_campo(error: dict[str, Any]) -> dict[str, str]:
     ubicacion = [str(parte) for parte in error.get("loc", ())]
     if ubicacion and ubicacion[0] in _UBICACIONES:
         ubicacion = ubicacion[1:]
     campo = ".".join(ubicacion)
-    causa = error.get("ctx", {}).get("error")
+    ctx = error.get("ctx", {})
+    causa = ctx.get("error")
     if isinstance(causa, DatoNoValido):
         return {"campo": campo, "mensaje": causa.mensaje, "req": causa.req}
-    if error.get("type") == "missing":
-        return {"campo": campo, "mensaje": "Falta este dato."}
-    if error.get("type") == "json_invalid":
-        return {"campo": campo, "mensaje": "Los datos enviados no son JSON válido."}
-    return {"campo": campo, "mensaje": "El dato no es válido."}
+    return {"campo": campo, "mensaje": _mensaje(str(error.get("type")), ctx)}
 
 
 async def _validacion(_peticion: Request, error: Exception) -> Response:

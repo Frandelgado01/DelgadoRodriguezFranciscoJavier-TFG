@@ -217,7 +217,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   `tipo_proteccion` o al revés, y componentes SIGPAC fuera de rango (provincia 1–99; municipio, polígono,
   parcela y recinto ≥ 1; agregado y zona ≥ 0); 409 si ya hay una parcela **activa** con la misma referencia
   SIGPAC completa. Contrato: `GET` y `POST /parcelas`, `PUT /parcelas/{id}`. (REQ-14)
-- [ ] T-21 [US4] Implementar REQ-14: migración y modelo `parcela` en `backend/alembic/versions/` y
+- [X] T-21 [US4] Implementar REQ-14: migración y modelo `parcela` en `backend/alembic/versions/` y
   `backend/src/cuaderno/modelos/parcela.py` con las columnas y restricciones de data-model (`numero_orden`
   INTEGER NOT NULL, CHECK ≥ 1, UNIQUE (`explotacion_id`, `numero_orden`), asignado con
   `explotacion.ultimo_numero_parcela` (INTEGER NOT NULL, por defecto 0) en la misma transacción del alta;

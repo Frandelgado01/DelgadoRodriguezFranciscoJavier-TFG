@@ -10,5 +10,13 @@ from cuaderno.modelos.cuentas import (
     TokenRestablecimiento,
     Usuario,
 )
+from cuaderno.modelos.parcela import Parcela
 
-__all__ = ["Explotacion", "IntentoAcceso", "Sesion", "TokenRestablecimiento", "Usuario"]
+__all__ = [
+    "Explotacion",
+    "IntentoAcceso",
+    "Parcela",
+    "Sesion",
+    "TokenRestablecimiento",
+    "Usuario",
+]

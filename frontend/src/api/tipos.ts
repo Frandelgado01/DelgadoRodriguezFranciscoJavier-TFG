@@ -96,6 +96,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/parcelas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listar parcelas (REQ-14) */
+        get: operations["listar_parcelas_parcelas_get"];
+        put?: never;
+        /** Dar de alta una parcela (REQ-14) */
+        post: operations["crear_parcela_parcelas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/parcelas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Modificar una parcela (REQ-14); no altera tratamientos anteriores (REQ-05) */
+        put: operations["modificar_parcela_parcelas__id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -161,6 +196,124 @@ export interface components {
         Mensaje: {
             /** Mensaje */
             mensaje: string;
+        };
+        /**
+         * Parcela
+         * @description Parcela guardada, con su número de orden (A.2.a), que asigna el servidor.
+         */
+        Parcela: {
+            /**
+             * Estado
+             * @enum {string}
+             */
+            estado: "activa" | "baja";
+            /** Fechabaja */
+            fechaBaja?: string | null;
+            /** Nombre */
+            nombre?: string | null;
+            sigpac: components["schemas"]["ReferenciaSigpac"];
+            /**
+             * Superficie
+             * @description ha
+             */
+            superficie: number;
+            /** Usosigpac */
+            usoSigpac: string;
+            /**
+             * Aprovechamiento
+             * @enum {string}
+             */
+            aprovechamiento: "forestal" | "pastos" | "cultivo";
+            /** Cultivolenoso */
+            cultivoLenoso: boolean;
+            /** Cultivoespecie */
+            cultivoEspecie?: string | null;
+            /** Cultivovariedad */
+            cultivoVariedad?: string | null;
+            /**
+             * Sistemaexplotacion
+             * @enum {string}
+             */
+            sistemaExplotacion: "secano" | "regadio";
+            /** Sistemariego */
+            sistemaRiego?: string | null;
+            /** Protegido */
+            protegido: boolean;
+            /** Tipoproteccion */
+            tipoProteccion?: string | null;
+            /** Sistemacertificacion */
+            sistemaCertificacion?: string | null;
+            /** Marcocontrolplagas */
+            marcoControlPlagas?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Numeroorden */
+            numeroOrden: number;
+        };
+        /**
+         * ParcelaEntrada
+         * @description Datos de la parcela que da el agricultor (A.2, apartados a–f). El número de orden no.
+         */
+        ParcelaEntrada: {
+            /** Nombre */
+            nombre?: string | null;
+            sigpac: components["schemas"]["ReferenciaSigpac"];
+            /**
+             * Superficie
+             * @description ha
+             */
+            superficie: number;
+            /** Usosigpac */
+            usoSigpac: string;
+            /**
+             * Aprovechamiento
+             * @enum {string}
+             */
+            aprovechamiento: "forestal" | "pastos" | "cultivo";
+            /** Cultivolenoso */
+            cultivoLenoso: boolean;
+            /** Cultivoespecie */
+            cultivoEspecie?: string | null;
+            /** Cultivovariedad */
+            cultivoVariedad?: string | null;
+            /**
+             * Sistemaexplotacion
+             * @enum {string}
+             */
+            sistemaExplotacion: "secano" | "regadio";
+            /** Sistemariego */
+            sistemaRiego?: string | null;
+            /** Protegido */
+            protegido: boolean;
+            /** Tipoproteccion */
+            tipoProteccion?: string | null;
+            /** Sistemacertificacion */
+            sistemaCertificacion?: string | null;
+            /** Marcocontrolplagas */
+            marcoControlPlagas?: string | null;
+        };
+        /**
+         * ReferenciaSigpac
+         * @description Recinto SIGPAC (A.2.b; SIEX REA 12.2 a 12.8).
+         */
+        ReferenciaSigpac: {
+            /** Provincia */
+            provincia: number;
+            /** Municipio */
+            municipio: number;
+            /** Agregado */
+            agregado: number;
+            /** Zona */
+            zona: number;
+            /** Poligono */
+            poligono: number;
+            /** Parcela */
+            parcela: number;
+            /** Recinto */
+            recinto: number;
         };
         /** SolicitudRecuperacion */
         SolicitudRecuperacion: {
@@ -374,6 +527,121 @@ export interface operations {
             };
             /** @description Enlace no válido o caducado */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Datos no válidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorValidacion"];
+                };
+            };
+        };
+    };
+    listar_parcelas_parcelas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Parcela"][];
+                };
+            };
+        };
+    };
+    crear_parcela_parcelas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParcelaEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Parcela"];
+                };
+            };
+            /** @description Ya hay una parcela activa con esa referencia SIGPAC */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Datos no válidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorValidacion"];
+                };
+            };
+        };
+    };
+    modificar_parcela_parcelas__id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParcelaEntrada"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Parcela"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Ya hay una parcela activa con esa referencia SIGPAC */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
