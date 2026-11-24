@@ -57,6 +57,8 @@ def _mensaje(tipo: str, ctx: dict[str, Any]) -> str:
             return "Tiene que ser una fecha (AAAA-MM-DD)."
         case "uuid_type" | "uuid_parsing":
             return "El identificador no es válido."
+        case "string_type":
+            return "Tiene que ser un texto."
         case _:
             return "El dato no es válido."
 
@@ -70,7 +72,26 @@ def _error_campo(error: dict[str, Any]) -> dict[str, str]:
     causa = ctx.get("error")
     if isinstance(causa, DatoNoValido):
         return {"campo": campo, "mensaje": causa.mensaje, "req": causa.req}
-    return {"campo": campo, "mensaje": _mensaje(str(error.get("type")), ctx)}
+    tipo = str(error.get("type"))
+    if tipo.endswith("_type") and error.get("input", "") is None:
+        tipo = "missing"  # un dato obligatorio enviado como null
+    return {"campo": campo, "mensaje": _mensaje(tipo, ctx)}
+
+
+class DatosNoValidos(Exception):
+    """Rechazo 422 de una regla que la API comprueba fuera del esquema (p. ej. con la fecha de hoy).
+
+    Sale con el mismo formato `ErrorValidacion` que los errores del esquema.
+    """
+
+    def __init__(self, campo: str, mensaje: str, req: str) -> None:
+        super().__init__(mensaje)
+        self.error = {"campo": campo, "mensaje": mensaje, "req": req}
+
+
+async def _datos_no_validos(_peticion: Request, error: Exception) -> Response:
+    assert isinstance(error, DatosNoValidos)  # noqa: S101 (contrato del manejador)
+    return JSONResponse({"errores": [error.error]}, status.HTTP_422_UNPROCESSABLE_CONTENT)
 
 
 async def _validacion(_peticion: Request, error: Exception) -> Response:
@@ -109,5 +130,6 @@ async def _solo_json(
 
 def registrar(api: FastAPI) -> None:
     api.add_exception_handler(RequestValidationError, _validacion)
+    api.add_exception_handler(DatosNoValidos, _datos_no_validos)
     api.add_exception_handler(HTTPException, _http)
     api.middleware("http")(_solo_json)

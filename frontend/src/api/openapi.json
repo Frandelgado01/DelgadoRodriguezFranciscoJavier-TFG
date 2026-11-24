@@ -420,6 +420,290 @@
           }
         }
       }
+    },
+    "/personas": {
+      "get": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Listar aplicadores y asesores (REQ-15)",
+        "operationId": "listar_personas_personas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Persona"
+                  },
+                  "type": "array",
+                  "title": "Response Listar Personas Personas Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Dar de alta una persona (REQ-15)",
+        "operationId": "crear_persona_personas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonaEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/personas/{id}": {
+      "put": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Modificar una persona (REQ-15)",
+        "operationId": "modificar_persona_personas__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/equipos": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Listar equipos de aplicación (REQ-15)",
+        "operationId": "listar_equipos_equipos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Equipo"
+                  },
+                  "type": "array",
+                  "title": "Response Listar Equipos Equipos Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Dar de alta un equipo (REQ-15)",
+        "operationId": "crear_equipo_equipos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipoEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/equipos/{id}": {
+      "put": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modificar un equipo (REQ-15)",
+        "operationId": "modificar_equipo_equipos__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipoEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -486,6 +770,101 @@
           "explotacionId"
         ],
         "title": "Cuenta"
+      },
+      "Equipo": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Descripcion"
+          },
+          "fechaAdquisicionOInspeccion": {
+            "type": "string",
+            "format": "date",
+            "title": "Fechaadquisicionoinspeccion"
+          },
+          "numeroRoma": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeroroma",
+            "description": "Número ROMA o referencia censal, si procede"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "descripcion",
+          "fechaAdquisicionOInspeccion",
+          "id"
+        ],
+        "title": "Equipo"
+      },
+      "EquipoEntrada": {
+        "properties": {
+          "descripcion": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Descripcion"
+          },
+          "fechaAdquisicionOInspeccion": {
+            "type": "string",
+            "format": "date",
+            "title": "Fechaadquisicionoinspeccion"
+          },
+          "numeroRoma": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeroroma",
+            "description": "Número ROMA o referencia censal, si procede"
+          }
+        },
+        "type": "object",
+        "required": [
+          "descripcion",
+          "fechaAdquisicionOInspeccion"
+        ],
+        "title": "EquipoEntrada"
       },
       "ErrorCampo": {
         "properties": {
@@ -881,6 +1260,95 @@
         ],
         "title": "ParcelaEntrada",
         "description": "Datos de la parcela que da el agricultor (A.2, apartados a–f). El número de orden no."
+      },
+      "Persona": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "aplicador",
+              "asesor"
+            ],
+            "title": "Tipo"
+          },
+          "numeroCarne": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numerocarne"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "nombre",
+          "tipo",
+          "numeroCarne",
+          "id"
+        ],
+        "title": "Persona"
+      },
+      "PersonaEntrada": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "aplicador",
+              "asesor"
+            ],
+            "title": "Tipo"
+          },
+          "numeroCarne": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numerocarne"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre",
+          "tipo",
+          "numeroCarne"
+        ],
+        "title": "PersonaEntrada"
       },
       "ReferenciaSigpac": {
         "properties": {

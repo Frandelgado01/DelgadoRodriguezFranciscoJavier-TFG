@@ -1,26 +1,21 @@
 """Rutas de parcelas (contrato: /parcelas*; REQ-14)."""
 
 import uuid
-from typing import Annotated, Any
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, col, select
 
 from cuaderno import modelos
-from cuaderno.db import sesion as sesion_bd
-from cuaderno.esquemas.base import ErrorValidacion, Mensaje
+from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, SesionBD
+from cuaderno.esquemas.base import Mensaje
 from cuaderno.esquemas.parcela import Parcela, ParcelaEntrada, ReferenciaSigpac
-from cuaderno.servicios.sesiones import buscar_en_explotacion, explotacion_actual
+from cuaderno.servicios.sesiones import buscar_en_explotacion
 
 router = APIRouter(prefix="/parcelas", tags=["parcelas"])
 
-SesionBD = Annotated[Session, Depends(sesion_bd)]
-ExplotacionActual = Annotated[modelos.Explotacion, Depends(explotacion_actual)]
-
-_VALIDACION = {"model": ErrorValidacion, "description": "Datos no válidos"}
-_NO_ENCONTRADA = {"model": Mensaje, "description": "No existe en la explotación del usuario"}
 _SIGPAC_REPETIDA = {
     "model": Mensaje,
     "description": "Ya hay una parcela activa con esa referencia SIGPAC",
@@ -114,7 +109,7 @@ def listar_parcelas(s: SesionBD, explotacion: ExplotacionActual) -> list[Parcela
     "",
     status_code=status.HTTP_201_CREATED,
     summary="Dar de alta una parcela (REQ-14)",
-    responses={409: _SIGPAC_REPETIDA, 422: _VALIDACION},
+    responses={409: _SIGPAC_REPETIDA, 422: VALIDACION},
 )
 def crear_parcela(datos: ParcelaEntrada, s: SesionBD, explotacion: ExplotacionActual) -> Parcela:
     parcela = modelos.Parcela.model_validate(
@@ -128,7 +123,7 @@ def crear_parcela(datos: ParcelaEntrada, s: SesionBD, explotacion: ExplotacionAc
 @router.put(
     "/{id}",
     summary="Modificar una parcela (REQ-14); no altera tratamientos anteriores (REQ-05)",
-    responses={404: _NO_ENCONTRADA, 409: _SIGPAC_REPETIDA, 422: _VALIDACION},
+    responses={404: NO_ENCONTRADO, 409: _SIGPAC_REPETIDA, 422: VALIDACION},
 )
 def modificar_parcela(
     id: uuid.UUID, datos: ParcelaEntrada, s: SesionBD, explotacion: ExplotacionActual

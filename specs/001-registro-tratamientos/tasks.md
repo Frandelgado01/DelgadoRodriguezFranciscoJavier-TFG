@@ -239,7 +239,7 @@ comprobar que aparecen en las listas (spec, historia 4).
   ≤ hoy; `numero_roma` opcional de hasta 30 car., "si procede"); el esquema de persona no tiene NIF ni otros
   datos personales; un equipo con número ROMA lo devuelve (escenario 3). Contrato: `GET`/`POST /personas`,
   `PUT /personas/{id}`, `GET`/`POST /equipos`, `PUT /equipos/{id}`. (REQ-15)
-- [ ] T-23 [US4] Implementar REQ-15: migraciones y modelos `persona` y `equipo` en
+- [X] T-23 [US4] Implementar REQ-15: migraciones y modelos `persona` y `equipo` en
   `backend/src/cuaderno/modelos/persona.py` y `modelos/equipo.py` con las restricciones de data-model (las de
   T-22, más `estado` CHECK IN (`activa`, `baja`) y `fecha_baja` como en `parcela`), y `esquemas/` y
   `api/personas.py` y `api/equipos.py`. Pasan las pruebas de T-22. (REQ-15)
