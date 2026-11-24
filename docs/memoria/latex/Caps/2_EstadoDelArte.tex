@@ -10,7 +10,7 @@
 
 La obligación de llevar un cuaderno de explotación no procede de una única norma, sino de varias normas sectoriales que el Real Decreto 1054/2022 integra en el \emph{Cuaderno digital de explotación agrícola} (CUE), conectado con el Sistema de información de explotaciones agrícolas y ganaderas y de la producción agraria (SIEX) \citep{rd1054-2022}. Este real decreto establece que el titular debe llevar el cuaderno cuando lo exija una norma sectorial, en particular las de productos fitosanitarios, nutrición de suelos e intervenciones de la Política Agrícola Común (PAC) (art.~9.1), y que el CUE será obligatorio en el próximo periodo de programación de la PAC para las explotaciones que superen 30~ha de cultivos, 5~ha de regadío o 0,1~ha de invernadero (disposición final octava).
 
-La obligación más exigente es la de los \textbf{tratamientos fitosanitarios}. El artículo~16 del Real Decreto 1311/2012 obliga a mantener actualizado un registro de tratamientos con los datos de la parte~I de su anexo~III: fecha, parcela, plaga, aplicador, cultivo, superficie, producto con su número de registro, equipo, cantidad, valoración de la eficacia y observaciones \citep{rd1311-2012}. Los datos deben registrarse en formato electrónico en el plazo de un mes desde el tratamiento y conservarse al menos tres años. El papel solo se admite hasta el 31 de diciembre de 2026, por lo que \textbf{desde el 1 de enero de 2027 el registro de tratamientos debe ser electrónico}.
+La obligación más exigente es la de los \textbf{tratamientos fitosanitarios}. El artículo~16 del Real Decreto 1311/2012 obliga a mantener actualizado un registro de tratamientos con los datos de la parte~I de su anexo~III: fecha, parcela, plaga, aplicador, cultivo, superficie, producto con su número de registro, equipo, cantidad, valoración de la eficacia y observaciones \citep{rd1311-2012}. Los datos deben registrarse en formato electrónico en el plazo de un mes desde el tratamiento y conservarse al menos durante los tres años siguientes a su fecha de emisión. El papel solo se admite hasta el 31 de diciembre de 2026, por lo que \textbf{desde el 1 de enero de 2027 el registro de tratamientos debe ser electrónico}. A escala europea, el Reglamento de Ejecución (UE) 2023/564, aplicable desde el 1 de enero de 2026, fija el contenido y el formato de estos registros y exige, entre otros datos, la dosis aplicada por hectárea \citep{reg2023-564}; su modificación de 2025 permitió a los Estados miembros autorizar que los registros de los usos anteriores a 2027 no se transfieran al formato electrónico \citep{reg2025-2203}.
 
 A esta obligación se suman otras tres. El Real Decreto 1051/2022 exige anotar cada aporte de nutrientes, materia orgánica y agua de riego en el plazo de un mes, y elaborar un plan de abonado, obligatorio con carácter general desde el 1 de septiembre de 2026 \citep{rd1051-2022}. El Real Decreto 1048/2022 obliga a quienes se acogen a los ecorregímenes de la PAC a anotar en el cuaderno las prácticas comprometidas, como la siega, el pastoreo o el establecimiento de cubiertas, generalmente en el plazo de un mes \citep{rd1048-2022}. Por último, el Real Decreto 1049/2022 incorpora a la condicionalidad reforzada de la PAC los requisitos sobre fitosanitarios, de modo que su incumplimiento reduce las ayudas un 3~\% con carácter general y al menos un 15~\%, hasta el 100~\%, si es intencionado (art.~15) \citep{rd1049-2022}.
 
@@ -18,7 +18,7 @@ En Castilla-La Mancha, el Decreto 80/2025 aprueba el programa de actuación en l
 
 Las cosechas, en cambio, no tienen una obligación de registro en el cuaderno: el anexo~III del Real Decreto 1311/2012 no incluye campos de cosecha y el Real Decreto 9/2015 solo exige notificar anualmente los datos de la explotación y sus cultivos \citep{rd1311-2012,rd9-2015}. Sin embargo, el agricultor debe respetar el plazo de seguridad que figura en la etiqueta de cada producto entre el último tratamiento y la cosecha, información que recoge el Registro de Productos Fitosanitarios del Ministerio de Agricultura, Pesca y Alimentación \citep{mapa-registro-fitosanitarios}.
 
-En conjunto, el agricultor debe conocer y aplicar al menos cinco normas estatales y una autonómica, con plazos de anotación de un mes, formato electrónico obligatorio para los fitosanitarios desde 2027 y consecuencias económicas directas sobre las ayudas.
+En conjunto, el agricultor debe conocer y aplicar al menos cinco normas estatales, una europea de aplicación directa y una autonómica, con plazos de anotación de un mes, formato electrónico obligatorio para los fitosanitarios desde 2027 y consecuencias económicas directas sobre las ayudas.
 
 \subsection{Soluciones existentes}\label{subsec:SolucionesExistentes}
 
@@ -118,7 +118,7 @@ La tabla~\ref{tab:Paradigmas} resume las diferencias entre los tres paradigmas.
 
 Este trabajo combina los tres paradigmas según su ámbito de aplicación. El SDD define \emph{qué} se construye, lo que resulta imprescindible por la carga normativa del dominio: cada obligación legal se recoge como requisito en la especificación y se traza hasta la prueba que la verifica, de modo que un cambio de norma se aplica primero en la especificación y se propaga desde ella. De los tres niveles descritos por \citet{bockeler2025sdd}, se adopta el \emph{spec-anchored}: la especificación se mantiene viva y guía la evolución del sistema, pero no se promete regenerar un código idéntico a partir de ella, dado el carácter no determinista de los modelos. La conformidad con la especificación se demuestra mediante pruebas.
 
-El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada tarea en un bucle de implementar, probar y corregir, con \emph{hooks} como puerta de verificación, un límite de iteraciones y una comprobación final de convergencia entre el código y la especificación como criterio de parada \citep{github2026speckitquickstart}. Los riesgos señalados se controlan con la revisión del alumno en cada fase, un \emph{commit} por tarea y el registro de iteraciones y consumo. El \emph{vibe coding} queda limitado a prototipos desechables durante la ideación, que no se incorporan al producto.
+El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada tarea en un bucle de implementar, probar y corregir, con las pruebas automáticas y el pipeline como puertas de verificación, un límite de intentos por tarea y una comprobación final de convergencia entre el código y la especificación como criterio de parada \citep{github2026speckitquickstart}. Los riesgos señalados se controlan con la revisión del alumno en cada fase, un \emph{commit} por tarea y el registro de iteraciones y decisiones. El \emph{vibe coding} queda limitado a prototipos desechables durante la ideación, que no se incorporan al producto.
 
 \pendiente{opcional: figura con los tres bucles de Ng aplicados a las fases del TFG}
 
@@ -126,7 +126,47 @@ El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada ta
 % Base: docs/conceptos/02-claude-code-y-spec-kit.md
 % VS Code con Claude Code; CLAUDE.md, skills, subagentes, hooks y MCP; Spec Kit y
 % Kiro; alternativas: Copilot, Cursor, Gemini CLI, Antigravity y Codex.
-\pendiente{entorno de desarrollo y comparativa de alternativas}
+% BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
+
+\subsection{Claude Code y Spec Kit}\label{subsec:ClaudeCode}
+
+El desarrollo se realiza con Claude Code, el agente de programación de Anthropic, principalmente a través de su extensión para Visual Studio Code (VS Code). La extensión ofrece una interfaz gráfica en el editor, permite revisar y editar los planes antes de aceptarlos, muestra los cambios propuestos junto al original y admite varias conversaciones en paralelo \citep{anthropic-vscode}. Estas características encajan con el principio de humano en el bucle, porque el plan y cada cambio se pueden revisar antes de incorporarlos.
+
+El comportamiento del agente se configura con varias piezas complementarias:
+
+\begin{itemize}
+	\item \textbf{\texttt{CLAUDE.md}} contiene las reglas del proyecto y se carga en cada sesión. Es una guía, no una garantía.
+	\item Las \textbf{\emph{skills}} empaquetan instrucciones para tareas recurrentes. El agente solo conoce de entrada su nombre y su descripción, y carga el resto cuando hace falta, por lo que apenas consumen contexto \citep{anthropic2026skills}.
+	\item Los \textbf{\emph{hooks}} son acciones que el programa, y no el modelo, ejecuta ante determinados eventos, como enviar un mensaje o editar un fichero. Pueden bloquear una acción o devolver un error al agente para que lo corrija \citep{anthropic2026hooks}.
+	\item El \textbf{Model Context Protocol} (MCP) es un protocolo abierto para conectar aplicaciones de IA con fuentes de datos y sistemas externos \citep{anthropic2024mcp,anthropic2026mcpdocs}. Conectar servidores que traen contenido externo expone al agente a instrucciones maliciosas incluidas en ese contenido \citep{anthropic2026mcpdocs}.
+\end{itemize}
+
+\textbf{GitHub Spec Kit} aporta la estructura del SDD: plantillas y fases que se instalan como \emph{skills} del agente \citep{github2026speckit,github2026speckitintegrations}. No programa por sí mismo. Fija el orden de los artefactos, incluye puertas de calidad como la clarificación y el análisis de coherencia, y cierra el ciclo con una comprobación de convergencia entre el código y los artefactos \citep{github2026speckitquickstart}.
+
+\subsection{Alternativas}\label{subsec:AlternativasHerramientas}
+
+El uso de Claude Code y de Spec Kit se fijó en el índice acordado con el tutor. La tabla~\ref{tab:Herramientas} los sitúa frente a otras herramientas a partir de su documentación oficial. La mayoría comparte una idea: las instrucciones del proyecto se guardan en ficheros de texto que el agente tiene en cuenta al trabajar. Como Spec Kit admite distintos agentes \citep{github2026speckitintegrations}, los artefactos de SDD no atan el proyecto a Claude Code.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Herramientas de desarrollo con agentes. Elaboración propia a partir de la documentación oficial citada, consultada el 24 de noviembre de 2026.}
+	\label{tab:Herramientas}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Herramienta} & \textbf{Cómo se presenta} & \textbf{Instrucciones del proyecto} \\
+		\midrule
+		Claude Code \citep{anthropic-vscode} & Extensión gráfica para VS Code, con revisión de planes y de cambios & \texttt{CLAUDE.md}, \emph{skills}, \emph{hooks} y MCP \\
+		Agentes de VS Code y GitHub Copilot \citep{vscode-customization} & Agentes integrados en el editor & Instrucciones del proyecto, \emph{skills}, agentes propios, \emph{hooks} y MCP \\
+		Cursor \citep{cursor-rules} & Editor con agente & Reglas versionadas en \texttt{.cursor/rules} y \texttt{AGENTS.md} \\
+		Codex \citep{codex-agents} & Agente de OpenAI & Ficheros \texttt{AGENTS.md}, que el agente lee antes de trabajar \\
+		Antigravity \citep{antigravity-overview} & Aplicación de escritorio, línea de órdenes, extensiones y SDK de Google & \pendiente{consultar la documentación de reglas de Antigravity} \\
+		Kiro \citep{kiro-specs} & Entorno con especificaciones propias, en un flujo de tres fases & \texttt{requirements.md}, \texttt{design.md} y \texttt{tasks.md} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+El índice mencionaba también Gemini CLI. Su documentación indica que Antigravity CLI lo sustituyó el 18 de junio de 2026 para los usuarios sin suscripción de pago y de Google One \citep{gemini-md}. Kiro es la alternativa más próxima al enfoque de este trabajo, porque también parte de una especificación; la diferencia es que integra el método en la herramienta, mientras que Spec Kit lo mantiene separado del agente.
 
 \section{Tecnologías del producto: comparativa y elección}\label{sec:Tecnologias}
 % Acuerdo de la tutoría anotada el 2026-11-09. Por qué se eligió cada tecnología y
@@ -137,7 +177,52 @@ El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada ta
 % Datos: PostgreSQL + pgvector frente a bases documentales o vectoriales dedicadas.
 % IA: Claude frente a otros LLM y modelos locales; RAG propio frente a marcos.
 % Pruebas y despliegue: pytest, Playwright, k6, GitHub Actions y Docker.
-\pendiente{comparativa y justificación de las tecnologías del producto}
+% BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
+
+Este apartado justifica las tecnologías del producto, aprobadas con el tutor el 23 de octubre de 2026, frente a sus alternativas. Los criterios se derivan de los requisitos: funcionar en el móvil y sin cobertura, garantizar la integridad de unos datos con valor legal, facilitar el RAG, permitir verificar automáticamente los contratos y mantener la sencillez propia de un trabajo individual.
+
+\subsection{Interfaz: PWA con React y TypeScript}\label{subsec:TecFrontend}
+
+Una aplicación web progresiva funciona en varios sistemas con un único código, se puede instalar en el dispositivo y puede funcionar sin conexión \citep{mdn-pwa}. Se apoya en un \emph{service worker}, que intercepta las peticiones de red \citep{mdn-service-worker}, y en IndexedDB, una base de datos transaccional del navegador \citep{mdn-indexeddb}. Frente a ella, React Native y Flutter producen aplicaciones a partir de un solo código, escrito en JavaScript y en Dart respectivamente \citep{reactnative,flutter}, pero se descartaron por el trabajo añadido de publicar en las tiendas de aplicaciones, que una demostración local no necesita. La desventaja principal de la PWA es que no puede confiar en la sincronización en segundo plano, que Safari y Firefox no implementan \citep{caniuse-background-sync}; se resuelve con una cola propia que se vacía con la aplicación abierta.
+
+\subsection{Servidor: Python y FastAPI}\label{subsec:TecBackend}
+
+FastAPI se basa en OpenAPI y JSON Schema, genera documentación interactiva y delega la validación en Pydantic \citep{fastapi-features}. En SDD esto resulta útil porque el contrato de la API, redactado en la fase de plan, se puede contrastar automáticamente con el que genera la aplicación. Django ofrece un panel de administración automático y un mapeador objeto-relacional \citep{django-overview}, ventajas que este producto no aprovecha porque su interfaz es la PWA. Flask mantiene un núcleo sencillo y extensible y no incluye capa de acceso a datos ni validación de formularios \citep{flask-design}, de modo que habría que añadirlas. Express es un marco mínimo para Node.js \citep{expressjs} que permitiría compartir lenguaje con la interfaz, a costa de separar el servidor del ecosistema de Python que se empleará en el RAG.
+
+\subsection{Datos: PostgreSQL y pgvector}\label{subsec:TecDatos}
+
+Los datos del cuaderno son muy estructurados y están relacionados entre sí: un tratamiento afecta a varias parcelas, usa varios productos y lo realiza una persona con un equipo. Una base relacional permite expresar estas relaciones con claves foráneas y restricciones, de manera que los datos incoherentes se rechazan aunque falle otra capa. MongoDB ofrece un modelo flexible, que admite datos polimórficos y nuevos campos sin migrar los existentes \citep{mongodb-modeling}, pero aquí la estructura viene fijada por la norma y la flexibilidad no es una ventaja.
+
+Para el RAG, pgvector almacena los vectores junto al resto de los datos, con transacciones y operaciones de combinación, y realiza por defecto una búsqueda exacta, con la posibilidad de añadir índices aproximados \citep{pgvector}. Una base vectorial dedicada, como Qdrant \citep{qdrant-overview}, exigiría desplegar y mantener un segundo sistema. Para un corpus reducido a unas pocas normas y etiquetas, esa complejidad no se justifica.
+
+\subsection{Pruebas y entrega}\label{subsec:TecPruebas}
+
+\textbf{Playwright} ejecuta pruebas en Chromium, WebKit y Firefox y emula dispositivos móviles, entre ellos Chrome para Android \citep{playwright-intro}, la plataforma de referencia del proyecto. Como alternativa, Cypress cubre las pruebas E2E, de componentes y de accesibilidad \citep{cypress-why}. \textbf{k6} permite definir umbrales que deciden si la prueba se supera \citep{k6-thresholds}, lo que encaja con unos umbrales fijados en la constitución; Locust define las pruebas en Python \citep{locust}, lo que evitaría introducir otro lenguaje. \textbf{GitHub Actions} es una plataforma de integración y entrega continuas \citep{github-actions} integrada con el repositorio y las PR. \textbf{Docker Compose} describe en un fichero los servicios, redes y volúmenes de la aplicación \citep{docker-compose}, y permite que el entorno local y el pipeline usen las mismas imágenes.
+
+\subsection{Comparativa}\label{subsec:ComparativaTecnologias}
+
+La tabla~\ref{tab:Tecnologias} resume las decisiones.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Tecnologías elegidas y alternativas. Elaboración propia a partir de las fuentes citadas en el apartado~\ref{sec:Tecnologias}.}
+	\label{tab:Tecnologias}
+	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+		\toprule
+		\textbf{Elección} & \textbf{A favor} & \textbf{En contra} & \textbf{Alternativas descartadas} \\
+		\midrule
+		PWA con React y TypeScript & Un solo código, instalable y utilizable sin conexión & Sin sincronización en segundo plano en Safari y Firefox & React Native y Flutter: distribución mediante tiendas \\
+		FastAPI & Contrato OpenAPI y validación a partir de los tipos & Sin panel de administración ni ORM propios & Django, Flask y Express \\
+		PostgreSQL con pgvector & Integridad y vectores en un único sistema & Menos especializado que una base vectorial dedicada & MongoDB y Qdrant \\
+		Playwright & Varios motores y emulación de Android & La emulación no sustituye a un dispositivo real & Cypress \\
+		k6 & Umbrales que hacen fallar el pipeline & Otro lenguaje para las pruebas & Locust \\
+		GitHub Actions y Docker Compose & Mismas imágenes en local y en el pipeline & Dependencia de la plataforma del repositorio & \pendiente{alternativa de CI/CD con fuente} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\pendiente{modelo de lenguaje, \emph{embeddings} y RAG propio frente a marcos como LangChain o LlamaIndex: se redacta con el módulo 06, antes del plan de la funcionalidad 002}
 
 \section{Generación aumentada por recuperación (RAG)}\label{sec:RAG}
 % Arquitectura (ingesta, fragmentación, embeddings, base vectorial, recuperación

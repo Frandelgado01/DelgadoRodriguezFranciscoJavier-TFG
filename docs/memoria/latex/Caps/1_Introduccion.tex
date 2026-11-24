@@ -1,34 +1,50 @@
 \chapter{Introducción}\label{cap:Introduccion}
 % Índice v4, cap. 1: el reto, el cambio de paradigma y la solución en 2-3 páginas,
 % sin detalle técnico.
-%  - El reto: el agricultor debe dedicarse a su explotación, pero la normativa le
-%    obliga a registrar tratamientos, fertilizaciones y labores.
-%  - El cambio de paradigma: los agentes de IA escriben buena parte del código; el
-%    valor del ingeniero se desplaza a especificar, decidir y verificar (SDD).
-%  - La solución: aplicación generada con Claude Code en VS Code a partir de una
-%    especificación, con RAG que cita la fuente y pipeline CI/CD.
-\pendiente{introducción: el reto, el cambio de paradigma y la solución}
+% BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
+
+Un agricultor necesita dedicar su tiempo a la explotación, pero la normativa le obliga, además, a documentar buena parte de lo que hace en ella. Cada tratamiento fitosanitario, cada abonado y, si se acoge a determinadas ayudas, cada labor comprometida debe quedar anotado con los datos y en los plazos que fija cada norma. El cuaderno de explotación es el documento en el que se reúnen esas anotaciones, y su paso al formato electrónico, obligatorio para los tratamientos fitosanitarios desde el 1 de enero de 2027 \citep{rd1311-2012}, añade una exigencia más: ya no basta con apuntar, hay que hacerlo con una herramienta digital.
+
+Al mismo tiempo, la forma de construir software está cambiando. Los agentes de inteligencia artificial (IA) leen un repositorio, escriben código, ejecutan las pruebas y corrigen sus propios errores. En este contexto, el valor del ingeniero se desplaza de escribir código a decidir qué se construye, expresarlo sin ambigüedad y comprobar que el resultado lo cumple. El desarrollo dirigido por especificaciones (\emph{Spec-Driven Development}, SDD) propone una respuesta metodológica a ese cambio: la especificación deja de ser un documento que acompaña al código y se convierte en el artefacto del que parten la planificación, la implementación y las pruebas \citep{delimarsky2025sdd}.
+
+Este Trabajo Fin de Grado une las dos cuestiones. Desarrolla un \textbf{Cuaderno de Campo} digital para el agricultor de Castilla-La Mancha y lo hace mediante SDD con agentes de IA: el alumno especifica, decide y aprueba; el agente planifica e implementa; y un conjunto de pruebas automáticas comprueba que el producto cumple lo especificado. La solución se compone de tres funcionalidades: el registro de tratamientos fitosanitarios desde el móvil, también sin cobertura; la consulta de dudas normativas mediante generación aumentada por recuperación (RAG), que responde citando la fuente; y el registro en lenguaje natural, por texto o por voz.
 
 \section{Motivación}\label{sec:Motivacion}
-% Gira en torno al agricultor, no a la tecnología. Cuatro pasos:
-%  1. El problema real: registros obligatorios y normativa (PAC, fitosanitarios,
-%     nutrición de suelos, cuaderno digital y SIEX, RD 1054/2022). Comprobar el
-%     calendario vigente y citar la norma.
-%  2. La fricción: cuantificarla con fuentes (MAPA, organizaciones agrarias,
-%     consejería de CLM) y con 2-3 entrevistas. No inventar cifras.
-%  3. La propuesta: lenguaje natural por voz o texto, avisos de plazos y dudas
-%     normativas resueltas citando la fuente (justifica el RAG).
-%  4. Por qué SDD y agentes: requisitos legales en una especificación versionada y
-%     trazados hasta su prueba.
-\pendiente{motivación en cuatro pasos}
+
+\textbf{El problema.} Las obligaciones de registro del agricultor no proceden de una sola norma. Los tratamientos fitosanitarios se rigen por el Real Decreto 1311/2012 \citep{rd1311-2012} y por el Reglamento de Ejecución (UE) 2023/564 \citep{reg2023-564}; la fertilización, por el Real Decreto 1051/2022 \citep{rd1051-2022}; las prácticas de los ecorregímenes, por el Real Decreto 1048/2022 \citep{rd1048-2022}; y todas ellas se integran en el cuaderno digital de explotación que regula el Real Decreto 1054/2022 \citep{rd1054-2022}. El apartado~\ref{subsec:MarcoNormativo} las describe con detalle. Para el agricultor, el resultado es un conjunto de plazos, campos y excepciones repartido entre varios textos que, además, cambian con frecuencia: el Reglamento de Ejecución (UE) 2023/564, por ejemplo, se modificó antes incluso de empezar a aplicarse \citep{reg2025-2203}.
+
+\textbf{La fricción.} Incumplir esas obligaciones tiene consecuencias económicas. La condicionalidad reforzada de la Política Agrícola Común (PAC) reduce las ayudas un 3~\% con carácter general cuando se incumplen los requisitos sobre fitosanitarios, y al menos un 15~\% si el incumplimiento es intencionado \citep[art.~15]{rd1049-2022}. A ese riesgo se suman las tareas que no aparecen en ninguna norma: recordar al final de la semana qué se aplicó y dónde, localizar el número de registro de un producto, no dejar pasar el mes de plazo o averiguar si ya se puede cosechar. \pendiente{cuantificar la fricción con fuentes oficiales (MAPA, Consejería de Agricultura): tiempo dedicado, número de explotaciones afectadas o sanciones; si no hay datos publicados, decirlo}
+
+Para hacer explícitas las suposiciones de diseño se han elaborado tres perfiles de usuario \emph{supuestos}, o proto-personas: un viticultor de secano, una agricultora joven de cereal y almendro y una técnica de cooperativa. Son perfiles ficticios, elaborados con ayuda de la IA y aceptados por el autor, que recogen hipótesis y no testimonios, por lo que no se usan para cuantificar nada. Han servido para revisar las decisiones de la primera funcionalidad y para identificar dos necesidades que quedan como trabajo futuro (apartado~\ref{sec:ProximosPasos}).
+
+\textbf{La propuesta.} El Cuaderno de Campo pretende absorber esa carga. Los datos de la explotación se introducen una sola vez y después se eligen de una lista; el registro funciona en el campo sin cobertura; la aplicación calcula los plazos y avisa antes de que venzan; y las dudas normativas se responden citando el artículo o la ficha oficial, de manera que el agricultor pueda comprobar la respuesta. Este último punto justifica el uso de RAG: en un dominio en el que un error puede costar una ayuda, una respuesta sin fuente no es aceptable, y el sistema debe reconocer que no sabe cuando no encuentra respaldo.
+
+\textbf{Por qué SDD y agentes de IA.} Un producto que implementa obligaciones legales debe poder demostrar que las cumple y adaptarse cuando cambian. Si cada obligación se recoge como un requisito en una especificación versionada, con la cita del artículo del que procede, un cambio de norma se aplica primero en la especificación y se propaga después al plan, a las tareas, a las pruebas y al código. Así, cada requisito queda trazado hasta la prueba que lo verifica. El caso se ha dado durante el propio desarrollo: el anexo del Reglamento de Ejecución (UE) 2023/564 exige la dosis por hectárea, que la especificación inicial no recogía; su incorporación empezó en la especificación y se propagó al plan y a las tareas antes de escribir pruebas o código (apartado~\ref{sec:Ideacion}).
 
 \section{Objetivos}\label{sec:Objetivos}
-% Objetivo general y seis objetivos específicos numerados; el capítulo 6 los
-% revisa uno a uno. Objetivo 6 reformulado el 2026-11-14 (índice): medir el
-% proceso con datos verificables en el repositorio y contrastarlo con una
-% estimación clásica, sin horas del alumno.
-\pendiente{objetivo general y objetivos específicos}
+% Los seis objetivos del índice v4; el 6, reformulado el 2026-11-14.
+
+El objetivo general es \textbf{desarrollar, mediante SDD con agentes de IA, un Cuaderno de Campo que minimice el tiempo y la fricción que la normativa supone para el agricultor}. Se concreta en seis objetivos específicos, que el capítulo~\ref{cap:Conclusiones} revisa uno a uno:
+
+\begin{enumerate}[label=\textbf{O\arabic*.}, leftmargin=*]
+	\item Definir la constitución y la especificación del Cuaderno de Campo mediante ideación con Claude.
+	\item Generar el plan, las tareas y la implementación con Claude Code en VS Code, con revisión humana en cada fase.
+	\item Incorporar un módulo RAG sobre la normativa aplicable que responda a las dudas del agricultor citando la fuente, evaluado con métricas objetivas.
+	\item Automatizar la construcción, las pruebas y el despliegue con un pipeline de integración y entrega continuas (CI/CD).
+	\item Validar el producto contra los criterios de aceptación con pruebas de extremo a extremo (E2E) y de rendimiento.
+	\item Medir el propio proceso de SDD con datos verificables en el repositorio (iteraciones por artefacto, correcciones del alumno, cambios de la especificación tras su aprobación, intentos de corrección por tarea, pruebas y cobertura) y contrastarlo con una estimación clásica del mismo alcance.
+\end{enumerate}
 
 \section{Estructura de la memoria}\label{sec:Estructura}
-% Un párrafo con el contenido de cada capítulo.
-\pendiente{un párrafo por capítulo}
+
+El resto de la memoria se organiza en cinco capítulos:
+
+\begin{itemize}
+	\item El \textbf{capítulo~\ref{cap:EstadoArte}} presenta el estado del arte: la normativa y las soluciones de cuaderno de campo existentes, los paradigmas de desarrollo con IA, las herramientas de desarrollo, las tecnologías del producto y su comparación con las alternativas, la generación aumentada por recuperación y las prácticas de CI/CD.
+	\item El \textbf{capítulo~\ref{cap:Metodologia}} describe la metodología: los principios del SDD adoptado, los artefactos, las fases del ciclo, la trazabilidad y el control de los riesgos del desarrollo con IA.
+	\item El \textbf{capítulo~\ref{cap:Desarrollo}} aplica esa metodología al Cuaderno de Campo y muestra los artefactos producidos, las iteraciones con la IA, las decisiones del alumno y los resultados del proceso.
+	\item El \textbf{capítulo~\ref{cap:Costes}} analiza los costes directos del desarrollo con IA y de la operación del producto, y los contrasta con una estimación clásica.
+	\item El \textbf{capítulo~\ref{cap:Conclusiones}} revisa el cumplimiento de los objetivos, valora el enfoque seguido y expone los próximos pasos.
+\end{itemize}
+
+Los anexos incluyen los artefactos de SDD, el registro del proceso, el manual de instalación y la declaración de uso de IA generativa.
