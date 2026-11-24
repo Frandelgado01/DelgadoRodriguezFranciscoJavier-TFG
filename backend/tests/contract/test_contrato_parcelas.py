@@ -10,3 +10,8 @@ def test_req14_operaciones_de_parcelas_cumplen_el_contrato() -> None:
         ("PUT", "/parcelas/{id}"),
     ]
     assert comprobar_operaciones(openapi_generado(), operaciones) == []
+
+
+def test_req17_baja_de_parcelas_cumple_el_contrato() -> None:
+    operaciones = [("POST", "/parcelas/{id}/baja")]
+    assert comprobar_operaciones(openapi_generado(), operaciones) == []

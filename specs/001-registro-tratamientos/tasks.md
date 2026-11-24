@@ -252,7 +252,7 @@ comprobar que aparecen en las listas (spec, historia 4).
 - [X] T-25 [US4] Implementar REQ-16: migración y modelo `producto` en `backend/src/cuaderno/modelos/producto.py`,
   `esquemas/producto.py` y `api/productos.py`, con creación idempotente por `id` (R4). Pasan las pruebas de
   T-24. (REQ-16, REQ-06)
-- [ ] T-26 [US4] Escribir las pruebas de REQ-17 (deben fallar) en `backend/tests/integration/test_bajas.py` y
+- [X] T-26 [US4] Escribir las pruebas de REQ-17 (deben fallar) en `backend/tests/integration/test_bajas.py` y
   ampliar las pruebas de contrato con `POST /parcelas/{id}/baja`, `/personas/{id}/baja`, `/equipos/{id}/baja` y
   `/productos/{id}/baja`: la baja pone `estado = 'baja'` y `fecha_baja`; el elemento deja de salir en los
   listados salvo con `incluir_bajas=true`; nunca se borra la fila. (La parte "no se puede usar en tratamientos

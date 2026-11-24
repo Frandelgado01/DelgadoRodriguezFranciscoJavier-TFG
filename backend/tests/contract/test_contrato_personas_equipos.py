@@ -13,3 +13,8 @@ def test_req15_operaciones_de_personas_y_equipos_cumplen_el_contrato() -> None:
         ("PUT", "/equipos/{id}"),
     ]
     assert comprobar_operaciones(openapi_generado(), operaciones) == []
+
+
+def test_req17_baja_de_personas_y_equipos_cumple_el_contrato() -> None:
+    operaciones = [("POST", "/personas/{id}/baja"), ("POST", "/equipos/{id}/baja")]
+    assert comprobar_operaciones(openapi_generado(), operaciones) == []
