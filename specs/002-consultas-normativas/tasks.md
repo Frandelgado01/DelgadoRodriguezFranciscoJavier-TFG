@@ -56,7 +56,7 @@ Si falta tiempo se recorta H10 entero y después el Decreto 80/2025 (spec, Supue
 - [ ] T-108 Escribir la migración (extensiones `vector` y `unaccent`, tablas `norma` y `fragmento`), los modelos y `scripts/cargar_corpus.py`.
   Pasan las pruebas de T-107. (REQ-42)
 - [ ] T-109 Escribir `scripts/crear_instantanea.py` y generar `corpus/` con las normas de REQ-42 que tengan texto; anotar en `corpus/normas.json` la
-  fuente, la fecha, la huella y la cobertura de cada una. Comprobar a mano cinco artículos contra el texto oficial, entre ellos el 16 y el
+  fuente, la fecha, la huella y la cobertura de cada una. El artículo 3 del Reglamento (UE) 2023/564 lleva el párrafo que añade el 2025/2203. Comprobar a mano cinco artículos contra el texto oficial, entre ellos el 16 y el
   anexo III del RD 1311/2012, el 7 del RD 285/2021 y el apartado 4.3.1 del anexo I del Decreto 80/2025, y todas las tablas de sus anejos
   que se carguen. (REQ-42; R20)
 - [ ] T-110 Escribir las pruebas (deben fallar) de la búsqueda en `backend/tests/integration/test_buscar.py`: exacta por vectores; por texto, con las

@@ -23,6 +23,9 @@ evaluación de REQ-43**, y esas preguntas no formarán parte del conjunto final.
   1. De cada bloque se toma la versión con la **mayor fecha de vigencia que no sea posterior a hoy**.
   2. Se descartan preámbulos, firmas, notas iniciales y **las notas editoriales** (`blockquote`).
   3. Los bloques suprimidos o derogados no generan fragmentos.
+  4. El XML europeo **no está consolidado**: el párrafo que el Reglamento (UE) 2025/2203 añade al artículo 3 del 2023/564 se incorpora a ese
+     artículo al crear la instantánea, con la fecha y la URL de la modificación, para que se cite la redacción vigente (REQ-42). Detectado al
+     revisar el alumno la pregunta A11.
 - **Motivo**: las notas editoriales no son inocuas. El bloque del artículo 40 del RD 1311/2012 dice «(Suprimido)» y su nota reproduce
   **toda la redacción anterior**, derogada en 2021 por el RD 285/2021; indexarla daría por vigente un texto derogado (REQ-42).
 - **Reproducibilidad**: los fragmentos y sus vectores se versionan como una **instantánea** (`corpus/`, con la fecha y la huella de cada
