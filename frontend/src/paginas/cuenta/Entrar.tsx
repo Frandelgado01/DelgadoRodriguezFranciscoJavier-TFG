@@ -35,8 +35,12 @@ export function Entrar() {
         await guardarSesion(yo.datos);
         // Copia local de los datos de la explotación para trabajar sin conexión (R3); si falla, se reintenta
         // al vaciar la cola.
-        await descargarMaestros();
-        await descargarTratamientos();
+        try {
+          await descargarMaestros();
+          await descargarTratamientos();
+        } catch {
+          // La sesión ya está guardada: se entra igualmente y la app vuelve a descargar al abrirse.
+        }
         navegar("/");
         return;
       }

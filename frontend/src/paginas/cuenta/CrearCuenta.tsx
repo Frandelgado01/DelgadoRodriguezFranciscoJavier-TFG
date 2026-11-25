@@ -29,8 +29,12 @@ export function CrearCuenta() {
     setEnviando(false);
     if (resultado.ok) {
       await guardarSesion(resultado.datos);
-      await descargarMaestros();
-      await descargarTratamientos();
+      try {
+        await descargarMaestros();
+        await descargarTratamientos();
+      } catch {
+        // La sesión ya está guardada: se entra igualmente y la app vuelve a descargar al abrirse (R3).
+      }
       navegar("/");
       return;
     }

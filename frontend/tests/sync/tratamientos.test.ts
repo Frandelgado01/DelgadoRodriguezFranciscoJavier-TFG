@@ -271,9 +271,11 @@ describe("cuándo se descargan (REQ-06; R3)", () => {
 
   it("al entrar", async () => {
     servidor.tratamientos = [delServidor("t1")];
+    window.history.replaceState(null, "", "/entrar");
     render(createElement(Entrar));
     await rellenar("Entrar");
-    await waitFor(async () => expect(Object.keys(await locales())).toEqual(["t1"]));
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    expect(Object.keys(await locales())).toEqual(["t1"]);
   });
 
   it("al crear la cuenta", async () => {
@@ -302,12 +304,14 @@ describe("cuándo se descargan (REQ-06; R3)", () => {
     await sincronizar();
     render(createElement(CerrarSesion));
     await userEvent.click(screen.getByRole("button", { name: "Cerrar sesión" }));
-    await waitFor(() => expect(baseAbierta()).toBeNull());
+    await waitFor(() => expect(window.location.pathname).toBe("/entrar"));
+    expect(baseAbierta()).toBeNull();
     cleanup();
 
     render(createElement(Entrar));
     await rellenar("Entrar");
-    await waitFor(async () => expect((await baseAbierta()?.tratamientos.get("t1"))?.["problema"]).toBe("Mildiu"));
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    expect((await baseAbierta()?.tratamientos.get("t1"))?.["problema"]).toBe("Mildiu");
     base = abrirBase(CUENTA.explotacionId);
   });
 });

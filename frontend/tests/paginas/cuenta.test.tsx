@@ -161,6 +161,41 @@ describe("iniciar sesión (REQ-20, REQ-22)", () => {
   });
 });
 
+describe("si falla la descarga de los datos al entrar (REQ-06, REQ-20; R3)", () => {
+  // Una respuesta 200 que no es JSON, como la página de acceso de una red wifi.
+  const HTML = new Response("<!doctype html><title>Otra cosa</title>", { headers: { "Content-Type": "text/html" } });
+  const LISTAS = ["parcelas", "personas", "equipos", "productos"].map((almacen) => `GET /api/${almacen}`);
+  const todas = (respuesta: Response) => Object.fromEntries(LISTAS.map((clave) => [clave, respuesta]));
+  const TRATAMIENTOS = { "GET /api/tratamientos?pagina=1&tamano=200": HTML };
+  const CASOS: [string, Respuestas][] = [
+    ["todos los datos", { ...todas(HTML), ...TRATAMIENTOS }],
+    ["solo los tratamientos", { ...todas(json(200, [])), ...TRATAMIENTOS }],
+  ];
+
+  async function rellenar(boton: string) {
+    await userEvent.type(screen.getByLabelText("Correo electrónico"), CUENTA.correo);
+    await userEvent.type(screen.getByLabelText("Contraseña"), FRASE);
+    await userEvent.click(screen.getByRole("button", { name: boton }));
+    // Un error sin capturar también haría fallar la ejecución de Vitest.
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    expect(await leerSesion()).toEqual(CUENTA);
+  }
+
+  it.each(CASOS)("REQ-06, REQ-20: Entrar abre el cuaderno con la sesión guardada (fallan %s)", async (_, datos) => {
+    simularApi({ "POST /api/sesion": vacia(204), "GET /api/cuenta/yo": json(200, CUENTA), ...datos });
+    irA("/entrar");
+    render(<Entrar />);
+    await rellenar("Entrar");
+  });
+
+  it.each(CASOS)("REQ-06, REQ-20: Crear cuenta abre el cuaderno con la sesión guardada (fallan %s)", async (_, datos) => {
+    simularApi({ "POST /api/cuenta": json(201, CUENTA), ...datos });
+    irA("/crear-cuenta");
+    render(<CrearCuenta />);
+    await rellenar("Crear cuenta");
+  });
+});
+
 describe("recuperar la contraseña (REQ-21)", () => {
   it("pide el enlace y muestra la respuesta, que es la misma exista o no la cuenta", async () => {
     const mensaje = "Si hay una cuenta con ese correo, te hemos enviado un enlace para restablecer la contraseña. Caduca en 1 hora.";
