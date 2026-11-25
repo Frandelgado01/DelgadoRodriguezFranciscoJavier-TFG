@@ -24,8 +24,8 @@
 > - **Anexos:** declaración breve de uso de IA generativa (producto y memoria), con el formato que pida la
 >   normativa de TFG de la ESI.
 >
-> **Cambio del 2026-11-14** (decisión del alumno: el registro deja de recoger minutos y tokens/coste; pendiente
-> del visto bueno del tutor):
+> **Cambio del 2026-11-14** (decisión del alumno: el registro deja de recoger minutos y tokens/coste; visto
+> bueno del tutor comunicado el 2026-11-25):
 >
 > - **Objetivo 6, 4.5 y capítulo 5:** el proceso se mide solo con datos verificables en el repositorio. Sin horas
 >   del alumno no hay coste de personal con IA; se declara como limitación. El tiempo se expresa en días con actividad por fase (fechas distintas con alguna fila del registro o algún commit de esa fase; no la duración entre fechas, porque los días sin commits son días en que no se avanzó).
@@ -137,7 +137,7 @@ desechables durante la ideación.
 - Elementos de Claude Code usados: `CLAUDE.md`, comandos y skills (Spec Kit), subagentes revisores o de pruebas,
   hooks que lanzan pruebas y linters, y MCP (base de datos, GitHub, documentación normativa).
 - Marcos SDD: GitHub Spec Kit (fases como comandos en Claude Code); Kiro como alternativa.
-- Alternativas para la comparativa: GitHub Copilot, Cursor, Gemini CLI y Antigravity, y Codex.
+- Alternativas para la comparativa: GitHub Copilot, Cursor, Antigravity y Codex (sin Gemini CLI desde el 2026-11-25: decisión del alumno).
 - **Tecnologías del producto (tutoría anotada el 2026-11-09):** por qué se eligió cada una y no otras, con pros,
   contras y tabla comparativa: PWA con React + TypeScript frente a app nativa o multiplataforma; FastAPI frente a
   Django, Flask o Node; PostgreSQL + pgvector frente a bases documentales o vectoriales dedicadas; Claude frente a

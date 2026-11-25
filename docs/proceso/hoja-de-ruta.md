@@ -43,7 +43,25 @@ y la 002 y se incorporan a la constitución por enmienda.
 - **Próximos pasos, en este orden si se abordaran:** 003 (reutiliza los plazos de seguridad de la 002), 004 y 005
   (registros sin IA) y 007 (exporta lo que ya exista).
 
+## Recorte del 2026-11-25
+
+Con la entrega el 2 de diciembre, el alumno acepta recortar el alcance, «con vistas a avanzar más si da tiempo». **Se hace:**
+001 hasta H4, 002 completa con su evaluación, pruebas E2E y de k6 mínimas y la memoria. **Pasa a próximos pasos:** H5 (plazos
+y avisos), H6 (consulta e historial), el resto de H7 y la 006. Si da tiempo, lo primero que se recupera es H5. Pendiente: el
+visto bueno del tutor y, con él, la enmienda del principio IV de la constitución y la actualización de `CLAUDE.md`.
+
+| Día | Trabajo previsto |
+| --- | --- |
+| 25 nov | Plan y tareas de REQ-06; spec de la 002 |
+| 26 nov | H4; plan y tareas de la 002 |
+| 27–28 nov | Implementar la 002 |
+| 29 nov | Evaluación del RAG, E2E y k6 |
+| 30 nov | Memoria: RAG, CI/CD, resultados y costes |
+| 1 dic | Memoria: conclusiones, resumen y anexos; revisión final |
+| 2 dic | Margen y entrega |
+
 ## Calendario
 
-Pendiente: fecha prevista de entrega y de defensa. Con ella se reparten las funcionalidades en el calendario y se
+**Entrega del TFG completo: 2 de diciembre como máximo** (tutor, comunicado por el alumno el 2026-11-25). Pendiente: fecha de
+defensa. Reparto hasta la entrega, en el apartado anterior. Con ello se reparten las funcionalidades en el calendario y se
 dibuja el diagrama de Gantt del apartado 3.6.

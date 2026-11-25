@@ -1,0 +1,105 @@
+"""Esquemas de tratamiento (contrato: TratamientoNuevo, Tratamiento; REQ-01 a REQ-05).
+
+Aquí se comprueban los tipos, los textos y las listas cerradas. Las reglas de REQ-02 y REQ-04
+compartidas con la PWA (al menos una parcela y un producto, superficies, cantidades y fecha) están
+en dominio/validacion.py; en el esquema solo se documentan, para que el rechazo lleve su mensaje.
+
+Los campos de plazo del contrato (estado, vencimiento y marcas) llegan con REQ-07 y REQ-09 (T-47).
+"""
+
+import uuid
+from datetime import UTC, date, datetime
+from typing import Annotated, Literal
+
+from pydantic import AfterValidator, AwareDatetime, BeforeValidator, Field
+
+from cuaderno.config import ZONA_HORARIA
+from cuaderno.dominio import validacion
+from cuaderno.esquemas.base import DatoNoValido, Esquema
+from cuaderno.esquemas.maestro import Texto, en_blanco_a_nulo
+
+
+class ParcelaTratadaNueva(Esquema):
+    parcela_id: uuid.UUID
+    superficie_tratada: float = Field(
+        description="ha; ≤ superficie de la parcela (REQ-04)",
+        json_schema_extra={"exclusiveMinimum": 0, "multipleOf": 0.01},
+    )
+    cultivo_especie: Texto = Field(min_length=1, max_length=validacion.CULTIVO_MAXIMO)
+    cultivo_variedad: Texto = Field(min_length=1, max_length=validacion.CULTIVO_MAXIMO)
+    producto_semilla: Annotated[
+        Annotated[str, Field(max_length=validacion.PRODUCTO_SEMILLA_MAXIMO)] | None,
+        BeforeValidator(en_blanco_a_nulo),
+    ] = None
+
+
+class ParcelaTratada(ParcelaTratadaNueva):
+    numero_orden: int = Field(ge=1, description="Número de orden de la parcela (REQ-01 b)")
+
+
+class ProductoAplicadoNuevo(Esquema):
+    producto_id: uuid.UUID
+    cantidad: float = Field(json_schema_extra={"exclusiveMinimum": 0})
+    unidad_medida: Literal["kg", "L"]
+
+
+class ProductoAplicado(ProductoAplicadoNuevo):
+    """Producto aplicado con su dosis calculada, que no se guarda ni se acepta (REQ-23; R15)."""
+
+    dosis_por_hectarea: float = Field(
+        gt=0,
+        description="Cantidad entre la superficie tratada total, redondeada según REQ-23",
+        json_schema_extra={"readOnly": True},
+    )
+    unidad_dosis: Literal["kg/ha", "L/ha"] = Field(json_schema_extra={"readOnly": True})
+
+
+class DatosTratamiento(Esquema):
+    """Datos de la sección B del anexo III que da el agricultor (REQ-01)."""
+
+    fecha: date = Field(description="≤ hoy (REQ-04)")
+    problema: Texto = Field(min_length=1, max_length=validacion.PROBLEMA_MAXIMO)
+    aplicador_id: uuid.UUID
+    asesor_id: uuid.UUID | None = None
+    equipo_id: uuid.UUID
+    parcelas: list[ParcelaTratadaNueva] = Field(json_schema_extra={"minItems": 1})
+    productos: list[ProductoAplicadoNuevo] = Field(json_schema_extra={"minItems": 1})
+    eficacia: Literal["buena", "regular", "mala"] | None = None
+    observaciones: Annotated[
+        Annotated[str, Field(max_length=validacion.OBSERVACIONES_MAXIMO)] | None,
+        BeforeValidator(en_blanco_a_nulo),
+    ] = None
+
+
+def _cabe_en_utc_y_en_madrid(valor: datetime) -> datetime:
+    """Un momento de los límites del calendario (años 1 y 9999) no se puede pasar a otra zona."""
+    try:
+        valor.astimezone(UTC)
+        valor.astimezone(ZONA_HORARIA)
+    except OverflowError as error:
+        raise DatoNoValido(
+            "El momento en que se anotó no es válido: revisa la fecha y la hora del dispositivo.",
+            "REQ-04",
+        ) from error
+    return valor
+
+
+class TratamientoNuevo(DatosTratamiento):
+    id: uuid.UUID = Field(description="Generado por el cliente (R4)")
+    registrado_en: Annotated[AwareDatetime, AfterValidator(_cabe_en_utc_y_en_madrid)] = Field(
+        description="Momento del guardado en el dispositivo (R14)"
+    )
+
+
+class Tratamiento(TratamientoNuevo):
+    """Tratamiento guardado, con el número de orden de cada parcela y la dosis de cada producto."""
+
+    parcelas: list[ParcelaTratada]  # type: ignore[assignment]
+    productos: list[ProductoAplicado]  # type: ignore[assignment]
+    version: int = Field(ge=1)
+    en_conflicto: bool
+
+
+class PaginaTratamientos(Esquema):
+    elementos: list[Tratamiento]
+    total: int = Field(ge=0)

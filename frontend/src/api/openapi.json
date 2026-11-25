@@ -1,0 +1,2667 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cuaderno de Campo",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/cuenta": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Crear cuenta y explotación (REQ-20)",
+        "operationId": "crear_cuenta_cuenta_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cuenta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya existe una cuenta con ese correo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cuenta/yo": {
+      "get": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Datos de la cuenta de la sesión (REQ-20)",
+        "operationId": "yo_cuenta_yo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cuenta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sesión ausente, caducada o revocada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/sesion": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Iniciar sesión (REQ-20, REQ-22)",
+        "operationId": "iniciar_sesion_sesion_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credenciales"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Correo o contraseña incorrectos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos fallidos con este correo (REQ-22): 5 fallos en 15 minutos → espera de 15 minutos. Se responde antes de verificar la contraseña e igual exista o no la cuenta.",
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos que faltan para poder intentarlo de nuevo",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1.0
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EsperaAcceso"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Cerrar sesión; invalida el token en el servidor (REQ-20)",
+        "operationId": "cerrar_sesion_sesion_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/cuenta/recuperacion": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Solicitar el enlace de restablecimiento por correo (REQ-21)",
+        "description": "Responde siempre igual; el correo se envía después de responder (R10).",
+        "operationId": "solicitar_recuperacion_cuenta_recuperacion_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudRecuperacion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cuenta/recuperacion/confirmar": {
+      "post": {
+        "tags": [
+          "cuenta"
+        ],
+        "summary": "Fijar una contraseña nueva con el token del enlace (REQ-21)",
+        "description": "Cambia la contraseña y cierra todas las sesiones; no inicia sesión.",
+        "operationId": "confirmar_recuperacion_cuenta_recuperacion_confirmar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmacionRecuperacion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "description": "Enlace no válido o caducado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parcelas": {
+      "get": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Listar parcelas (REQ-14)",
+        "operationId": "listar_parcelas_parcelas_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Parcela"
+                  },
+                  "title": "Response Listar Parcelas Parcelas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Dar de alta una parcela (REQ-14)",
+        "operationId": "crear_parcela_parcelas_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParcelaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya hay una parcela activa con esa referencia SIGPAC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parcelas/{id}": {
+      "put": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Modificar una parcela (REQ-14); no altera tratamientos anteriores (REQ-05)",
+        "operationId": "modificar_parcela_parcelas__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParcelaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ya hay una parcela activa con esa referencia SIGPAC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/parcelas/{id}/baja": {
+      "post": {
+        "tags": [
+          "parcelas"
+        ],
+        "summary": "Dar de baja una parcela (REQ-17)",
+        "operationId": "dar_de_baja_parcela_parcelas__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parcela"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personas": {
+      "get": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Listar aplicadores y asesores (REQ-15)",
+        "operationId": "listar_personas_personas_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Persona"
+                  },
+                  "title": "Response Listar Personas Personas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Dar de alta una persona (REQ-15)",
+        "operationId": "crear_persona_personas_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personas/{id}": {
+      "put": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Modificar una persona (REQ-15)",
+        "operationId": "modificar_persona_personas__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonaEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personas/{id}/baja": {
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Dar de baja una persona (REQ-17)",
+        "operationId": "dar_de_baja_persona_personas__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/equipos": {
+      "get": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Listar equipos de aplicación (REQ-15)",
+        "operationId": "listar_equipos_equipos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equipo"
+                  },
+                  "title": "Response Listar Equipos Equipos Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Dar de alta un equipo (REQ-15)",
+        "operationId": "crear_equipo_equipos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipoEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/equipos/{id}": {
+      "put": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Modificar un equipo (REQ-15)",
+        "operationId": "modificar_equipo_equipos__id__put",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipoEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/equipos/{id}/baja": {
+      "post": {
+        "tags": [
+          "equipos"
+        ],
+        "summary": "Dar de baja un equipo (REQ-17)",
+        "operationId": "dar_de_baja_equipo_equipos__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/productos": {
+      "get": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Listar productos fitosanitarios (REQ-16)",
+        "operationId": "listar_productos_productos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "incluir_bajas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Incluir también los elementos dados de baja (REQ-17)",
+              "default": false,
+              "title": "Incluir Bajas"
+            },
+            "description": "Incluir también los elementos dados de baja (REQ-17)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Producto"
+                  },
+                  "title": "Response Listar Productos Productos Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Dar de alta un producto, también desde el registro y sin conexión (REQ-16, REQ-06)",
+        "description": "Idempotente por `id` (UUID del cliente). Un reintento con el mismo contenido devuelve 200.",
+        "operationId": "crear_producto_productos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductoEntrada"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Ya existía con el mismo contenido (reintento)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Existe otro producto con ese id y distinto contenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/productos/{id}/baja": {
+      "post": {
+        "tags": [
+          "productos"
+        ],
+        "summary": "Dar de baja un producto (REQ-17)",
+        "operationId": "dar_de_baja_producto_productos__id__baja_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Producto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos": {
+      "get": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Consultar tratamientos ordenados por fecha, con filtros (REQ-10)",
+        "operationId": "listar_tratamientos_tratamientos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Desde"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Hasta"
+            }
+          },
+          {
+            "name": "parcela_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parcela Id"
+            }
+          },
+          {
+            "name": "producto_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Producto Id"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000000,
+              "minimum": 1,
+              "default": 1,
+              "title": "Pagina"
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Tamano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaTratamientos"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Registrar un tratamiento (REQ-01 a REQ-05)",
+        "description": "Idempotente por `id` (UUID del cliente, REQ-06). Un reintento con el mismo contenido devuelve 200.",
+        "operationId": "registrar_tratamiento_tratamientos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TratamientoNuevo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Ya existía con el mismo contenido (reintento)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Existe otro tratamiento con ese id y distinto contenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos/{id}": {
+      "get": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Ver un tratamiento (REQ-10)",
+        "operationId": "ver_tratamiento_tratamientos__id__get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConfirmacionRecuperacion": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 32,
+            "title": "Token"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 15,
+            "title": "Contrasena"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "contrasena"
+        ],
+        "title": "ConfirmacionRecuperacion"
+      },
+      "Credenciales": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "title": "Correo"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 15,
+            "title": "Contrasena"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo",
+          "contrasena"
+        ],
+        "title": "Credenciales"
+      },
+      "Cuenta": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "title": "Correo"
+          },
+          "explotacionId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Explotacionid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo",
+          "explotacionId"
+        ],
+        "title": "Cuenta"
+      },
+      "Equipo": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Descripcion"
+          },
+          "fechaAdquisicionOInspeccion": {
+            "type": "string",
+            "format": "date",
+            "title": "Fechaadquisicionoinspeccion"
+          },
+          "numeroRoma": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeroroma",
+            "description": "Número ROMA o referencia censal, si procede"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "descripcion",
+          "fechaAdquisicionOInspeccion",
+          "id"
+        ],
+        "title": "Equipo"
+      },
+      "EquipoEntrada": {
+        "properties": {
+          "descripcion": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Descripcion"
+          },
+          "fechaAdquisicionOInspeccion": {
+            "type": "string",
+            "format": "date",
+            "title": "Fechaadquisicionoinspeccion"
+          },
+          "numeroRoma": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeroroma",
+            "description": "Número ROMA o referencia censal, si procede"
+          }
+        },
+        "type": "object",
+        "required": [
+          "descripcion",
+          "fechaAdquisicionOInspeccion"
+        ],
+        "title": "EquipoEntrada"
+      },
+      "ErrorCampo": {
+        "properties": {
+          "campo": {
+            "type": "string",
+            "title": "Campo"
+          },
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          },
+          "req": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Req"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campo",
+          "mensaje"
+        ],
+        "title": "ErrorCampo"
+      },
+      "ErrorValidacion": {
+        "properties": {
+          "errores": {
+            "items": {
+              "$ref": "#/components/schemas/ErrorCampo"
+            },
+            "type": "array",
+            "title": "Errores"
+          }
+        },
+        "type": "object",
+        "required": [
+          "errores"
+        ],
+        "title": "ErrorValidacion",
+        "description": "Respuesta 422: un mensaje en lenguaje llano por campo (REQ-04, principio V)."
+      },
+      "EsperaAcceso": {
+        "properties": {
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          },
+          "segundosRestantes": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Segundosrestantes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mensaje",
+          "segundosRestantes"
+        ],
+        "title": "EsperaAcceso",
+        "description": "Respuesta 429 del inicio de sesión (REQ-22)."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Mensaje": {
+        "properties": {
+          "mensaje": {
+            "type": "string",
+            "title": "Mensaje"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mensaje"
+        ],
+        "title": "Mensaje",
+        "description": "Respuesta de error con un mensaje en lenguaje llano."
+      },
+      "PaginaTratamientos": {
+        "properties": {
+          "elementos": {
+            "items": {
+              "$ref": "#/components/schemas/Tratamiento"
+            },
+            "type": "array",
+            "title": "Elementos"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "elementos",
+          "total"
+        ],
+        "title": "PaginaTratamientos"
+      },
+      "Parcela": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "sigpac": {
+            "$ref": "#/components/schemas/ReferenciaSigpac"
+          },
+          "superficie": {
+            "type": "number",
+            "exclusiveMaximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficie",
+            "description": "ha"
+          },
+          "usoSigpac": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Usosigpac"
+          },
+          "aprovechamiento": {
+            "type": "string",
+            "enum": [
+              "forestal",
+              "pastos",
+              "cultivo"
+            ],
+            "title": "Aprovechamiento"
+          },
+          "cultivoLenoso": {
+            "type": "boolean",
+            "title": "Cultivolenoso"
+          },
+          "cultivoEspecie": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivovariedad"
+          },
+          "sistemaExplotacion": {
+            "type": "string",
+            "enum": [
+              "secano",
+              "regadio"
+            ],
+            "title": "Sistemaexplotacion"
+          },
+          "sistemaRiego": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemariego"
+          },
+          "protegido": {
+            "type": "boolean",
+            "title": "Protegido"
+          },
+          "tipoProteccion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipoproteccion"
+          },
+          "sistemaCertificacion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemacertificacion"
+          },
+          "marcoControlPlagas": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marcocontrolplagas"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "numeroOrden": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Numeroorden"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "sigpac",
+          "superficie",
+          "usoSigpac",
+          "aprovechamiento",
+          "cultivoLenoso",
+          "sistemaExplotacion",
+          "protegido",
+          "id",
+          "numeroOrden"
+        ],
+        "title": "Parcela",
+        "description": "Parcela guardada, con su número de orden (A.2.a), que asigna el servidor."
+      },
+      "ParcelaEntrada": {
+        "properties": {
+          "nombre": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nombre"
+          },
+          "sigpac": {
+            "$ref": "#/components/schemas/ReferenciaSigpac"
+          },
+          "superficie": {
+            "type": "number",
+            "exclusiveMaximum": 1000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficie",
+            "description": "ha"
+          },
+          "usoSigpac": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 1,
+            "title": "Usosigpac"
+          },
+          "aprovechamiento": {
+            "type": "string",
+            "enum": [
+              "forestal",
+              "pastos",
+              "cultivo"
+            ],
+            "title": "Aprovechamiento"
+          },
+          "cultivoLenoso": {
+            "type": "boolean",
+            "title": "Cultivolenoso"
+          },
+          "cultivoEspecie": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultivovariedad"
+          },
+          "sistemaExplotacion": {
+            "type": "string",
+            "enum": [
+              "secano",
+              "regadio"
+            ],
+            "title": "Sistemaexplotacion"
+          },
+          "sistemaRiego": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemariego"
+          },
+          "protegido": {
+            "type": "boolean",
+            "title": "Protegido"
+          },
+          "tipoProteccion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipoproteccion"
+          },
+          "sistemaCertificacion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sistemacertificacion"
+          },
+          "marcoControlPlagas": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marcocontrolplagas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sigpac",
+          "superficie",
+          "usoSigpac",
+          "aprovechamiento",
+          "cultivoLenoso",
+          "sistemaExplotacion",
+          "protegido"
+        ],
+        "title": "ParcelaEntrada",
+        "description": "Datos de la parcela que da el agricultor (A.2, apartados a–f). El número de orden no."
+      },
+      "ParcelaTratada": {
+        "properties": {
+          "parcelaId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Parcelaid"
+          },
+          "superficieTratada": {
+            "type": "number",
+            "multipleOf": 0.01,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficietratada",
+            "description": "ha; ≤ superficie de la parcela (REQ-04)"
+          },
+          "cultivoEspecie": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivovariedad"
+          },
+          "productoSemilla": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Productosemilla"
+          },
+          "numeroOrden": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Numeroorden",
+            "description": "Número de orden de la parcela (REQ-01 b)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parcelaId",
+          "superficieTratada",
+          "cultivoEspecie",
+          "cultivoVariedad",
+          "numeroOrden"
+        ],
+        "title": "ParcelaTratada"
+      },
+      "ParcelaTratadaNueva": {
+        "properties": {
+          "parcelaId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Parcelaid"
+          },
+          "superficieTratada": {
+            "type": "number",
+            "multipleOf": 0.01,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficietratada",
+            "description": "ha; ≤ superficie de la parcela (REQ-04)"
+          },
+          "cultivoEspecie": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivovariedad"
+          },
+          "productoSemilla": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Productosemilla"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parcelaId",
+          "superficieTratada",
+          "cultivoEspecie",
+          "cultivoVariedad"
+        ],
+        "title": "ParcelaTratadaNueva"
+      },
+      "Persona": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "aplicador",
+              "asesor"
+            ],
+            "title": "Tipo"
+          },
+          "numeroCarne": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numerocarne"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "nombre",
+          "tipo",
+          "numeroCarne",
+          "id"
+        ],
+        "title": "Persona"
+      },
+      "PersonaEntrada": {
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombre"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "aplicador",
+              "asesor"
+            ],
+            "title": "Tipo"
+          },
+          "numeroCarne": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numerocarne"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nombre",
+          "tipo",
+          "numeroCarne"
+        ],
+        "title": "PersonaEntrada"
+      },
+      "Producto": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "enum": [
+              "activa",
+              "baja"
+            ],
+            "title": "Estado"
+          },
+          "fechaBaja": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fechabaja"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "nombreComercial": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombrecomercial"
+          },
+          "numeroRegistro": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numeroregistro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "id",
+          "nombreComercial",
+          "numeroRegistro"
+        ],
+        "title": "Producto"
+      },
+      "ProductoAplicado": {
+        "properties": {
+          "productoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productoid"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Cantidad"
+          },
+          "unidadMedida": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "L"
+            ],
+            "title": "Unidadmedida"
+          },
+          "dosisPorHectarea": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Dosisporhectarea",
+            "description": "Cantidad entre la superficie tratada total, redondeada según REQ-23",
+            "readOnly": true
+          },
+          "unidadDosis": {
+            "type": "string",
+            "enum": [
+              "kg/ha",
+              "L/ha"
+            ],
+            "title": "Unidaddosis",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "productoId",
+          "cantidad",
+          "unidadMedida",
+          "dosisPorHectarea",
+          "unidadDosis"
+        ],
+        "title": "ProductoAplicado",
+        "description": "Producto aplicado con su dosis calculada, que no se guarda ni se acepta (REQ-23; R15)."
+      },
+      "ProductoAplicadoNuevo": {
+        "properties": {
+          "productoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productoid"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Cantidad"
+          },
+          "unidadMedida": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "L"
+            ],
+            "title": "Unidadmedida"
+          }
+        },
+        "type": "object",
+        "required": [
+          "productoId",
+          "cantidad",
+          "unidadMedida"
+        ],
+        "title": "ProductoAplicadoNuevo"
+      },
+      "ProductoEntrada": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "nombreComercial": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Nombrecomercial"
+          },
+          "numeroRegistro": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Numeroregistro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nombreComercial",
+          "numeroRegistro"
+        ],
+        "title": "ProductoEntrada"
+      },
+      "ReferenciaSigpac": {
+        "properties": {
+          "provincia": {
+            "type": "integer",
+            "maximum": 99.0,
+            "minimum": 1.0,
+            "title": "Provincia"
+          },
+          "municipio": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 1.0,
+            "title": "Municipio"
+          },
+          "agregado": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 0.0,
+            "title": "Agregado"
+          },
+          "zona": {
+            "type": "integer",
+            "maximum": 32767.0,
+            "minimum": 0.0,
+            "title": "Zona"
+          },
+          "poligono": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Poligono"
+          },
+          "parcela": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Parcela"
+          },
+          "recinto": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Recinto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provincia",
+          "municipio",
+          "agregado",
+          "zona",
+          "poligono",
+          "parcela",
+          "recinto"
+        ],
+        "title": "ReferenciaSigpac",
+        "description": "Recinto SIGPAC (A.2.b; SIEX REA 12.2 a 12.8)."
+      },
+      "SolicitudRecuperacion": {
+        "properties": {
+          "correo": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "title": "Correo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correo"
+        ],
+        "title": "SolicitudRecuperacion"
+      },
+      "Tratamiento": {
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha",
+            "description": "≤ hoy (REQ-04)"
+          },
+          "problema": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Problema"
+          },
+          "aplicadorId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Aplicadorid"
+          },
+          "asesorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asesorid"
+          },
+          "equipoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Equipoid"
+          },
+          "parcelas": {
+            "items": {
+              "$ref": "#/components/schemas/ParcelaTratada"
+            },
+            "type": "array",
+            "title": "Parcelas"
+          },
+          "productos": {
+            "items": {
+              "$ref": "#/components/schemas/ProductoAplicado"
+            },
+            "type": "array",
+            "title": "Productos"
+          },
+          "eficacia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "buena",
+                  "regular",
+                  "mala"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eficacia"
+          },
+          "observaciones": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observaciones"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registradoen",
+            "description": "Momento del guardado en el dispositivo (R14)"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "enConflicto": {
+            "type": "boolean",
+            "title": "Enconflicto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fecha",
+          "problema",
+          "aplicadorId",
+          "equipoId",
+          "parcelas",
+          "productos",
+          "id",
+          "registradoEn",
+          "version",
+          "enConflicto"
+        ],
+        "title": "Tratamiento",
+        "description": "Tratamiento guardado, con el número de orden de cada parcela y la dosis de cada producto."
+      },
+      "TratamientoNuevo": {
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha",
+            "description": "≤ hoy (REQ-04)"
+          },
+          "problema": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Problema"
+          },
+          "aplicadorId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Aplicadorid"
+          },
+          "asesorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asesorid"
+          },
+          "equipoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Equipoid"
+          },
+          "parcelas": {
+            "items": {
+              "$ref": "#/components/schemas/ParcelaTratadaNueva"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Parcelas"
+          },
+          "productos": {
+            "items": {
+              "$ref": "#/components/schemas/ProductoAplicadoNuevo"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Productos"
+          },
+          "eficacia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "buena",
+                  "regular",
+                  "mala"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eficacia"
+          },
+          "observaciones": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observaciones"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registradoen",
+            "description": "Momento del guardado en el dispositivo (R14)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fecha",
+          "problema",
+          "aplicadorId",
+          "equipoId",
+          "parcelas",
+          "productos",
+          "id",
+          "registradoEn"
+        ],
+        "title": "TratamientoNuevo"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "cookieSesion": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-sesion"
+      }
+    }
+  }
+}

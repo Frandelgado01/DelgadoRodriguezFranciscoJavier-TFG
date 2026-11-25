@@ -22,5 +22,6 @@
     }
   ],
   "latex-workshop.latex.rootFile.useSubFile": false,
-  "latex-workshop.view.pdf.viewer": "tab"
+  "latex-workshop.view.pdf.viewer": "tab",
+  "python.terminal.useEnvFile": true
 }

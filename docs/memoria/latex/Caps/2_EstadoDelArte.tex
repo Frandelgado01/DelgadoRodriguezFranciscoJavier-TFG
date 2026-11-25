@@ -125,7 +125,7 @@ El \emph{loop engineering} ejecuta el \emph{cómo}: el agente implementa cada ta
 \section{Herramientas de desarrollo}\label{sec:Herramientas}
 % Base: docs/conceptos/02-claude-code-y-spec-kit.md
 % VS Code con Claude Code; CLAUDE.md, skills, subagentes, hooks y MCP; Spec Kit y
-% Kiro; alternativas: Copilot, Cursor, Gemini CLI, Antigravity y Codex.
+% Kiro; alternativas: Copilot, Cursor, Antigravity y Codex.
 % BORRADOR del agente (2026-11-24): el alumno lo revisa y lo reescribe con su voz.
 
 \subsection{Claude Code y Spec Kit}\label{subsec:ClaudeCode}
@@ -150,7 +150,7 @@ El uso de Claude Code y de Spec Kit se fijó en el índice acordado con el tutor
 \begin{table}[htbp]
 	\centering
 	\small
-	\caption{Herramientas de desarrollo con agentes. Elaboración propia a partir de la documentación oficial citada, consultada el 24 de noviembre de 2026.}
+	\caption{Herramientas de desarrollo con agentes. Elaboración propia a partir de la documentación oficial citada, consultada el 24 y el 25 de noviembre de 2026.}
 	\label{tab:Herramientas}
 	\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 		\toprule
@@ -160,13 +160,13 @@ El uso de Claude Code y de Spec Kit se fijó en el índice acordado con el tutor
 		Agentes de VS Code y GitHub Copilot \citep{vscode-customization} & Agentes integrados en el editor & Instrucciones del proyecto, \emph{skills}, agentes propios, \emph{hooks} y MCP \\
 		Cursor \citep{cursor-rules} & Editor con agente & Reglas versionadas en \texttt{.cursor/rules} y \texttt{AGENTS.md} \\
 		Codex \citep{codex-agents} & Agente de OpenAI & Ficheros \texttt{AGENTS.md}, que el agente lee antes de trabajar \\
-		Antigravity \citep{antigravity-overview} & Aplicación de escritorio, línea de órdenes, extensiones y SDK de Google & \pendiente{consultar la documentación de reglas de Antigravity} \\
+		Antigravity \citep{antigravity-overview} & Aplicación de escritorio, línea de órdenes, extensiones y SDK de Google & \texttt{AGENTS.md} o \texttt{GEMINI.md} y reglas en \texttt{.agents/rules}, que carga automáticamente \citep{antigravity-rules} \\
 		Kiro \citep{kiro-specs} & Entorno con especificaciones propias, en un flujo de tres fases & \texttt{requirements.md}, \texttt{design.md} y \texttt{tasks.md} \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-El índice mencionaba también Gemini CLI. Su documentación indica que Antigravity CLI lo sustituyó el 18 de junio de 2026 para los usuarios sin suscripción de pago y de Google One \citep{gemini-md}. Kiro es la alternativa más próxima al enfoque de este trabajo, porque también parte de una especificación; la diferencia es que integra el método en la herramienta, mientras que Spec Kit lo mantiene separado del agente.
+Kiro es la alternativa más próxima al enfoque de este trabajo, porque también parte de una especificación; la diferencia es que integra el método en la herramienta, mientras que Spec Kit lo mantiene separado del agente.
 
 \section{Tecnologías del producto: comparativa y elección}\label{sec:Tecnologias}
 % Acuerdo de la tutoría anotada el 2026-11-09. Por qué se eligió cada tecnología y

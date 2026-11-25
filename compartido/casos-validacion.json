@@ -1,0 +1,2597 @@
+{
+  "descripcion": "Casos compartidos de las reglas de validación (research R8). Los recorren pytest (backend/tests/unit/test_casos_compartidos.py) y Vitest (frontend/tests/casos-compartidos.test.ts). Cada caso: req (REQ-xx que verifica), regla, descripcion, entrada y esperado.",
+  "casos": [
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "vacía",
+      "entrada": "",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "14 caracteres",
+      "entrada": "aaaaaaaaaaaaaa",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "15 caracteres (mínimo)",
+      "entrada": "aaaaaaaaaaaaaaa",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "128 caracteres (máximo)",
+      "entrada": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "129 caracteres",
+      "entrada": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "frase solo con minúsculas y espacios, sin reglas de composición",
+      "entrada": "mi huerta de olivos",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "15 espacios",
+      "entrada": "               ",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "letras con tilde y eñe",
+      "entrada": "ñandú cigüeña olivo",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "14 letras y un emoji cuentan 15 caracteres",
+      "entrada": "aaaaaaaaaaaaaa🌾",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "127 letras y un emoji cuentan 128 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa🌾",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "contrasena",
+      "descripcion": "128 letras y un emoji cuentan 129 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa🌾",
+      "esperado": {
+        "campo": "contrasena",
+        "mensaje": "La contraseña debe tener entre 15 y 128 caracteres.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "correo normal",
+      "entrada": "ana@example.com",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con espacios a los lados",
+      "entrada": "  ana@example.com  ",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con mayúsculas",
+      "entrada": "Ana@Example.COM",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con letras con tilde",
+      "entrada": "ñandú@campo.es",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "vacío",
+      "entrada": "",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "solo espacios",
+      "entrada": "   ",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "sin arroba",
+      "entrada": "anaexample.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con dos arrobas",
+      "entrada": "ana@@example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "sin punto en el dominio",
+      "entrada": "ana@example",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con un espacio dentro",
+      "entrada": "ana @example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "con un carácter nulo dentro",
+      "entrada": "a\u0000b@example.com",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "254 caracteres (máximo)",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.es",
+      "esperado": null
+    },
+    {
+      "req": "REQ-20",
+      "regla": "correo",
+      "descripcion": "255 caracteres",
+      "entrada": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.es",
+      "esperado": {
+        "campo": "correo",
+        "mensaje": "Escribe un correo electrónico válido, por ejemplo nombre@dominio.es.",
+        "req": "REQ-20"
+      }
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "completo con los datos obligatorios",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "completo también con los opcionales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén",
+              "productoSemilla": "Tebuconazol"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ],
+          "asesorId": "22222222-0000-4000-8000-000000000001",
+          "eficacia": "buena",
+          "observaciones": "Sin viento."
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "asesor, producto de la semilla, eficacia y observaciones son opcionales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén",
+              "productoSemilla": null
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ],
+          "asesorId": null,
+          "eficacia": null,
+          "observaciones": null
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "dos parcelas y dos productos en mezcla",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            },
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000002",
+              "superficieTratada": 2,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            },
+            {
+              "productoId": "44444444-0000-4000-8000-000000000002",
+              "cantidad": 1.5,
+              "unidadMedida": "L"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin fecha",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "fecha",
+          "mensaje": "Falta la fecha del tratamiento.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin problema",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "problema",
+          "mensaje": "Falta la plaga o el problema que querías controlar.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin aplicador",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "aplicadorId",
+          "mensaje": "Falta quién aplicó el producto.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin equipo",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "equipoId",
+          "mensaje": "Falta el equipo de aplicación.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "problema solo con espacios",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "   ",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "problema",
+          "mensaje": "Falta la plaga o el problema que querías controlar.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "fecha vacía",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "fecha",
+          "mensaje": "Falta la fecha del tratamiento.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin parcelas",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas",
+          "mensaje": "Elige al menos una parcela tratada.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "lista de parcelas vacía",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas",
+          "mensaje": "Elige al menos una parcela tratada.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin productos",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos",
+          "mensaje": "Añade al menos un producto.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "lista de productos vacía",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": []
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos",
+          "mensaje": "Añade al menos un producto.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "línea sin parcela elegida",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.parcelaId",
+          "mensaje": "Elige la parcela.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin especie",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.cultivoEspecie",
+          "mensaje": "Falta la especie del cultivo.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin variedad",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": " "
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.cultivoVariedad",
+          "mensaje": "Falta la variedad del cultivo.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin superficie tratada",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": null,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "Falta la superficie tratada.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "línea sin producto elegido",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.productoId",
+          "mensaje": "Elige el producto.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin cantidad",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "Falta la cantidad de producto.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin unidad",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.unidadMedida",
+          "mensaje": "La cantidad se anota en kg o en L.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-02",
+      "regla": "tratamiento",
+      "descripcion": "sin ningún dato señala todos los que faltan",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {}
+      },
+      "esperado": [
+        {
+          "campo": "fecha",
+          "mensaje": "Falta la fecha del tratamiento.",
+          "req": "REQ-02"
+        },
+        {
+          "campo": "parcelas",
+          "mensaje": "Elige al menos una parcela tratada.",
+          "req": "REQ-02"
+        },
+        {
+          "campo": "problema",
+          "mensaje": "Falta la plaga o el problema que querías controlar.",
+          "req": "REQ-02"
+        },
+        {
+          "campo": "aplicadorId",
+          "mensaje": "Falta quién aplicó el producto.",
+          "req": "REQ-02"
+        },
+        {
+          "campo": "productos",
+          "mensaje": "Añade al menos un producto.",
+          "req": "REQ-02"
+        },
+        {
+          "campo": "equipoId",
+          "mensaje": "Falta el equipo de aplicación.",
+          "req": "REQ-02"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "fecha de hoy",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "fecha anterior a hoy",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-01-31",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "fecha posterior a hoy",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-16",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "fecha",
+          "mensaje": "La fecha no puede ser posterior a hoy.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "fecha que no existe",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-02-30",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "fecha",
+          "mensaje": "La fecha no es válida.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada cero",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 0,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada tiene que ser mayor que 0.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada negativa",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": -1,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada tiene que ser mayor que 0.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada que no es un número",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": "tres",
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada tiene que ser un número.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada con 2 decimales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 0.01,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada con 3 decimales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.505,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada puede tener como mucho 2 decimales.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada muy pequeña con muchos decimales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 1e-07,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada puede tener como mucho 2 decimales.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada igual que la de la parcela",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 4.2,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "superficie tratada mayor que la de la parcela",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.superficieTratada",
+          "mensaje": "La superficie tratada (5 ha) es mayor que la de la parcela (4,2 ha).",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "solo una de las dos parcelas supera su superficie",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            },
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000002",
+              "superficieTratada": 2.01,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.1.superficieTratada",
+          "mensaje": "La superficie tratada (2,01 ha) es mayor que la de la parcela (2 ha).",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "parcela cuya superficie no se conoce",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000009",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "parcela repetida",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            },
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.1.parcelaId",
+          "mensaje": "Esta parcela está repetida.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "producto repetido",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            },
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.1.productoId",
+          "mensaje": "Este producto está repetido: suma las cantidades en una sola línea.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad nula",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 0,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "La cantidad tiene que ser mayor que 0.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad negativa",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": -2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "La cantidad tiene que ser mayor que 0.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad que no es un número",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": "dos",
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "La cantidad tiene que ser un número.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad con 3 decimales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 0.001,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad con 4 decimales",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 0.0005,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "La cantidad puede tener como mucho 3 decimales.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad demasiado grande",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 1000000000,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.cantidad",
+          "mensaje": "La cantidad tiene que ser menor que 1000000000.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "cantidad en litros",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "L"
+            }
+          ]
+        }
+      },
+      "esperado": []
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "unidad g",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "g"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.unidadMedida",
+          "mensaje": "La cantidad se anota en kg o en L.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "unidad l",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "l"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.unidadMedida",
+          "mensaje": "La cantidad se anota en kg o en L.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "unidad ml",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "ml"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "productos.0.unidadMedida",
+          "mensaje": "La cantidad se anota en kg o en L.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "eficacia fuera de la escala",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ],
+          "eficacia": "excelente"
+        }
+      },
+      "esperado": [
+        {
+          "campo": "eficacia",
+          "mensaje": "La eficacia tiene que ser buena, regular o mala.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "problema de 201 caracteres",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "problema",
+          "mensaje": "Puede tener como mucho 200 caracteres.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "especie de 101 caracteres",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.cultivoEspecie",
+          "mensaje": "Puede tener como mucho 100 caracteres.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "variedad de 101 caracteres",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.cultivoVariedad",
+          "mensaje": "Puede tener como mucho 100 caracteres.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "producto de la semilla de 151 caracteres",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén",
+              "productoSemilla": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ]
+        }
+      },
+      "esperado": [
+        {
+          "campo": "parcelas.0.productoSemilla",
+          "mensaje": "Puede tener como mucho 150 caracteres.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-04",
+      "regla": "tratamiento",
+      "descripcion": "observaciones de 2001 caracteres",
+      "entrada": {
+        "hoy": "2026-03-15",
+        "superficies": {
+          "11111111-0000-4000-8000-000000000001": 4.2,
+          "11111111-0000-4000-8000-000000000002": 2
+        },
+        "datos": {
+          "fecha": "2026-03-15",
+          "problema": "Mildiu",
+          "aplicadorId": "22222222-0000-4000-8000-000000000001",
+          "equipoId": "33333333-0000-4000-8000-000000000001",
+          "parcelas": [
+            {
+              "parcelaId": "11111111-0000-4000-8000-000000000001",
+              "superficieTratada": 3.5,
+              "cultivoEspecie": "Vitis vinifera",
+              "cultivoVariedad": "Airén"
+            }
+          ],
+          "productos": [
+            {
+              "productoId": "44444444-0000-4000-8000-000000000001",
+              "cantidad": 2,
+              "unidadMedida": "kg"
+            }
+          ],
+          "observaciones": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      },
+      "esperado": [
+        {
+          "campo": "observaciones",
+          "mensaje": "Puede tener como mucho 2000 caracteres.",
+          "req": "REQ-04"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "escenario 6, 2 kg en 3,5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "escenario 7, mezcla de 2 kg y 1,5 L en 1,5 + 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "kg"
+          },
+          {
+            "cantidad": 1.5,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          1.5,
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        },
+        {
+          "dosisPorHectarea": "0,43",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate hacia arriba, 1,13 kg en 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 1.13,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate que falla con coma flotante, 0,57 kg en 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.57,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,29",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate de 0,005 hacia arriba",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.01,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,01",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña, 0,02 L en 5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.02,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,004",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña que se redondea en el tercer decimal",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.001,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          1.04
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,001",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña en una superficie grande",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.001,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          12000
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,0000001",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "resultado exacto, 3,5 kg en 3,5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 3.5,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "1,00",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis de más de 1 000",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 999999999.999,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          0.01
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "99999999999,90",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "suma de superficies sin error binario, 0,1 + 0,2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.3,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          0.1,
+          0.2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "1,00",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "la unidad sigue a la cantidad en litros",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    }
+  ]
+}

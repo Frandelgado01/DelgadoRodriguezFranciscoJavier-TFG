@@ -1,0 +1,307 @@
+/* Hoja de estilos de la PWA (T-84; principio V, SC-001). Pensada para el móvil: una columna, letra de 16 px o más y
+   botones y campos de 44 px de alto o más (WCAG 2.2, 2.5.5). Todos los textos superan 4,5:1 de contraste (1.4.3).
+   Sin fuentes ni recursos externos. Solo tema claro. */
+
+:root {
+  --verde: #2e7d32; /* el theme_color del manifiesto */
+  --verde-oscuro: #1b5e20;
+  --verde-claro: #e8f5e9;
+  --texto: #1f2a20;
+  --texto-suave: #4a554b;
+  --borde: #6b766c;
+  --separador: #d5dcd5;
+  --rojo: #a61b1b;
+  --rojo-claro: #fdecea;
+  --ambar: #704700;
+  --ambar-claro: #fff3d6;
+  --foco: #0b4f94;
+  --alto: 2.75rem; /* 44 px */
+  --ancho: 40rem;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--texto);
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere; /* nombres y errores largos sin espacios */
+}
+
+/* Una columna, con un ancho máximo legible en pantallas grandes */
+main,
+#raiz > [role="status"] {
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  color: var(--verde-oscuro);
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--verde);
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+p {
+  margin: 0.5rem 0;
+}
+
+/* Enlaces y botones */
+a {
+  display: inline-block;
+  min-width: var(--alto);
+  padding: 0.625rem 0;
+  color: var(--verde-oscuro);
+}
+
+button,
+nav a,
+li > a {
+  display: inline-block;
+  min-height: var(--alto);
+  max-width: 100%;
+  margin: 0.25rem 0.5rem 0.25rem 0;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--verde);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--verde-oscuro);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+nav a {
+  display: block;
+  margin-right: 0;
+}
+
+button[type="submit"],
+nav a:first-child {
+  background: var(--verde);
+  color: #fff;
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin-right: 0;
+}
+
+button:hover,
+nav a:hover,
+li > a:hover {
+  background: var(--verde-claro);
+}
+
+button[type="submit"]:hover,
+nav a:first-child:hover {
+  background: var(--verde-oscuro);
+}
+
+button:disabled,
+button:disabled:hover {
+  border-color: var(--borde);
+  background: #eef0ee;
+  color: var(--texto-suave);
+  cursor: default;
+}
+
+/* El campo de fecha no cumple :focus-visible cuando el foco está en el botón de su calendario */
+:focus-visible,
+.campo input:focus-within {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+/* Formularios: la etiqueta encima del campo, a todo el ancho */
+.campo {
+  margin: 0 0 1rem;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--alto);
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  background-color: #fff;
+  color: inherit;
+  font: inherit;
+  text-overflow: ellipsis;
+}
+
+.campo [aria-invalid="true"] {
+  border: 2px solid var(--rojo);
+}
+
+.campo p {
+  margin: 0.25rem 0 0;
+  color: var(--texto-suave);
+}
+
+.campo input[type="checkbox"] {
+  display: inline-block;
+  width: var(--alto);
+  height: var(--alto);
+  accent-color: var(--verde);
+  vertical-align: middle;
+}
+
+.campo input[type="checkbox"] + label {
+  display: inline-block;
+  width: calc(100% - var(--alto));
+  margin: 0;
+  padding-left: 0.75rem;
+  vertical-align: middle;
+}
+
+button + .campo,
+button + fieldset {
+  margin-top: 0.75rem;
+}
+
+fieldset {
+  min-width: 0; /* sin esto, crece con su contenido más ancho */
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem 1rem;
+  border: 1px solid var(--separador);
+  border-radius: 0.5rem;
+}
+
+legend {
+  max-width: 100%;
+  padding: 0 0.5rem;
+  color: var(--verde-oscuro);
+  font-weight: 700;
+}
+
+/* Listas: una tarjeta por elemento */
+ul {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+li,
+section > form {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--separador);
+  border-radius: 0.5rem;
+}
+
+li > strong,
+li > span {
+  display: block;
+}
+
+li > span {
+  margin-bottom: 0.25rem;
+  color: var(--texto-suave);
+}
+
+dl {
+  margin: 0.75rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--separador);
+}
+
+dt {
+  color: var(--texto-suave);
+}
+
+dd {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+/* Avisos y estados: se distinguen por su texto, además de por el color */
+[role="alert"],
+.campo p[role="alert"] {
+  color: var(--rojo);
+  font-weight: 600;
+}
+
+:not(.campo) > [role="alert"] {
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--rojo);
+  background: var(--rojo-claro);
+}
+
+[role="alertdialog"] {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--ambar);
+  border-radius: 0.5rem;
+  background: var(--ambar-claro);
+}
+
+main [role="status"] {
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--verde);
+  background: var(--verde-claro);
+}
+
+#raiz > [role="status"] {
+  padding-block: 0.25rem;
+  background: var(--verde-claro);
+}
+
+.estado {
+  width: fit-content;
+  margin: 0 0 0.5rem;
+  padding: 0.125rem 0.75rem;
+  border: 1px solid currentcolor;
+  border-radius: 1rem;
+  background: var(--verde-claro);
+  color: var(--verde-oscuro);
+  font-weight: 600;
+}
+
+.estado-pendiente,
+.estado-conflicto {
+  background: var(--ambar-claro);
+  color: var(--ambar);
+}
+
+.estado-rechazado {
+  background: var(--rojo-claro);
+  color: var(--rojo);
+}

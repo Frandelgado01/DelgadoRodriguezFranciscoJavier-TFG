@@ -44,6 +44,7 @@ docs/memoria/latex/principal.pdf
 !.env.example
 *.pem
 *.key
+*.crt
 
 # Claude Code (ajustes locales de cada máquina)
 .claude/settings.local.json
@@ -55,3 +56,6 @@ desktop.ini
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# TypeScript
+*.tsbuildinfo
