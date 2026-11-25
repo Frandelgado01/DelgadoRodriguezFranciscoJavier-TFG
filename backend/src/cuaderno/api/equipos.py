@@ -16,7 +16,7 @@ from cuaderno.api.comun import (
     dar_de_baja,
     de_la_explotacion,
 )
-from cuaderno.api.errores import DatosNoValidos
+from cuaderno.dominio.validacion import DatosNoValidos
 from cuaderno.esquemas.equipo import Equipo, EquipoEntrada
 from cuaderno.reloj import Reloj
 from cuaderno.servicios.sesiones import buscar_en_explotacion
@@ -28,9 +28,14 @@ def _comprobar_fecha(datos: EquipoEntrada, reloj: Reloj) -> None:
     """La fecha de adquisición o de la última inspección no puede ser posterior a hoy (REQ-15)."""
     if datos.fecha_adquisicion_o_inspeccion > reloj.hoy():
         raise DatosNoValidos(
-            "fechaAdquisicionOInspeccion",
-            "La fecha de adquisición o de la última inspección no puede ser posterior a hoy.",
-            "REQ-15",
+            [
+                {
+                    "campo": "fechaAdquisicionOInspeccion",
+                    "mensaje": "La fecha de adquisición o de la última inspección no puede ser "
+                    "posterior a hoy.",
+                    "req": "REQ-15",
+                }
+            ]
         )
 
 

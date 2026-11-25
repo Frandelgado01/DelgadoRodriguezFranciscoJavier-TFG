@@ -329,7 +329,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   se guarda un cambio `creacion`; `fecha_registro` es la fecha de `registrado_en` en `Europe/Madrid` y se
   rechaza un `registrado_en` futuro o anterior a la fecha. Contrato: `POST /tratamientos` y
   `GET /tratamientos/{id}`. (REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-17)
-- [ ] T-36 [US1] Implementar el registro en `backend/src/cuaderno/servicios/tratamientos.py`,
+- [X] T-36 [US1] Implementar el registro en `backend/src/cuaderno/servicios/tratamientos.py`,
   `esquemas/tratamiento.py` y `api/tratamientos.py`: todo en una transacción; validación con
   `dominio/validacion.py` más las comprobaciones contra la base (superficie de la parcela, elementos activos,
   tipo de persona, misma explotación); copia del cultivo en `tratamiento_parcela`; cálculo de `fecha_registro`;

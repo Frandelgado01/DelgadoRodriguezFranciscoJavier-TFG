@@ -6,7 +6,7 @@ La API se monta como subaplicación en /api: así su OpenAPI declara `servers: /
 
 from fastapi import FastAPI
 
-from cuaderno.api import cuenta, equipos, errores, parcelas, personas, productos
+from cuaderno.api import cuenta, equipos, errores, parcelas, personas, productos, tratamientos
 
 api = FastAPI(
     title="Cuaderno de Campo",
@@ -21,6 +21,7 @@ api.include_router(parcelas.router)
 api.include_router(personas.router)
 api.include_router(equipos.router)
 api.include_router(productos.router)
+api.include_router(tratamientos.router)
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/api", api)

@@ -290,6 +290,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tratamientos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registrar un tratamiento (REQ-01 a REQ-05)
+         * @description Idempotente por `id` (UUID del cliente, REQ-06). Un reintento con el mismo contenido devuelve 200.
+         */
+        post: operations["registrar_tratamiento_tratamientos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tratamientos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ver un tratamiento (REQ-10) */
+        get: operations["ver_tratamiento_tratamientos__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -501,6 +538,49 @@ export interface components {
             /** Marcocontrolplagas */
             marcoControlPlagas?: string | null;
         };
+        /** ParcelaTratada */
+        ParcelaTratada: {
+            /**
+             * Parcelaid
+             * Format: uuid
+             */
+            parcelaId: string;
+            /**
+             * Superficietratada
+             * @description ha; ≤ superficie de la parcela (REQ-04)
+             */
+            superficieTratada: number;
+            /** Cultivoespecie */
+            cultivoEspecie: string;
+            /** Cultivovariedad */
+            cultivoVariedad: string;
+            /** Productosemilla */
+            productoSemilla?: string | null;
+            /**
+             * Numeroorden
+             * @description Número de orden de la parcela (REQ-01 b)
+             */
+            numeroOrden: number;
+        };
+        /** ParcelaTratadaNueva */
+        ParcelaTratadaNueva: {
+            /**
+             * Parcelaid
+             * Format: uuid
+             */
+            parcelaId: string;
+            /**
+             * Superficietratada
+             * @description ha; ≤ superficie de la parcela (REQ-04)
+             */
+            superficieTratada: number;
+            /** Cultivoespecie */
+            cultivoEspecie: string;
+            /** Cultivovariedad */
+            cultivoVariedad: string;
+            /** Productosemilla */
+            productoSemilla?: string | null;
+        };
         /** Persona */
         Persona: {
             /**
@@ -557,6 +637,21 @@ export interface components {
             /** Numeroregistro */
             numeroRegistro: string;
         };
+        /** ProductoAplicado */
+        ProductoAplicado: {
+            /**
+             * Productoid
+             * Format: uuid
+             */
+            productoId: string;
+            /** Cantidad */
+            cantidad: number;
+            /**
+             * Unidadmedida
+             * @enum {string}
+             */
+            unidadMedida: "kg" | "L";
+        };
         /** ProductoEntrada */
         ProductoEntrada: {
             /**
@@ -597,6 +692,99 @@ export interface components {
              * Format: email
              */
             correo: string;
+        };
+        /**
+         * Tratamiento
+         * @description Tratamiento guardado, con el número de orden de cada parcela tratada.
+         */
+        Tratamiento: {
+            /**
+             * Fecha
+             * Format: date
+             * @description ≤ hoy (REQ-04)
+             */
+            fecha: string;
+            /** Problema */
+            problema: string;
+            /**
+             * Aplicadorid
+             * Format: uuid
+             */
+            aplicadorId: string;
+            /** Asesorid */
+            asesorId?: string | null;
+            /**
+             * Equipoid
+             * Format: uuid
+             */
+            equipoId: string;
+            /** Parcelas */
+            parcelas: components["schemas"]["ParcelaTratada"][];
+            /** Productos */
+            productos: components["schemas"]["ProductoAplicado"][];
+            /** Eficacia */
+            eficacia?: ("buena" | "regular" | "mala") | null;
+            /** Observaciones */
+            observaciones?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             * @description Generado por el cliente (R4)
+             */
+            id: string;
+            /**
+             * Registradoen
+             * Format: date-time
+             * @description Momento del guardado en el dispositivo (R14)
+             */
+            registradoEn: string;
+            /** Version */
+            version: number;
+            /** Enconflicto */
+            enConflicto: boolean;
+        };
+        /** TratamientoNuevo */
+        TratamientoNuevo: {
+            /**
+             * Fecha
+             * Format: date
+             * @description ≤ hoy (REQ-04)
+             */
+            fecha: string;
+            /** Problema */
+            problema: string;
+            /**
+             * Aplicadorid
+             * Format: uuid
+             */
+            aplicadorId: string;
+            /** Asesorid */
+            asesorId?: string | null;
+            /**
+             * Equipoid
+             * Format: uuid
+             */
+            equipoId: string;
+            /** Parcelas */
+            parcelas: components["schemas"]["ParcelaTratadaNueva"][];
+            /** Productos */
+            productos: components["schemas"]["ProductoAplicado"][];
+            /** Eficacia */
+            eficacia?: ("buena" | "regular" | "mala") | null;
+            /** Observaciones */
+            observaciones?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             * @description Generado por el cliente (R4)
+             */
+            id: string;
+            /**
+             * Registradoen
+             * Format: date-time
+             * @description Momento del guardado en el dispositivo (R14)
+             */
+            registradoEn: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -1399,6 +1587,97 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Producto"];
+                };
+            };
+            /** @description No existe en la explotación del usuario */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    registrar_tratamiento_tratamientos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TratamientoNuevo"];
+            };
+        };
+        responses: {
+            /** @description Ya existía con el mismo contenido (reintento) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tratamiento"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tratamiento"];
+                };
+            };
+            /** @description Existe otro tratamiento con ese id y distinto contenido */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mensaje"];
+                };
+            };
+            /** @description Datos no válidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorValidacion"];
+                };
+            };
+        };
+    };
+    ver_tratamiento_tratamientos__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Tratamiento"];
                 };
             };
             /** @description No existe en la explotación del usuario */

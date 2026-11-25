@@ -1127,6 +1127,131 @@
           }
         }
       }
+    },
+    "/tratamientos": {
+      "post": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Registrar un tratamiento (REQ-01 a REQ-05)",
+        "description": "Idempotente por `id` (UUID del cliente, REQ-06). Un reintento con el mismo contenido devuelve 200.",
+        "operationId": "registrar_tratamiento_tratamientos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TratamientoNuevo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Ya existía con el mismo contenido (reintento)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Existe otro tratamiento con ese id y distinto contenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ]
+      }
+    },
+    "/tratamientos/{id}": {
+      "get": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Ver un tratamiento (REQ-10)",
+        "operationId": "ver_tratamiento_tratamientos__id__get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tratamiento"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe en la explotación del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensaje"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1697,6 +1822,109 @@
         "title": "ParcelaEntrada",
         "description": "Datos de la parcela que da el agricultor (A.2, apartados a–f). El número de orden no."
       },
+      "ParcelaTratada": {
+        "properties": {
+          "parcelaId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Parcelaid"
+          },
+          "superficieTratada": {
+            "type": "number",
+            "multipleOf": 0.01,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficietratada",
+            "description": "ha; ≤ superficie de la parcela (REQ-04)"
+          },
+          "cultivoEspecie": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivovariedad"
+          },
+          "productoSemilla": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Productosemilla"
+          },
+          "numeroOrden": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Numeroorden",
+            "description": "Número de orden de la parcela (REQ-01 b)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parcelaId",
+          "superficieTratada",
+          "cultivoEspecie",
+          "cultivoVariedad",
+          "numeroOrden"
+        ],
+        "title": "ParcelaTratada"
+      },
+      "ParcelaTratadaNueva": {
+        "properties": {
+          "parcelaId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Parcelaid"
+          },
+          "superficieTratada": {
+            "type": "number",
+            "multipleOf": 0.01,
+            "exclusiveMinimum": 0.0,
+            "title": "Superficietratada",
+            "description": "ha; ≤ superficie de la parcela (REQ-04)"
+          },
+          "cultivoEspecie": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivoespecie"
+          },
+          "cultivoVariedad": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Cultivovariedad"
+          },
+          "productoSemilla": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Productosemilla"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parcelaId",
+          "superficieTratada",
+          "cultivoEspecie",
+          "cultivoVariedad"
+        ],
+        "title": "ParcelaTratadaNueva"
+      },
       "Persona": {
         "properties": {
           "estado": {
@@ -1836,6 +2064,35 @@
         ],
         "title": "Producto"
       },
+      "ProductoAplicado": {
+        "properties": {
+          "productoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productoid"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Cantidad"
+          },
+          "unidadMedida": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "L"
+            ],
+            "title": "Unidadmedida"
+          }
+        },
+        "type": "object",
+        "required": [
+          "productoId",
+          "cantidad",
+          "unidadMedida"
+        ],
+        "title": "ProductoAplicado"
+      },
       "ProductoEntrada": {
         "properties": {
           "id": {
@@ -1937,6 +2194,229 @@
           "correo"
         ],
         "title": "SolicitudRecuperacion"
+      },
+      "Tratamiento": {
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha",
+            "description": "≤ hoy (REQ-04)"
+          },
+          "problema": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Problema"
+          },
+          "aplicadorId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Aplicadorid"
+          },
+          "asesorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asesorid"
+          },
+          "equipoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Equipoid"
+          },
+          "parcelas": {
+            "items": {
+              "$ref": "#/components/schemas/ParcelaTratada"
+            },
+            "type": "array",
+            "title": "Parcelas"
+          },
+          "productos": {
+            "items": {
+              "$ref": "#/components/schemas/ProductoAplicado"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Productos"
+          },
+          "eficacia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "buena",
+                  "regular",
+                  "mala"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eficacia"
+          },
+          "observaciones": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observaciones"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registradoen",
+            "description": "Momento del guardado en el dispositivo (R14)"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "enConflicto": {
+            "type": "boolean",
+            "title": "Enconflicto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fecha",
+          "problema",
+          "aplicadorId",
+          "equipoId",
+          "parcelas",
+          "productos",
+          "id",
+          "registradoEn",
+          "version",
+          "enConflicto"
+        ],
+        "title": "Tratamiento",
+        "description": "Tratamiento guardado, con el número de orden de cada parcela tratada."
+      },
+      "TratamientoNuevo": {
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date",
+            "title": "Fecha",
+            "description": "≤ hoy (REQ-04)"
+          },
+          "problema": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Problema"
+          },
+          "aplicadorId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Aplicadorid"
+          },
+          "asesorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asesorid"
+          },
+          "equipoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Equipoid"
+          },
+          "parcelas": {
+            "items": {
+              "$ref": "#/components/schemas/ParcelaTratadaNueva"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Parcelas"
+          },
+          "productos": {
+            "items": {
+              "$ref": "#/components/schemas/ProductoAplicado"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Productos"
+          },
+          "eficacia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "buena",
+                  "regular",
+                  "mala"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eficacia"
+          },
+          "observaciones": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observaciones"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Generado por el cliente (R4)"
+          },
+          "registradoEn": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Registradoen",
+            "description": "Momento del guardado en el dispositivo (R14)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fecha",
+          "problema",
+          "aplicadorId",
+          "equipoId",
+          "parcelas",
+          "productos",
+          "id",
+          "registradoEn"
+        ],
+        "title": "TratamientoNuevo"
       },
       "ValidationError": {
         "properties": {

@@ -14,6 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
+from cuaderno.dominio.validacion import DatosNoValidos
 from cuaderno.esquemas.base import DatoNoValido
 
 _UBICACIONES = {"body", "query", "path", "header", "cookie"}
@@ -57,6 +58,10 @@ def _mensaje(tipo: str, ctx: dict[str, Any]) -> str:
             return "Tiene que ser un número."
         case "date_type" | "date_parsing" | "date_from_datetime_parsing":
             return "Tiene que ser una fecha (AAAA-MM-DD)."
+        case "datetime_type" | "datetime_parsing" | "datetime_from_date_parsing" | "timezone_aware":
+            return "Tiene que ser una fecha con hora y zona horaria."
+        case "list_type":
+            return "Tiene que ser una lista."
         case "uuid_type" | "uuid_parsing":
             return "El identificador no es válido."
         case "string_type":
@@ -80,20 +85,13 @@ def _error_campo(error: dict[str, Any]) -> dict[str, str]:
     return {"campo": campo, "mensaje": _mensaje(tipo, ctx)}
 
 
-class DatosNoValidos(Exception):
-    """Rechazo 422 de una regla que la API comprueba fuera del esquema (p. ej. con la fecha de hoy).
+async def _datos_no_validos(_peticion: Request, error: Exception) -> Response:
+    """Rechazo de una regla que se comprueba fuera del esquema (p. ej. con la fecha de hoy).
 
     Sale con el mismo formato `ErrorValidacion` que los errores del esquema.
     """
-
-    def __init__(self, campo: str, mensaje: str, req: str) -> None:
-        super().__init__(mensaje)
-        self.error = {"campo": campo, "mensaje": mensaje, "req": req}
-
-
-async def _datos_no_validos(_peticion: Request, error: Exception) -> Response:
     assert isinstance(error, DatosNoValidos)  # noqa: S101 (contrato del manejador)
-    return JSONResponse({"errores": [error.error]}, status.HTTP_422_UNPROCESSABLE_CONTENT)
+    return JSONResponse({"errores": error.errores}, status.HTTP_422_UNPROCESSABLE_CONTENT)
 
 
 async def _validacion(_peticion: Request, error: Exception) -> Response:

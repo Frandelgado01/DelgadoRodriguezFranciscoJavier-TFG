@@ -19,6 +19,14 @@ class ErrorRegla(TypedDict):
     req: str
 
 
+class DatosNoValidos(Exception):
+    """Datos rechazados por una o varias reglas; la API responde 422 con todos los errores."""
+
+    def __init__(self, errores: list[ErrorRegla]) -> None:
+        super().__init__("; ".join(error["mensaje"] for error in errores))
+        self.errores = errores
+
+
 CONTRASENA_MINIMA = 15
 CONTRASENA_MAXIMA = 128
 CORREO_MAXIMO = 254
