@@ -321,7 +321,7 @@ explotación):
 | `meta` | `clave` | | Última sincronización |
 
 Al iniciar sesión y tras vaciar la cola, la PWA descarga los datos maestros y los tratamientos (paginados) y
-sustituye las copias locales, excepto los tratamientos con operaciones en la cola (pendientes o rechazadas).
+sustituye las copias locales, excepto los tratamientos y productos con operaciones en la cola (pendientes o rechazadas).
 
 ## Correspondencia con los requisitos
 

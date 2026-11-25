@@ -4,9 +4,9 @@ description: "Tareas de implementación de la funcionalidad 001: registro de tra
 
 # Tareas: Registro de tratamientos fitosanitarios
 
-**Entrada**: `specs/001-registro-tratamientos/`: [spec.md](spec.md) (aprobada, con REQ-22 y, desde el
-2026-11-14, REQ-23), [plan.md](plan.md) (aprobado el 2026-10-27; cambio de REQ-23 aprobado el 2026-11-14),
-[research.md](research.md) (R1–R15), [data-model.md](data-model.md),
+**Entrada**: `specs/001-registro-tratamientos/`: [spec.md](spec.md) (aprobada, con REQ-22, REQ-23 desde el
+2026-11-14 y REQ-06 ampliado el 2026-11-24), [plan.md](plan.md) (aprobado el 2026-10-27; cambios de REQ-23 y REQ-06
+aprobados el 2026-11-14 y el 2026-11-25), [research.md](research.md) (R1–R16), [data-model.md](data-model.md),
 [contracts/openapi.yaml](contracts/openapi.yaml), [quickstart.md](quickstart.md) y constitución v1.1.0.
 
 **Pruebas**: obligatorias (principio III, NO NEGOCIABLE). Para cada REQ, la tarea que escribe sus pruebas a
@@ -28,10 +28,15 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 | H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca `db`, `mailpit`, `api` y `web` (el `worker` llega en T-51) y el CI está en verde en la PR #1 |
 | H2 Cuentas | 2 | T-07 a T-19 | Crear cuenta, entrar, salir, recuperar la contraseña y comprobar el límite de intentos |
 | H3 Datos de la explotación | 3 (US4) | T-20 a T-29 | Dar de alta, modificar y dar de baja parcela, aplicador, equipo y producto |
-| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 y T-72 a T-77 | Registrar con y sin conexión y ver el tratamiento en el cuaderno, con la dosis por hectárea de cada producto |
+| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 y T-72 a T-83 | Registrar con y sin conexión y ver el tratamiento en el cuaderno, con la dosis por hectárea de cada producto; cambiar de cuenta en el mismo móvil; corregir y descartar un registro rechazado; salir, volver a entrar y ver los tratamientos |
 | H5 Plazos y avisos | 5 (US2) | T-43 a T-52 | Tratamiento pendiente, aviso en la app, correo único en Mailpit, completar la eficacia |
 | H6 Consulta e historial | 6 (US3) | T-53 a T-62 | Filtrar, corregir, anular, ver el historial y resolver un conflicto |
 | H7 Cierre | 7 | T-63 a T-71 (T-70 la última) | E2E y k6 en verde, quickstart en el Android de la demo, sesión con agricultores (SC-001, SC-005, SC-007) y `/speckit-converge` sin pendientes |
+
+**Recorte del 2026-11-25** (entrega el 2 de diciembre; aceptado por el alumno, pendiente de confirmar el visto bueno del tutor): se
+implementan H4 y, del H7, T-63, T-64, T-65, T-67 y T-68, y la parte de T-69 y T-70 que les corresponde. **Quedan aplazadas** H5 (T-43 a
+T-52), H6 (T-53 a T-62), T-66 y T-71; sus requisitos (REQ-07 a REQ-13) siguen en la spec y se declaran no implementados en la memoria. Si
+da tiempo, se recupera primero H5. T-65 cubre además los escenarios 8 a 10, y T-67 mide `GET /api/tratamientos` de T-81.
 
 ## Formato: `- [ ] T-xx [P?] [Historia?] Descripción (trazabilidad)`
 
@@ -39,7 +44,7 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 - **[US1]…[US4]**: historia de usuario de la spec (US1 = historia 1, registrar; US2 = historia 2, plazo y
   eficacia; US3 = historia 3, consultar, corregir y conservar; US4 = historia 4, datos de la explotación).
 - **Trazabilidad** al final de cada tarea: los `REQ-xx` que cubre o, en infraestructura, el principio o la
-  decisión del plan (R1–R15) que la motiva.
+  decisión del plan (R1–R16) que la motiva.
 
 ## Orden de las fases
 
@@ -342,11 +347,16 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   encolar si hay red y cada 60 s; un fallo de red detiene el vaciado sin perder nada; un 401 conserva la cola y
   pide iniciar sesión; un reintento de una creación ya aplicada (200) no duplica nada; con 20 tratamientos
   encolados se sincronizan los 20 sin pérdida ni duplicados (SC-003); el contador de pendientes es correcto.
-  (REQ-06)
+  **Cuentas (escenario 8)**: antes de **cada** envío se pide `GET /cuenta/yo`; si devuelve otra explotación, no se envía nada, la cola
+  se conserva y se pide entrar. **Rechazos (escenarios 9 y 10)**: un 422, o un 409 al crear, deja la operación `rechazada` con sus
+  errores y el tratamiento `rechazado`, y se envía la siguiente; un 408, 429 o 5xx detiene el vaciado sin marcar nada; un tratamiento
+  que usa un producto con el alta rechazada no se envía; corregir vuelve a `pendiente` con el mismo `id`, o con uno nuevo si el rechazo
+  fue un 409 al crear; descartar borra la operación y su copia local, y no se permite con un producto que use un tratamiento sin enviar;
+  el contador distingue pendientes y rechazados. (REQ-06, REQ-20; R16)
 - [ ] T-40 [US1] Implementar la cola en `frontend/src/sync/cola.ts` y `frontend/src/sync/vaciado.ts`
-  (operaciones `crear_producto` y `crear_tratamiento`; disparadores de R3; estado `sincronizado`, `pendiente` o
-  `conflicto`), la petición de `navigator.storage.persist()` y el contador de operaciones pendientes, siempre
-  visible. Pasan las pruebas de T-39. (REQ-06; R3)
+  (operaciones `crear_producto` y `crear_tratamiento`; disparadores de R3; estado `sincronizado`, `pendiente`,
+  `conflicto` o `rechazado`; comprobación de la cuenta, clasificación de respuestas, corregir y descartar de R16), la petición de `navigator.storage.persist()` y el contador de operaciones pendientes, siempre
+  visible. Pasan las pruebas de T-39. (REQ-06; R3, R16)
 - [ ] T-41 [US1] Escribir las pruebas de componentes (deben fallar) del formulario en
   `frontend/tests/paginas/tratamiento.test.tsx` y después implementarlo en
   `frontend/src/paginas/tratamiento/`: fecha, parcelas con superficie tratada, problema, aplicador y asesor,
@@ -354,12 +364,13 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   parcelas (identificadas por su número de orden), personas, equipos y productos activos desde Dexie; propone el cultivo actual de cada parcela, que se
   puede cambiar; producto de la semilla opcional; alta de un producto nuevo (nombre comercial y número de
   registro) sin salir del formulario y sin conexión, con aviso si ya hay uno con el mismo número de registro;
-  mensajes llanos de `validacion.ts` antes de guardar; guarda en local y encola. (REQ-01, REQ-02, REQ-03,
-  REQ-04, REQ-05, REQ-06, REQ-16)
+  mensajes llanos de `validacion.ts` antes de guardar; guarda en local y encola. Abre un registro rechazado con sus datos y los
+  errores junto a su campo, y al guardarlo lo vuelve a encolar (escenario 10). (REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-06, REQ-16; R16)
 - [ ] T-42 [US1] Implementar la vista básica del cuaderno en `frontend/src/paginas/cuaderno/` (lista de
   tratamientos locales y sincronizados, ordenados por fecha, con su estado de sincronización y el detalle con
   todos los campos de la sección B; cada parcela tratada se muestra por su número de orden), con pruebas de componentes escritas antes en
-  `frontend/tests/paginas/cuaderno.test.tsx`. (REQ-01, REQ-06)
+  `frontend/tests/paginas/cuaderno.test.tsx`. Los registros rechazados muestran su motivo y se pueden corregir (T-41) o descartar con
+  confirmación (escenarios 9 y 10). (REQ-01, REQ-06; R16)
 
 **Dosis por hectárea (REQ-23)**, añadidas el 2026-11-14 tras el cambio de la spec (propuesta del tutor). Llevan
 números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentro del hito se indica en
@@ -397,8 +408,35 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
   tratamientos guardados sin conexión y aún no sincronizados; el formulario de registro no tiene ningún campo de
   dosis. (REQ-23, REQ-06; R15)
 
+**Cuentas en el dispositivo y lista de tratamientos (REQ-06, REQ-20)**, añadidas el 2026-11-25. Llevan números a partir de T-78
+para no renumerar; su orden dentro del hito se indica en "Dependencias y orden de ejecución".
+
+- [ ] T-78 [US1] Escribir las pruebas (deben fallar) de la base local por explotación en `frontend/tests/db/cuentas.test.ts`: entrar
+  abre `cuaderno-<explotacionId>`; los datos de la cuenta A no se leen con la sesión de B, con y sin conexión (escenario 8); salir con
+  la cola vacía elimina la base de esa cuenta y no toca la de otra; salir con operaciones pendientes o rechazadas avisa y conserva la
+  base, que se vuelve a abrir al entrar la misma cuenta; la base `cuaderno` solo guarda la sesión, y su versión 2 elimina los almacenes
+  de datos. Adaptar, sin cambiar lo que comprueban, las pruebas de T-16, T-19, T-28 y T-29 que usan la base única. (REQ-06, REQ-20; R16)
+- [ ] T-79 [US1] Implementar la base local por explotación en `frontend/src/db/` y `frontend/src/sesion.ts`, y usarla en
+  `sync/maestros.ts`, `paginas/cuenta/CerrarSesion.tsx` y `paginas/explotacion/Seccion.tsx`; añadir `estado` y `errores` a la cola y el
+  estado `rechazado` en `db/esquema.ts`. Pasan las pruebas de T-78. (REQ-06, REQ-20; R16)
+- [ ] T-80 [US1] Escribir las pruebas (deben fallar) de la lista de tratamientos en
+  `backend/tests/integration/test_lista_tratamientos.py` y ampliar el contrato con `GET /tratamientos`: filtros `desde`, `hasta`,
+  `parcela_id` y `producto_id`; orden por fecha, del más reciente al más antiguo; paginación (`tamano` máx. 200, `total`); sin sesión, 401;
+  no se ven los de otra explotación. El filtro `estado` y los anulados siguen en T-53 (H6). (REQ-10, REQ-20)
+- [ ] T-81 [US1] Implementar `GET /tratamientos` con lo de T-80 en `servicios/tratamientos.py` y `api/tratamientos.py`, y los índices que
+  preveía T-54. Los índices son (`explotacion_id`,
+  `fecha`), (`parcela_id`) en `tratamiento_parcela` y (`producto_id`) en `tratamiento_producto`. Pasan las pruebas de T-80. (REQ-10)
+- [ ] T-82 [US1] Escribir las pruebas (deben fallar) de la descarga de los tratamientos en `frontend/tests/sync/tratamientos.test.ts`: al
+  entrar y tras vaciar la cola se descargan todas las páginas y se sustituyen las copias locales, **salvo** las que tienen operaciones
+  en la cola (pendientes o rechazadas); si falla una página no se toca ninguna copia; al salir y volver a entrar, el cuaderno muestra los
+  tratamientos ya enviados. Una cola con **solo** operaciones rechazadas no impide descargar los datos maestros (hoy T-28 no descarga nada si
+  la cola no está vacía): se conservan los productos con el alta en la cola. (REQ-06; R3, R16, data-model)
+- [ ] T-83 [US1] Implementar la descarga de T-82 en `frontend/src/sync/tratamientos.ts`, llamarla junto a `descargarMaestros()` y adaptar esta. Pasan las
+  pruebas de T-82. (REQ-06; R3)
+
 **Punto de control (MVP)**: con la historia 4 hecha, el agricultor registra tratamientos con y sin conexión y
-los ve en el cuaderno, con la dosis por hectárea de cada producto.
+los ve en el cuaderno, también al volver a entrar, con la dosis por hectárea de cada producto. Dos cuentas en un mismo móvil no
+mezclan sus datos, y un registro rechazado se puede corregir o descartar sin bloquear los demás.
 
 ---
 
@@ -482,13 +520,10 @@ otro, y comprobar que ambos cambios quedan en el historial (spec, historia 3).
 
 - [ ] T-53 [US3] Escribir las pruebas de consulta (deben fallar) en
   `backend/tests/integration/test_consulta_tratamientos.py` y ampliar el contrato con `GET /tratamientos`:
-  filtros `desde`, `hasta`, `parcela_id`, `producto_id` y `estado` (`completo`, `pendiente`,
-  `anotado_fuera_plazo`, `completado_fuera_plazo`, `anulado`); orden por fecha; paginación (`tamano` máx. 200);
-  los anulados no aparecen salvo con `estado=anulado` (escenarios 1 y 3). (REQ-10, REQ-12)
-- [ ] T-54 [US3] Implementar `GET /tratamientos` con filtros y paginación en
-  `backend/src/cuaderno/servicios/tratamientos.py` y `api/tratamientos.py`, más la migración con los índices
-  (`explotacion_id`, `fecha`), (`parcela_id`) en `tratamiento_parcela` y (`producto_id`) en
-  `tratamiento_producto`. Pasan las pruebas de T-53. (REQ-10)
+  (la lista básica ya está en T-80) el filtro `estado` (`completo`, `pendiente`,
+  `anotado_fuera_plazo`, `completado_fuera_plazo`, `anulado`); los anulados no aparecen salvo con `estado=anulado` (escenarios 1 y 3). (REQ-10, REQ-12)
+- [ ] T-54 [US3] Ampliar `GET /tratamientos` (T-81) con el filtro `estado` y la exclusión de los anulados en
+  `backend/src/cuaderno/servicios/tratamientos.py` y `api/tratamientos.py`. Pasan las pruebas de T-53. (REQ-10)
 - [ ] T-55 [US3] Escribir las pruebas de corrección, anulación e historial (deben fallar) en
   `backend/tests/integration/test_corregir_anular.py` y ampliar el contrato con
   `POST /tratamientos/{id}/anulacion` y `GET /tratamientos/{id}/historial`: corregir la cantidad con motivo →
@@ -568,7 +603,8 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
 - [ ] T-65 [P] Escribir el E2E de registro en `e2e/registrar.spec.ts`: escenarios 1 a 4 de la historia 1 y,
   con la red cortada por Playwright, 20 tratamientos registrados sin conexión que se sincronizan sin pérdida ni
   duplicados al recuperarla (escenario 5, SC-003), incluido un producto dado de alta sin conexión; escenarios 6
-  y 7 (dosis por hectárea en el cuaderno, también sin conexión). (REQ-01 a REQ-06, REQ-16, REQ-23)
+  y 7 (dosis por hectárea en el cuaderno, también sin conexión); y 8 a 10 (dos cuentas en el mismo navegador; un registro rechazado que
+  no bloquea otro, se corrige y se descarta). (REQ-01 a REQ-06, REQ-16, REQ-20, REQ-23)
 - [ ] T-66 [P] Escribir el E2E de plazos, consulta y conflictos en `e2e/plazos-consulta.spec.ts`: escenarios de
   la historia 2 (pendiente, aviso, correo único en Mailpit, completar, fuera de plazo) y de la historia 3
   (filtrar, corregir, anular, historial), y un conflicto con dos contextos de navegador sin red que se resuelve
@@ -609,14 +645,14 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
   T-01.
 - **Base común (T-07 a T-19)**: depende del Setup y **bloquea todas las historias**.
 - **US4 (T-20 a T-29)**: depende de la base común.
-- **US1 (T-30 a T-42 y T-72 a T-77)**: depende de US4 (parcelas, personas, equipos y productos). Orden de
-  ejecución dentro del hito: T-30 a T-32 → T-72 a T-74 → T-33 a T-36 → T-75 y T-76 → T-37 a T-42 → T-77.
-  T-72 usa el fichero de casos de T-07; T-75 necesita el registro de T-36, y T-77 la vista del cuaderno de T-42.
+- **US1 (T-30 a T-42 y T-72 a T-83)**: depende de US4 (parcelas, personas, equipos y productos). Orden de
+  ejecución dentro del hito: T-30 a T-32 → T-72 a T-74 → T-33 a T-36 → T-75 y T-76 → T-37 y T-38 → T-80 y T-81 →
+  T-78 y T-79 → T-39 y T-40 → T-82 y T-83 → T-41 y T-42 → T-77. T-39 necesita la base por explotación de T-79; T-82, la lista de T-81. T-72 usa el fichero de casos de T-07; T-75 necesita el registro de T-36, y T-77 la vista del cuaderno de T-42.
 - **US2 (T-43 a T-52)**: depende de US1 (tabla `tratamiento` y registro).
 - **US3 (T-53 a T-62)**: depende de US1. T-57 y T-58 amplían el `PATCH` de T-49 (US2).
 - **Cierre (T-63 a T-71)**: depende de las historias que se quieran validar. T-63, con su prueba de humo, va
   antes de T-64 a T-66; T-71 va después de T-69, y T-70 es la última. T-71 lleva un número mayor que T-70 porque
-  se añadió después del análisis; el orden de ejecución es el indicado. Lo mismo ocurre con T-72 a T-77, que
+  se añadió después del análisis; el orden de ejecución es el indicado. Lo mismo ocurre con T-72 a T-83, que
   pertenecen a US1 (H4).
 
 ### Dentro de cada historia
@@ -650,7 +686,7 @@ Tras T-30 (casos de REQ-02 y REQ-04 en compartido/casos-validacion.json):
 
 1. Setup y base común (T-01 a T-19).
 2. Historia 4 (T-20 a T-29), requisito de la 1.
-3. Historia 1 (T-30 a T-42 y T-72 a T-77).
+3. Historia 1 (T-30 a T-42 y T-72 a T-83).
 4. **Parar y validar**: registrar con y sin conexión (prueba independiente de la historia 1).
 
 ### Entrega incremental
@@ -678,11 +714,11 @@ actualizado en el mismo commit cuando proceda.
 | REQ-03 | T-33, T-35 | T-34, T-36, T-41 | T-65 |
 | REQ-04 | T-30, T-33, T-35 | T-31, T-32, T-34, T-36, T-41 | T-65 |
 | REQ-05 | T-35 | T-36, T-41 | T-65 |
-| REQ-06 | T-24, T-37, T-39, T-57, T-61 | T-25, T-38, T-40, T-41, T-42, T-52, T-58 | T-65, T-66 |
+| REQ-06 | T-24, T-37, T-39, T-78, T-82, T-57, T-61 | T-25, T-38, T-40, T-41, T-42, T-79, T-83, T-52, T-58 | T-65, T-66 |
 | REQ-07 | T-43, T-46, T-48 | T-44, T-45, T-47, T-49, T-52 | T-66 |
 | REQ-08 | T-43, T-50 | T-44, T-45, T-51, T-52 | T-66 |
 | REQ-09 | T-43, T-46, T-48 | T-44, T-45, T-47, T-49, T-52 | T-66 |
-| REQ-10 | T-53 | T-54, T-62 | T-66 |
+| REQ-10 | T-80, T-53 | T-81, T-54, T-62 | T-66 |
 | REQ-11 | T-48, T-55, T-57, T-61 | T-49, T-56, T-58, T-62 | T-66 |
 | REQ-12 | T-53, T-55, T-61 | T-56, T-62 | T-66 |
 | REQ-13 | T-59 | T-60 | T-69 (escenario 8) |
@@ -690,7 +726,7 @@ actualizado en el mismo commit cuando proceda.
 | REQ-15 | T-22, T-28 | T-23, T-28, T-29 | T-64 |
 | REQ-16 | T-24, T-28 | T-25, T-28, T-29, T-41 | T-64, T-65 |
 | REQ-17 | T-26, T-35 | T-27, T-29, T-36 | T-64 |
-| REQ-20 | T-09, T-17 | T-10, T-17, T-19 | T-64 |
+| REQ-20 | T-09, T-17, T-39, T-78 | T-10, T-17, T-19, T-40, T-79 | T-64, T-65 |
 | REQ-21 | T-11 | T-12, T-19 | T-64 |
 | REQ-22 | T-13 | T-14, T-19 | T-64 |
 | REQ-23 | T-72, T-75, T-55 | T-73, T-74, T-76, T-77 | T-65 |
