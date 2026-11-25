@@ -145,9 +145,9 @@ function Formulario({ catalogos, rechazada }: { catalogos: Catalogos; rechazada:
       if (rechazada === null) await guardarTratamiento(tratamiento);
       else await corregirTratamiento(rechazada.entidadId, tratamiento);
       navegar("/");
+      // Guardado: no se vuelve a permitir, aunque se pulse otra vez antes de cambiar de página.
     } catch {
       setAviso("No se ha podido guardar en el dispositivo. Inténtalo de nuevo.");
-    } finally {
       guardando.current = false;
     }
   }
