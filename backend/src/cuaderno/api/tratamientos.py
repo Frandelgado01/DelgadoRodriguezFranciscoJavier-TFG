@@ -2,7 +2,7 @@
 
 import uuid
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Response, status
 
 from cuaderno import modelos
 from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, RelojAPI, SesionBD
@@ -30,11 +30,16 @@ router = APIRouter(prefix="/tratamientos", tags=["tratamientos"])
     },
 )
 def registrar_tratamiento(
-    datos: TratamientoNuevo, s: SesionBD, explotacion: ExplotacionActual, reloj: RelojAPI
+    datos: TratamientoNuevo,
+    respuesta: Response,
+    s: SesionBD,
+    explotacion: ExplotacionActual,
+    reloj: RelojAPI,
 ) -> Tratamiento:
-    return tratamientos.a_esquema(
-        s, tratamientos.registrar(s, datos, explotacion.id, reloj.ahora())
-    )
+    tratamiento, nuevo = tratamientos.registrar(s, datos, explotacion.id, reloj.ahora())
+    if not nuevo:
+        respuesta.status_code = status.HTTP_200_OK
+    return tratamientos.a_esquema(s, tratamiento)
 
 
 @router.get(

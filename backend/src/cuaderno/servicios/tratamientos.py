@@ -10,6 +10,8 @@ from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
+from fastapi import HTTPException, status
+from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session, col, select
 
 from cuaderno import modelos
@@ -110,10 +112,45 @@ def _instantanea(datos: TratamientoNuevo) -> dict[str, Any]:
     return instantanea
 
 
+MENSAJE_ID_OCUPADO = (
+    "Ya existe otro tratamiento con este identificador y distintos datos. Vuelve a guardarlo."
+)
+
+
+def _ya_registrado(
+    s: Session, datos: TratamientoNuevo, explotacion_id: uuid.UUID
+) -> modelos.Tratamiento | None:
+    """El tratamiento con ese id si es un reintento; None si no hay ninguno (REQ-06; R4).
+
+    Se compara con la instantánea de la creación: el tratamiento pudo cambiar después. Responde 409
+    si tiene otro contenido o es de otra explotación.
+    """
+    tratamiento = s.get(modelos.Tratamiento, datos.id)
+    if tratamiento is None:
+        return None
+    creacion = s.exec(
+        select(modelos.Cambio).where(
+            col(modelos.Cambio.tratamiento_id) == datos.id,
+            col(modelos.Cambio.tipo) == "creacion",
+        )
+    ).one()
+    if tratamiento.explotacion_id != explotacion_id or creacion.datos_nuevos != _instantanea(datos):
+        raise HTTPException(status.HTTP_409_CONFLICT, MENSAJE_ID_OCUPADO)
+    return tratamiento
+
+
 def registrar(
     s: Session, datos: TratamientoNuevo, explotacion_id: uuid.UUID, ahora: datetime
-) -> modelos.Tratamiento:
-    """Valida y guarda el tratamiento; lanza DatosNoValidos con todos los errores a la vez."""
+) -> tuple[modelos.Tratamiento, bool]:
+    """Guarda el tratamiento y dice si es nuevo; lanza DatosNoValidos con todos los errores.
+
+    Un reintento no se vuelve a validar: ya está guardado, aunque después se diera de baja su
+    parcela.
+    """
+    existente = _ya_registrado(s, datos, explotacion_id)
+    if existente is not None:
+        return existente, False
+
     parcelas = _de_la_explotacion(
         s, modelos.Parcela, [p.parcela_id for p in datos.parcelas], explotacion_id
     )
@@ -135,8 +172,19 @@ def registrar(
         fecha_registro=fecha_registro,
         recibido_en=ahora,
     )
-    s.add(tratamiento)
-    s.flush()
+    # Espera a que termine un registro simultáneo con el mismo id: de varios reintentos a la vez
+    # solo uno lo crea y los demás lo encuentran ya guardado con sus líneas.
+    creado = s.exec(
+        insert(modelos.Tratamiento)
+        .values(**tratamiento.model_dump())
+        .on_conflict_do_nothing(index_elements=["id"])
+        .returning(col(modelos.Tratamiento.id))
+    ).first()
+    if creado is None:
+        s.rollback()
+        existente = _ya_registrado(s, datos, explotacion_id)
+        assert existente is not None  # noqa: S101 (el conflicto es con una fila confirmada)
+        return existente, False
     for parcela in datos.parcelas:
         linea = parcela.model_dump()
         linea["superficie_tratada"] = Decimal(str(parcela.superficie_tratada))
@@ -158,7 +206,7 @@ def registrar(
         )
     )
     s.commit()
-    return tratamiento
+    return s.get_one(modelos.Tratamiento, datos.id), True
 
 
 def a_esquema(s: Session, t: modelos.Tratamiento) -> Tratamiento:

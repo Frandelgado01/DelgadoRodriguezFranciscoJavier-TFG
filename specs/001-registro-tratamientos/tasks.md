@@ -339,7 +339,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   `backend/tests/integration/test_idempotencia_registro.py`: reintento con el mismo `id` y el mismo contenido →
   200 y un solo tratamiento; mismo `id` y otro contenido → 409; un producto nuevo y un tratamiento que lo usa,
   enviados en ese orden, se crean bien aunque se reintenten. (REQ-06)
-- [ ] T-38 [US1] Implementar la idempotencia por `id` en `backend/src/cuaderno/servicios/tratamientos.py`
+- [X] T-38 [US1] Implementar la idempotencia por `id` en `backend/src/cuaderno/servicios/tratamientos.py`
   (comparación del contenido con la instantánea de `creacion`). Pasan las pruebas de T-37. (REQ-06; R4)
 - [ ] T-39 [US1] Escribir las pruebas de la cola sin conexión (deben fallar) en `frontend/tests/sync/cola.test.ts`:
   al guardar sin red, el tratamiento queda en `tratamientos` como `pendiente` y su operación en `cola` con UUID
