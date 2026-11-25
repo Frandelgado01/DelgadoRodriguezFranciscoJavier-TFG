@@ -168,17 +168,19 @@ export async function descargarDatos(): Promise<void> {
   if (explotacionAbierta() === explotacionId) await descargarTratamientos();
 }
 
+let descargas: Promise<void> = Promise.resolve();
+
 /** Vacía la cola y, si se ha enviado algo o se pide, descarga los datos del servidor. */
 export async function sincronizar(descargar = false): Promise<void> {
   const resultado = await vaciarCola();
   const hayCambios = aplicadas > 0;
   if (resultado.estado !== "vacia" || !(descargar || hayCambios)) return;
   aplicadas = 0;
-  try {
-    await descargarDatos();
-  } catch {
+  // Las descargas van de una en una: la más reciente es la última en escribir.
+  descargas = descargas.then(descargarDatos).catch(() => {
     // La base se cerró a medias: se descargará al volver a entrar.
-  }
+  });
+  await descargas;
 }
 
 async function sincronizarSiHayPendientes(): Promise<void> {

@@ -159,7 +159,7 @@ afterEach(async () => {
   vi.useRealTimers();
   vi.restoreAllMocks();
   servidor.conRed = false;
-  await sincronizar(); // espera a que acabe una sincronización a medias antes de cerrar la base
+  await sincronizar(true); // espera a que acabe una sincronización a medias antes de cerrar la base
   vi.unstubAllGlobals();
 });
 
@@ -354,10 +354,31 @@ describe("disparadores (REQ-06; R3)", () => {
     reloj?.accion();
     vi.mocked(globalThis.setInterval).mockRestore();
     await waitFor(async () => expect(await estado(t.id)).toBe("sincronizado"));
-    await sincronizar();
+    await sincronizar(true);
 
     servidor.llamadas = [];
     reloj?.accion();
+    await new Promise((resolver) => setTimeout(resolver, 50));
+    expect(servidor.llamadas).toEqual([]);
+  });
+
+  it("dos sincronizaciones seguidas no descargan a la vez, y la segunda espera a la primera", async () => {
+    let enMarcha = 0;
+    let aLaVez = 0;
+    const atender = globalThis.fetch;
+    vi.stubGlobal("fetch", async (url: string, opciones: RequestInit) => {
+      const descarga = url === "/api/parcelas";
+      if (descarga) enMarcha += 1;
+      aLaVez = Math.max(aLaVez, enMarcha);
+      await new Promise((resolver) => setTimeout(resolver, 10));
+      if (descarga) enMarcha -= 1;
+      return atender(url, opciones);
+    });
+    const primera = sincronizar(true);
+    await sincronizar(true);
+    expect(aLaVez).toBe(1);
+    servidor.llamadas = [];
+    await primera;
     await new Promise((resolver) => setTimeout(resolver, 50));
     expect(servidor.llamadas).toEqual([]);
   });
