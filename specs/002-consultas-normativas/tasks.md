@@ -65,7 +65,7 @@ Si falta tiempo se recorta H10 entero y después el Decreto 80/2025 (spec, Supue
   una pregunta sin ninguna palabra en común devuelve igualmente los de los vectores. (REQ-31; R23)
 - [ ] T-111 Implementar `consultas/buscar.py` y una orden de consola que muestre los fragmentos de una pregunta. Pasan las pruebas de T-110.
   (REQ-31; R23)
-- [ ] T-112 Redactar `evaluacion/preguntas.yaml`: 15 de ajuste y 40 finales (30 con respuesta y 10 sin ella), con el artículo esperado y lenguaje de
+- [X] T-112 Redactar `evaluacion/preguntas.yaml`: 15 de ajuste y 40 finales (30 con respuesta y 10 sin ella), con el artículo esperado y lenguaje de
   agricultor, repartidas entre las normas y sin repetir las de la medición del plan. **El alumno revisa cada una** y lo deja marcado en el
   fichero. Sin código. (REQ-43; R28)
 - [ ] T-113 Escribir las pruebas (deben fallar) de la evaluación de la recuperación en `backend/tests/unit/test_evaluacion_recuperacion.py`: formato del

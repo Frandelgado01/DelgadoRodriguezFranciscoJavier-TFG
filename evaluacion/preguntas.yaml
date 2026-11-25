@@ -120,7 +120,7 @@ preguntas:
         unidad: "artículo 5"
         apartado: null
         extracto: "Será aplicable a partir del 1 de enero de 2026"
-    revisada: false
+    revisada: true
   - id: A12
     conjunto: ajuste
     pregunta: "¿Cuántos años guardo el libro de gestión de estiércoles en zona vulnerable?"
@@ -168,7 +168,7 @@ preguntas:
         unidad: "artículo 39"
         apartado: "a"
         extracto: "Se prohíbe el vertido de los restos de mezcla excedentes del tratamiento. Su eliminación se realizará aplicándolos en la misma parcela tratada previa su dilución con la cantidad de agua suficiente para que no se exceda la dosis máxima admisible"
-    revisada: false
+    revisada: true
   - id: F03
     conjunto: final
     pregunta: "¿Cuántos años vale el carné de aplicador?"
@@ -228,7 +228,7 @@ preguntas:
         unidad: "artículo 36"
         apartado: "d"
         extracto: "en ningún caso a menos de 25 metros de las mismas, o a distancia inferior a 10 metros cuando se utilicen equipos dotados de mezcladores-incorporadores de producto"
-    revisada: false
+    revisada: true
   - id: F09
     conjunto: final
     pregunta: "Soy ingeniero agrónomo y la finca es mía, ¿puedo hacerme yo el asesoramiento de plagas?"
@@ -298,7 +298,7 @@ preguntas:
         unidad: "artículo 4"
         apartado: "2.b"
         extracto: "Las que no superen las 10 hectáreas de superficie, si son de secano"
-    revisada: false
+    revisada: true
   - id: F16
     conjunto: final
     pregunta: "¿Cuánto tiempo tengo para apuntar que he abonado?"
@@ -372,7 +372,7 @@ preguntas:
         unidad: "artículo 14"
         apartado: "1"
         extracto: "no se aplicarán penalizaciones a las personas beneficiarias cuya explotación sea igual o inferior a las 10 hectáreas de superficie agraria declarada"
-    revisada: false
+    revisada: true
   - id: F23
     conjunto: final
     pregunta: "Si repito el mismo fallo sin querer, ¿cuánto me quitan de la PAC?"
@@ -422,7 +422,7 @@ preguntas:
         unidad: "artículo 31"
         apartado: "3"
         extracto: "del 4 % del conjunto de la superficie de pastos permanentes y pastos temporales objeto de siega"
-    revisada: false
+    revisada: true
   - id: F28
     conjunto: final
     pregunta: "Según Europa, ¿sirve escanear el cuaderno o el registro tiene que poder leerlo una máquina?"
