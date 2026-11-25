@@ -33,6 +33,7 @@
 
 - Iteración 1 (2026-11-25): sin marcas [NEEDS CLARIFICATION]; las cinco decisiones por confirmar llevan un valor propuesto
   y están en el apartado "Por confirmar en la fase 3".
+- Iteración 2 (2026-11-25): las cinco decisiones, confirmadas por el alumno (apartado Clarifications).
 - REQ-42 nombra las normas y el listado del MAPA porque son el contenido, no la implementación. El modelo, la base de
   datos y la forma de buscar quedan para el plan (módulo 06).
 - Cada requisito cita su fuente o se marca como "apoyo" (principio IV de la constitución).

@@ -4,7 +4,7 @@
 
 **Creada**: 2026-11-25
 
-**Estado**: Borrador, pendiente de clarificar (fase 3) y de la aprobación del alumno y del visto bueno del tutor
+**Estado**: Clarificada (2026-11-25); pendiente de la aprobación del alumno y del visto bueno del tutor
 
 **Entrada**: descripción del alumno: "comienza […] spec 002", con la hoja de ruta (consultas normativas con RAG), el
 módulo 06 (`docs/conceptos/06-rag.md`) y sus decisiones del 2026-11-25: el Reglamento (UE) 2023/564 entra en el corpus;
@@ -32,6 +32,17 @@ repartida entre varias normas escritas en lenguaje jurídico. Un error puede cos
 respuesta sin fuente no le sirve. Esta funcionalidad responde en lenguaje llano **citando el artículo**, permite
 comprobarlo y reconoce que no sabe cuando la normativa incluida no lo dice. Para el plazo de seguridad de un producto no
 redacta nada: muestra el dato oficial.
+
+## Clarifications
+
+### Session 2026-11-25
+
+- Q: ¿Qué límites tienen la pregunta y el uso? → A: 500 caracteres y 20 consultas por cuenta y día (REQ-30, REQ-36).
+- Q: ¿Se guardan las preguntas y las respuestas? → A: No; solo el consumo, sin texto (REQ-35, REQ-36).
+- Q: ¿Qué umbrales se exigen y con cuántas preguntas? → A: 90 % de recuperación, 90 % de fidelidad, 85 % de cita correcta y 9 de
+  10 abstenciones, con al menos 40 preguntas, 10 de ellas sin respuesta (SC-101 a SC-104).
+- Q: ¿Se calcula la fecha de cosecha a partir del plazo de seguridad? → A: No; se muestra el plazo literal (REQ-40).
+- Q: ¿Quién escribe las preguntas de referencia? → A: El agente las redacta a partir de la norma y el alumno revisa las 40 (REQ-43).
 
 ## Escenarios de usuario y pruebas *(obligatorio)*
 
@@ -161,14 +172,15 @@ corpus viejo da respuestas falsas.
 ## Requisitos *(obligatorio)*
 
 Cada requisito cita la norma o la condición de la que deriva (principio IV de la constitución). Los marcados como "apoyo" derivan
-de la constitución o de la usabilidad. Las cifras marcadas como *propuesta* son del agente y están por confirmar.
+de la constitución o de la usabilidad. Los límites y umbrales
+son propuesta del agente aceptada por el alumno (2026-11-25), sin fuente normativa.
 
 ### Requisitos funcionales
 
 **Pregunta y respuesta** (historia 1)
 
 - **REQ-30**: El agricultor con la sesión iniciada MUST poder enviar una pregunta en texto libre, de 1 a 500 caracteres
-  (*propuesta*), y ver la respuesta en español y en lenguaje llano. Las consultas necesitan conexión: sin ella, el sistema MUST
+ , y ver la respuesta en español y en lenguaje llano. Las consultas necesitan conexión: sin ella, el sistema MUST
   explicarlo y conservar lo escrito. *Apoyo: constitución, principio V.*
 - **REQ-31**: El sistema MUST responder solo con el contenido del corpus y acompañar cada afirmación normativa de al menos una cita
   que identifique la norma y su artículo, disposición o anexo. *Apoyo: constitución, principio IV (citar la fuente de cada respuesta).*
@@ -183,7 +195,7 @@ de la constitución o de la usabilidad. Las cifras marcadas como *propuesta* son
 - **REQ-35**: Para responder, el sistema MUST enviar fuera del servidor solo la pregunta y los fragmentos del corpus; nunca datos de la
   cuenta ni de la explotación. Las preguntas y respuestas MUST NOT guardarse. La pantalla MUST pedir que no se escriban datos personales e
   informar de que la pregunta la procesa un servicio externo. *Apoyo: constitución, principio VI (RGPD, datos mínimos).*
-- **REQ-36**: El sistema MUST limitar las consultas a 20 por cuenta y día natural, en hora peninsular (*propuesta*), y explicar al llegar al
+- **REQ-36**: El sistema MUST limitar las consultas a 20 por cuenta y día natural, en hora peninsular, y explicar al llegar al
   límite cuándo se puede volver a preguntar. MUST registrar el consumo de cada consulta sin guardar su texto. *Apoyo: constitución
   (gasto de unos 10 €); objetivo 6.*
 - **REQ-37**: Si falla la búsqueda o la redacción, el sistema MUST informarlo en lenguaje llano y ofrecer reintentar, sin mostrar una
@@ -252,7 +264,7 @@ de la constitución o de la usabilidad. Las cifras marcadas como *propuesta* son
 
 ## Criterios de éxito *(obligatorio)*
 
-Umbrales iniciales **propuestos** por el agente, sin fuente normativa. Se miden con las preguntas del conjunto final (REQ-43): al menos 40, de
+Umbrales iniciales, propuestos por el agente y aceptados por el alumno, sin fuente normativa. Se miden con las preguntas del conjunto final (REQ-43): al menos 40, de
 ellas 10 sin respuesta en el corpus. Con ese tamaño, cada pregunta con respuesta pesa más de 3 puntos, así que son orientativos.
 
 - **SC-101** (recuperación): en al menos el 90 % de las preguntas con respuesta, el artículo esperado está entre los fragmentos usados.
@@ -278,11 +290,3 @@ ellas 10 sin respuesta en el corpus. Con ese tamaño, cada pregunta con respuest
 - **Decreto 80/2025**: si no se encuentra una fuente con texto reutilizable antes de planificar, sale del corpus y se declara como limitación.
 - **Recorte del 2026-11-25**: si falta tiempo, lo primero que se aplaza es la historia 3 y después el Decreto 80/2025. Las historias 1 y 2 y la
   evaluación no se recortan.
-
-## Por confirmar en la fase 3 (clarificar)
-
-1. Límite de 20 consultas por cuenta y día y pregunta de hasta 500 caracteres (REQ-30, REQ-36).
-2. No guardar ninguna consulta (REQ-35). La alternativa es un historial visible solo para el titular.
-3. Umbrales de SC-101 a SC-104 y tamaño del conjunto de preguntas.
-4. No calcular la fecha de cosecha en la historia 3 (REQ-40).
-5. Preguntas de referencia: quién las redacta y cómo las revisa el alumno.
