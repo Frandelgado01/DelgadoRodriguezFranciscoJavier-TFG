@@ -637,8 +637,36 @@ export interface components {
             /** Numeroregistro */
             numeroRegistro: string;
         };
-        /** ProductoAplicado */
+        /**
+         * ProductoAplicado
+         * @description Producto aplicado con su dosis calculada, que no se guarda ni se acepta (REQ-23; R15).
+         */
         ProductoAplicado: {
+            /**
+             * Productoid
+             * Format: uuid
+             */
+            productoId: string;
+            /** Cantidad */
+            cantidad: number;
+            /**
+             * Unidadmedida
+             * @enum {string}
+             */
+            unidadMedida: "kg" | "L";
+            /**
+             * Dosisporhectarea
+             * @description Cantidad entre la superficie tratada total, redondeada según REQ-23
+             */
+            readonly dosisPorHectarea: number;
+            /**
+             * Unidaddosis
+             * @enum {string}
+             */
+            readonly unidadDosis: "kg/ha" | "L/ha";
+        };
+        /** ProductoAplicadoNuevo */
+        ProductoAplicadoNuevo: {
             /**
              * Productoid
              * Format: uuid
@@ -695,7 +723,7 @@ export interface components {
         };
         /**
          * Tratamiento
-         * @description Tratamiento guardado, con el número de orden de cada parcela tratada.
+         * @description Tratamiento guardado, con el número de orden de cada parcela y la dosis de cada producto.
          */
         Tratamiento: {
             /**
@@ -768,7 +796,7 @@ export interface components {
             /** Parcelas */
             parcelas: components["schemas"]["ParcelaTratadaNueva"][];
             /** Productos */
-            productos: components["schemas"]["ProductoAplicado"][];
+            productos: components["schemas"]["ProductoAplicadoNuevo"][];
             /** Eficacia */
             eficacia?: ("buena" | "regular" | "mala") | null;
             /** Observaciones */

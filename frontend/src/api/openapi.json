@@ -2083,6 +2083,54 @@
               "L"
             ],
             "title": "Unidadmedida"
+          },
+          "dosisPorHectarea": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Dosisporhectarea",
+            "description": "Cantidad entre la superficie tratada total, redondeada según REQ-23",
+            "readOnly": true
+          },
+          "unidadDosis": {
+            "type": "string",
+            "enum": [
+              "kg/ha",
+              "L/ha"
+            ],
+            "title": "Unidaddosis",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "productoId",
+          "cantidad",
+          "unidadMedida",
+          "dosisPorHectarea",
+          "unidadDosis"
+        ],
+        "title": "ProductoAplicado",
+        "description": "Producto aplicado con su dosis calculada, que no se guarda ni se acepta (REQ-23; R15)."
+      },
+      "ProductoAplicadoNuevo": {
+        "properties": {
+          "productoId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Productoid"
+          },
+          "cantidad": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Cantidad"
+          },
+          "unidadMedida": {
+            "type": "string",
+            "enum": [
+              "kg",
+              "L"
+            ],
+            "title": "Unidadmedida"
           }
         },
         "type": "object",
@@ -2091,7 +2139,7 @@
           "cantidad",
           "unidadMedida"
         ],
-        "title": "ProductoAplicado"
+        "title": "ProductoAplicadoNuevo"
       },
       "ProductoEntrada": {
         "properties": {
@@ -2243,7 +2291,6 @@
               "$ref": "#/components/schemas/ProductoAplicado"
             },
             "type": "array",
-            "minItems": 1,
             "title": "Productos"
           },
           "eficacia": {
@@ -2310,7 +2357,7 @@
           "enConflicto"
         ],
         "title": "Tratamiento",
-        "description": "Tratamiento guardado, con el número de orden de cada parcela tratada."
+        "description": "Tratamiento guardado, con el número de orden de cada parcela y la dosis de cada producto."
       },
       "TratamientoNuevo": {
         "properties": {
@@ -2358,7 +2405,7 @@
           },
           "productos": {
             "items": {
-              "$ref": "#/components/schemas/ProductoAplicado"
+              "$ref": "#/components/schemas/ProductoAplicadoNuevo"
             },
             "type": "array",
             "minItems": 1,

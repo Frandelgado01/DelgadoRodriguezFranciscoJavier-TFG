@@ -398,7 +398,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
   0,43 `L/ha` para B; una `dosisPorHectarea` enviada en `POST /tratamientos` no se guarda ni cambia la dosis
   devuelta; la instantánea del cambio `creacion` no contiene la dosis; no hay ninguna columna de dosis en la
   base de datos. (REQ-23; R15)
-- [ ] T-76 [US1] Implementar la dosis en las respuestas de la API en `backend/src/cuaderno/esquemas/tratamiento.py`
+- [X] T-76 [US1] Implementar la dosis en las respuestas de la API en `backend/src/cuaderno/esquemas/tratamiento.py`
   y `servicios/tratamientos.py`: campos calculados de solo lectura con `dominio/dosis.py` a partir de las
   cantidades y las superficies tratadas del tratamiento; las instantáneas del historial siguen sin la dosis;
   regenerar `frontend/src/api/openapi.json` y los tipos (T-15). Pasan las pruebas de T-75. (REQ-23; R15)

@@ -36,10 +36,21 @@ class ParcelaTratada(ParcelaTratadaNueva):
     numero_orden: int = Field(ge=1, description="Número de orden de la parcela (REQ-01 b)")
 
 
-class ProductoAplicado(Esquema):
+class ProductoAplicadoNuevo(Esquema):
     producto_id: uuid.UUID
     cantidad: float = Field(json_schema_extra={"exclusiveMinimum": 0})
     unidad_medida: Literal["kg", "L"]
+
+
+class ProductoAplicado(ProductoAplicadoNuevo):
+    """Producto aplicado con su dosis calculada, que no se guarda ni se acepta (REQ-23; R15)."""
+
+    dosis_por_hectarea: float = Field(
+        gt=0,
+        description="Cantidad entre la superficie tratada total, redondeada según REQ-23",
+        json_schema_extra={"readOnly": True},
+    )
+    unidad_dosis: Literal["kg/ha", "L/ha"] = Field(json_schema_extra={"readOnly": True})
 
 
 class DatosTratamiento(Esquema):
@@ -51,7 +62,7 @@ class DatosTratamiento(Esquema):
     asesor_id: uuid.UUID | None = None
     equipo_id: uuid.UUID
     parcelas: list[ParcelaTratadaNueva] = Field(json_schema_extra={"minItems": 1})
-    productos: list[ProductoAplicado] = Field(json_schema_extra={"minItems": 1})
+    productos: list[ProductoAplicadoNuevo] = Field(json_schema_extra={"minItems": 1})
     eficacia: Literal["buena", "regular", "mala"] | None = None
     observaciones: Annotated[
         Annotated[str, Field(max_length=validacion.OBSERVACIONES_MAXIMO)] | None,
@@ -65,8 +76,9 @@ class TratamientoNuevo(DatosTratamiento):
 
 
 class Tratamiento(TratamientoNuevo):
-    """Tratamiento guardado, con el número de orden de cada parcela tratada."""
+    """Tratamiento guardado, con el número de orden de cada parcela y la dosis de cada producto."""
 
     parcelas: list[ParcelaTratada]  # type: ignore[assignment]
+    productos: list[ProductoAplicado]  # type: ignore[assignment]
     version: int = Field(ge=1)
     en_conflicto: bool

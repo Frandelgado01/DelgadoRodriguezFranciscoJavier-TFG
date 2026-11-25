@@ -14,6 +14,7 @@ from sqlmodel import Session, col, select
 
 from cuaderno import modelos
 from cuaderno.config import ZONA_HORARIA
+from cuaderno.dominio.dosis import calcular_dosis
 from cuaderno.dominio.validacion import DatosNoValidos, ErrorRegla, validar_tratamiento
 from cuaderno.esquemas.tratamiento import (
     DatosTratamiento,
@@ -174,6 +175,10 @@ def a_esquema(s: Session, t: modelos.Tratamiento) -> Tratamiento:
         .where(col(modelos.TratamientoProducto.tratamiento_id) == t.id)
         .order_by(col(modelos.Producto.nombre_comercial), col(modelos.Producto.id))
     ).all()
+    dosis = calcular_dosis(
+        [(linea.cantidad, linea.unidad_medida) for linea in productos],
+        [linea.superficie_tratada for linea, _ in parcelas],
+    )
     return Tratamiento(
         id=t.id,
         registrado_en=t.registrado_en.astimezone(UTC),
@@ -198,8 +203,10 @@ def a_esquema(s: Session, t: modelos.Tratamiento) -> Tratamiento:
                 producto_id=linea.producto_id,
                 cantidad=float(linea.cantidad),
                 unidad_medida=linea.unidad_medida,  # type: ignore[arg-type]
+                dosis_por_hectarea=float(calculada.por_hectarea),
+                unidad_dosis=calculada.unidad,  # type: ignore[arg-type]
             )
-            for linea in productos
+            for linea, calculada in zip(productos, dosis, strict=True)
         ],
         eficacia=t.eficacia,  # type: ignore[arg-type]
         observaciones=t.observaciones,
