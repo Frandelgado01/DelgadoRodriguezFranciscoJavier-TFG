@@ -45,5 +45,6 @@ y la 002 y se incorporan a la constitución por enmienda.
 
 ## Calendario
 
-Pendiente: fecha prevista de entrega y de defensa. Con ella se reparten las funcionalidades en el calendario y se
+**Entrega del TFG completo: 2 de diciembre como máximo** (tutor, comunicado por el alumno el 2026-11-25). Pendiente: fecha de
+defensa y reparto del trabajo hasta la entrega, que el alumno debe aprobar. Con ello se reparten las funcionalidades en el calendario y se
 dibuja el diagrama de Gantt del apartado 3.6.

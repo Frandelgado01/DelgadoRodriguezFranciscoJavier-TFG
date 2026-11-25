@@ -36,8 +36,8 @@
   3. Sin diferencias en el resto de columnas aplicables: nombre y número de autorización del producto (REQ-01 g),
      fecha (REQ-01 a), número de hectáreas tratadas (REQ-01 f) y unidad de terreno SIGPAC de la parcela
      (REQ-14 b).
-- 2026-11-24, revisión previa a H4 (propuesta del agente, aprobada por el alumno; pendiente del visto bueno del
-  tutor): se amplía REQ-06 con dos reglas que faltaban, la pertenencia de los registros del dispositivo a su cuenta y
+- 2026-11-24, revisión previa a H4 (propuesta del agente, aprobada por el alumno; visto bueno del tutor comunicado el
+  2026-11-25): se amplía REQ-06 con dos reglas que faltaban, la pertenencia de los registros del dispositivo a su cuenta y
   qué ocurre con un registro que el servidor rechaza, y se añaden sus casos límite. No cambia ningún dato del
   registro ni su base normativa.
 

@@ -24,8 +24,8 @@
 > - **Anexos:** declaración breve de uso de IA generativa (producto y memoria), con el formato que pida la
 >   normativa de TFG de la ESI.
 >
-> **Cambio del 2026-11-14** (decisión del alumno: el registro deja de recoger minutos y tokens/coste; pendiente
-> del visto bueno del tutor):
+> **Cambio del 2026-11-14** (decisión del alumno: el registro deja de recoger minutos y tokens/coste; visto
+> bueno del tutor comunicado el 2026-11-25):
 >
 > - **Objetivo 6, 4.5 y capítulo 5:** el proceso se mide solo con datos verificables en el repositorio. Sin horas
 >   del alumno no hay coste de personal con IA; se declara como limitación. El tiempo se expresa en días con actividad por fase (fechas distintas con alguna fila del registro o algún commit de esa fase; no la duración entre fechas, porque los días sin commits son días en que no se avanzó).
