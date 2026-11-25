@@ -28,7 +28,7 @@ lo aprueba antes de empezar el siguiente. El estado de los hitos se marca en la 
 | H1 Esqueleto | 1 | T-01 a T-06 | `docker compose up` arranca `db`, `mailpit`, `api` y `web` (el `worker` llega en T-51) y el CI está en verde en la PR #1 |
 | H2 Cuentas | 2 | T-07 a T-19 | Crear cuenta, entrar, salir, recuperar la contraseña y comprobar el límite de intentos |
 | H3 Datos de la explotación | 3 (US4) | T-20 a T-29 | Dar de alta, modificar y dar de baja parcela, aplicador, equipo y producto |
-| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 y T-72 a T-83 | Registrar con y sin conexión y ver el tratamiento en el cuaderno, con la dosis por hectárea de cada producto; cambiar de cuenta en el mismo móvil; corregir y descartar un registro rechazado; salir, volver a entrar y ver los tratamientos |
+| H4 Registrar (MVP) | 4 (US1) | T-30 a T-42 y T-72 a T-85 | Registrar con y sin conexión y ver el tratamiento en el cuaderno, con la dosis por hectárea de cada producto; cambiar de cuenta en el mismo móvil; corregir y descartar un registro rechazado; salir, volver a entrar y ver los tratamientos |
 | H5 Plazos y avisos | 5 (US2) | T-43 a T-52 | Tratamiento pendiente, aviso en la app, correo único en Mailpit, completar la eficacia |
 | H6 Consulta e historial | 6 (US3) | T-53 a T-62 | Filtrar, corregir, anular, ver el historial y resolver un conflicto |
 | H7 Cierre | 7 | T-63 a T-71 (T-70 la última) | E2E y k6 en verde, quickstart en el Android de la demo, sesión con agricultores (SC-001, SC-005, SC-007) y `/speckit-converge` sin pendientes |
@@ -327,7 +327,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   con su superficie; el cultivo se guarda como copia y no cambia si después se modifica el de la parcela; una
   parcela, persona, equipo o producto de baja, un aplicador de tipo `asesor` o datos de otra explotación → 422;
   se guarda un cambio `creacion`; `fecha_registro` es la fecha de `registrado_en` en `Europe/Madrid` y se
-  rechaza un `registrado_en` futuro o anterior a la fecha. Contrato: `POST /tratamientos` y
+  rechaza un `registrado_en` futuro (con la tolerancia de T-85) o anterior a la fecha. Contrato: `POST /tratamientos` y
   `GET /tratamientos/{id}`. (REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-17)
 - [X] T-36 [US1] Implementar el registro en `backend/src/cuaderno/servicios/tratamientos.py`,
   `esquemas/tratamiento.py` y `api/tratamientos.py`: todo en una transacción; validación con
@@ -433,6 +433,24 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
   la cola no está vacía): se conservan los productos con el alta en la cola. (REQ-06; R3, R16, data-model)
 - [X] T-83 [US1] Implementar la descarga de T-82 en `frontend/src/sync/tratamientos.ts`, llamarla junto a `descargarMaestros()` y adaptar esta. Pasan las
   pruebas de T-82. (REQ-06; R3)
+
+**Reloj y aspecto**, añadidas el 2026-11-25 tras la revisión de H4 (decisiones del alumno). Se hacen después de las
+correcciones de la revisión: primero T-85 y después T-84.
+
+- [ ] T-84 [US1] Dar a la PWA una hoja de estilos mínima, `frontend/src/estilos.css`, importada en `main.tsx`: sin librerías, sin
+  fuentes ni recursos externos y sin cambiar textos, roles, rutas ni comportamiento (todas las pruebas siguen pasando sin
+  modificarlas; si hace falta alguna clase, las mínimas). Pensada para el móvil: una columna, con un ancho máximo legible en
+  pantallas grandes; letra de 16 px o más; formularios con la etiqueta encima del campo a todo el ancho; botones y campos de 44 px
+  de alto o más (criterio 2.5.5 de las WCAG 2.2, https://www.w3.org/TR/WCAG22/); contraste de 4,5:1 o más en los textos
+  (criterio 1.4.3); foco visible con el teclado; el color principal del manifiesto (`#2e7d32`); los errores y el estado de cada
+  registro (pendiente, rechazado) se distinguen por el texto, además de por el color. Solo tema claro. Comprobación en Chrome a
+  360 × 640 y a 1280 × 800 de todas las páginas: sin desplazamiento horizontal, también con un error largo y con nombres largos; y
+  sin conexión, con la app ya abierta una vez (el CSS está en el precaché). (principio V; SC-001)
+- [ ] T-85 [US1] Escribir las pruebas (deben fallar) en `backend/tests/integration/test_registrar_tratamiento.py` e implementar la
+  tolerancia del reloj de R14 en `servicios/tratamientos.py`, con los 5 minutos en una constante: `registradoEn` 5 minutos por
+  delante de la hora del servidor → 201, guardado como llega, y su reintento → 200; 5 minutos y 1 segundo → 422; a las 23:58 de
+  Madrid, uno que cae en el día siguiente → 201 con `fecha_registro` de hoy; una `fecha` de mañana sigue dando 422 (REQ-04). Ajustar
+  solo la prueba de T-35 que rechazaba cualquier adelanto. (REQ-06, REQ-09; R14)
 
 **Punto de control (MVP)**: con la historia 4 hecha, el agricultor registra tratamientos con y sin conexión y
 los ve en el cuaderno, también al volver a entrar, con la dosis por hectárea de cada producto. Dos cuentas en un mismo móvil no
@@ -645,14 +663,14 @@ ellos. Orden: T-63 a T-69, después T-71 y, por último, T-70.
   T-01.
 - **Base común (T-07 a T-19)**: depende del Setup y **bloquea todas las historias**.
 - **US4 (T-20 a T-29)**: depende de la base común.
-- **US1 (T-30 a T-42 y T-72 a T-83)**: depende de US4 (parcelas, personas, equipos y productos). Orden de
+- **US1 (T-30 a T-42 y T-72 a T-85)**: depende de US4 (parcelas, personas, equipos y productos). Orden de
   ejecución dentro del hito: T-30 a T-32 → T-72 a T-74 → T-33 a T-36 → T-75 y T-76 → T-37 y T-38 → T-80 y T-81 →
-  T-78 y T-79 → T-39 y T-40 → T-82 y T-83 → T-41 y T-42 → T-77. T-39 necesita la base por explotación de T-79; T-82, la lista de T-81. T-72 usa el fichero de casos de T-07; T-75 necesita el registro de T-36, y T-77 la vista del cuaderno de T-42.
+  T-78 y T-79 → T-39 y T-40 → T-82 y T-83 → T-41 y T-42 → T-77 → T-85 → T-84. T-39 necesita la base por explotación de T-79; T-82, la lista de T-81. T-72 usa el fichero de casos de T-07; T-75 necesita el registro de T-36, y T-77 la vista del cuaderno de T-42.
 - **US2 (T-43 a T-52)**: depende de US1 (tabla `tratamiento` y registro).
 - **US3 (T-53 a T-62)**: depende de US1. T-57 y T-58 amplían el `PATCH` de T-49 (US2).
 - **Cierre (T-63 a T-71)**: depende de las historias que se quieran validar. T-63, con su prueba de humo, va
   antes de T-64 a T-66; T-71 va después de T-69, y T-70 es la última. T-71 lleva un número mayor que T-70 porque
-  se añadió después del análisis; el orden de ejecución es el indicado. Lo mismo ocurre con T-72 a T-83, que
+  se añadió después del análisis; el orden de ejecución es el indicado. Lo mismo ocurre con T-72 a T-85, que
   pertenecen a US1 (H4).
 
 ### Dentro de cada historia
@@ -686,7 +704,7 @@ Tras T-30 (casos de REQ-02 y REQ-04 en compartido/casos-validacion.json):
 
 1. Setup y base común (T-01 a T-19).
 2. Historia 4 (T-20 a T-29), requisito de la 1.
-3. Historia 1 (T-30 a T-42 y T-72 a T-83).
+3. Historia 1 (T-30 a T-42 y T-72 a T-85).
 4. **Parar y validar**: registrar con y sin conexión (prueba independiente de la historia 1).
 
 ### Entrega incremental
@@ -714,10 +732,10 @@ actualizado en el mismo commit cuando proceda.
 | REQ-03 | T-33, T-35 | T-34, T-36, T-41 | T-65 |
 | REQ-04 | T-30, T-33, T-35 | T-31, T-32, T-34, T-36, T-41 | T-65 |
 | REQ-05 | T-35 | T-36, T-41 | T-65 |
-| REQ-06 | T-24, T-37, T-39, T-78, T-82, T-57, T-61 | T-25, T-38, T-40, T-41, T-42, T-79, T-83, T-52, T-58 | T-65, T-66 |
+| REQ-06 | T-24, T-37, T-39, T-78, T-82, T-85, T-57, T-61 | T-25, T-38, T-40, T-41, T-42, T-79, T-83, T-52, T-58, T-85 | T-65, T-66 |
 | REQ-07 | T-43, T-46, T-48 | T-44, T-45, T-47, T-49, T-52 | T-66 |
 | REQ-08 | T-43, T-50 | T-44, T-45, T-51, T-52 | T-66 |
-| REQ-09 | T-43, T-46, T-48 | T-44, T-45, T-47, T-49, T-52 | T-66 |
+| REQ-09 | T-43, T-46, T-48, T-85 | T-44, T-45, T-47, T-49, T-52, T-85 | T-66 |
 | REQ-10 | T-80, T-53 | T-81, T-54, T-62 | T-66 |
 | REQ-11 | T-48, T-55, T-57, T-61 | T-49, T-56, T-58, T-62 | T-66 |
 | REQ-12 | T-53, T-55, T-61 | T-56, T-62 | T-66 |
@@ -737,7 +755,7 @@ SC-001, SC-005 y SC-007 → T-71 (sesión con agricultores).
 Tareas de infraestructura y su motivo: T-01 (R1, R2, R10, R13, principio VI), T-02 y T-03 (R13, principio VI),
 T-04 (R11), T-05 (R2, R7), T-06 (R10, R13, principio III), T-07 (R8), T-08 y T-68 (R7, principio I), T-15 (R7,
 R8), T-16 (R3), T-18 (R3, R11), T-63 (decisión de plataforma, R3, R11), T-67 (R12, constitución v1.1.0), T-69 (R11) y
-T-70 (principio III) y T-71 (SC-001, SC-005, SC-007; principio V).
+T-70 (principio III), T-71 (SC-001, SC-005, SC-007; principio V) y T-84 (principio V, SC-001).
 
 Pendientes del plan convertidos en tareas: Python 3.14 o 3.13 → T-01; `pip-audit`, `npm audit` y reglas `S`
 de `ruff` → T-02 y T-03; columnas generadas aceptadas por PostgreSQL → T-47; confianza en la autoridad de Caddy

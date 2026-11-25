@@ -21,6 +21,9 @@ diferencias con el SIEX se aplazan a la 007.
 | ¿Se guarda en la base de datos o se calcula al mostrarla? | **Se calcula** cada vez a partir de la cantidad y de la suma de superficies tratadas. No se guarda: depende de filas de dos tablas y se desincronizaría tras una corrección o un conflicto. Aritmética exacta (sin coma flotante) para que las dos capas redondeen igual |
 | ¿Cómo sale en la exportación? | La 001 no tiene exportación (spec, Supuestos). La API devuelve la dosis en las respuestas (`dosisPorHectarea` y `unidadDosis`, de solo lectura) y la exportación reutilizará `dominio/dosis.py` cuando se especifique; queda pendiente comprobar el campo de dosis del anexo V del SIEX |
 
+**Cambio del 2026-11-25 (R14, tras la revisión de H4)**: se admite que `registrado_en` vaya hasta 5 minutos por delante
+de la hora del servidor (T-85). No cambia la spec ni el contrato.
+
 **Cambio del 2026-11-25 (REQ-06, antes de H4)**: la spec amplía REQ-06 con dos reglas, con el visto bueno del tutor.
 Respuestas del plan, con el detalle en R16:
 

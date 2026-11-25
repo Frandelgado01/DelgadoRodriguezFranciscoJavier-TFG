@@ -194,8 +194,8 @@ de registro y propone reutilizarlo.
 | `equipo_id` | UUID | FK → `equipo`, NOT NULL | REQ-01 h | CUE 8.35 |
 | `eficacia` | TEXT | NULL, CHECK IN (`buena`, `regular`, `mala`) | REQ-01 j | CUE 8.54 |
 | `observaciones` | TEXT | NULL, ≤ 2000 car. | REQ-01 k | CUE 8.55 |
-| `registrado_en` | TIMESTAMPTZ | NOT NULL; ≤ `now()` (momento del guardado en el dispositivo) | REQ-09, R14 | |
-| `fecha_registro` | DATE | NOT NULL; CHECK `fecha_registro >= fecha`. **No generada**: la API la calcula como la fecha de `registrado_en` en `Europe/Madrid` | REQ-09, R14 | |
+| `registrado_en` | TIMESTAMPTZ | NOT NULL; ≤ `now()` + 5 minutos (momento del guardado en el dispositivo) | REQ-09, R14 | |
+| `fecha_registro` | DATE | NOT NULL; CHECK `fecha_registro >= fecha`. **No generada**: la API la calcula como la fecha en `Europe/Madrid` del menor de `registrado_en` y `recibido_en` | REQ-09, R14 | |
 | `completado_en` | TIMESTAMPTZ | CHECK (`eficacia IS NULL`) = (`completado_en IS NULL`) | REQ-07 | |
 | `fecha_completado` | DATE | CHECK (`completado_en IS NULL`) = (`fecha_completado IS NULL`). **No generada**: la API la calcula como la fecha de `completado_en` en `Europe/Madrid` | REQ-07, R14 | |
 | `fecha_vencimiento` | DATE | **GENERADA**: `(fecha + interval '1 month')::date` | REQ-07, R14 | |

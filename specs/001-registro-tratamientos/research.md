@@ -346,7 +346,12 @@ como **pendiente**.
   - `anotado_fuera_plazo` se calcula con `fecha_registro`, la fecha en `Europe/Madrid` de `registrado_en` (el
     momento en que el agricultor lo guardó en el dispositivo), no con la de llegada al servidor: un tratamiento
     anotado a tiempo sin conexión no debe salir como fuera de plazo por sincronizarse tarde. La API rechaza un
-    `registrado_en` futuro o anterior a la fecha del tratamiento.
+    `registrado_en` posterior en **más de 5 minutos** a la hora del servidor, o anterior a la fecha del tratamiento.
+    Los 5 minutos (decisión del alumno del 2026-11-25, tras la revisión de H4) admiten que el reloj del móvil vaya
+    algo adelantado: sin ellos, todos los registros de ese móvil se rechazarían y corregirlos no serviría de nada.
+    `registrado_en` se guarda como llega (la idempotencia compara el contenido, R4), y `fecha_registro` sale del
+    **menor** de `registrado_en` y la hora del servidor, para que un reloj adelantado no cambie el día. La fecha del
+    tratamiento no tiene tolerancia: no puede ser posterior a hoy (REQ-04).
   - `completado_fuera_plazo` se calcula igual con `fecha_completado`, que procede de `completado_en`.
   - Las dos marcas son columnas generadas, pero **no usan `fecha_vencimiento`**, porque PostgreSQL no permite que
     una columna generada use otra. Repiten la expresión del vencimiento a partir de `fecha`. `fecha_registro` y
