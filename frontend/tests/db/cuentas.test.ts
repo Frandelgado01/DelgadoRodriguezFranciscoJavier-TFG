@@ -14,6 +14,7 @@ import { BaseDispositivo, type EstadoOperacion } from "../../src/db/esquema";
 import { CerrarSesion } from "../../src/paginas/cuenta/CerrarSesion";
 import { Explotacion } from "../../src/paginas/explotacion/Explotacion";
 import { guardarSesion, leerSesion } from "../../src/sesion";
+import { guardarTratamiento, type TratamientoNuevo } from "../../src/sync/cola";
 import { vaciarDispositivo } from "../ayudas";
 
 const A = { correo: "ana@example.com", explotacionId: "6d1f2a90-0000-4000-8000-00000000000a" };
@@ -182,6 +183,53 @@ describe("al salir (REQ-06, REQ-20; R16)", () => {
       expect(await baseAbierta()?.tratamientos.count()).toBe(1);
     },
   );
+});
+
+describe("guardar mientras se cierra la sesión (REQ-06)", () => {
+  const NUEVO: TratamientoNuevo = {
+    id: "t-tardio",
+    registradoEn: "2026-03-15T10:30:00Z",
+    fecha: "2026-03-15",
+    problema: "Mildiu",
+    aplicadorId: "per-1",
+    asesorId: null,
+    equipoId: "equ-1",
+    parcelas: [],
+    productos: [],
+    eficacia: null,
+    observaciones: null,
+  };
+
+  it("REQ-06: un tratamiento guardado con el cierre en curso no se pierde y sigue en la cola al volver a entrar", async () => {
+    await guardarSesion(A);
+    let soltar: (respuesta: Response) => void = () => undefined;
+    const retenida = new Promise<Response>((resolver) => {
+      soltar = resolver;
+    });
+    const llamadas: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, opciones: RequestInit) => {
+        llamadas.push(`${opciones.method} ${url}`);
+        if (opciones.method === "DELETE") return retenida;
+        return new Response("{}", { status: 401, headers: { "Content-Type": "application/json" } });
+      }),
+    );
+    render(createElement(CerrarSesion));
+    await userEvent.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+    await waitFor(() => expect(llamadas).toContain("DELETE /api/sesion"));
+
+    await guardarTratamiento(NUEVO);
+    soltar(new Response(null, { status: 204 }));
+    await waitFor(() => expect(window.location.pathname).toBe("/entrar"));
+
+    expect(await leerSesion()).toBeNull();
+    expect(baseAbierta()).toBeNull();
+    expect(await Dexie.exists(BASE_A)).toBe(true);
+    await guardarSesion(A);
+    expect(await baseAbierta()?.cola.toArray()).toMatchObject([{ entidadId: "t-tardio", estado: "pendiente" }]);
+    expect(await baseAbierta()?.tratamientos.get("t-tardio")).toMatchObject({ estadoSincronizacion: "pendiente" });
+  });
 });
 
 describe("base del dispositivo", () => {

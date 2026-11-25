@@ -42,9 +42,9 @@ export function baseActual(): BaseLocal {
   return abierta.base;
 }
 
-/** Elimina la base abierta: al salir sin operaciones en la cola no queda ningún dato de la cuenta. */
-export async function eliminarBase(): Promise<void> {
-  const base = abierta?.base;
+/** Deja de ofrecer la base abierta, sin cerrarla: nadie puede guardar ya en ella. Devuelve la que había. */
+export function soltarBase(): BaseLocal | null {
+  const base = abierta?.base ?? null;
   abierta = null;
-  await base?.delete();
+  return base;
 }
