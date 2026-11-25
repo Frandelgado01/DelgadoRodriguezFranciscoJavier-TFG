@@ -446,7 +446,7 @@ correcciones de la revisión: primero T-85 y después T-84.
   registro (pendiente, rechazado) se distinguen por el texto, además de por el color. Solo tema claro. Comprobación en Chrome a
   360 × 640 y a 1280 × 800 de todas las páginas: sin desplazamiento horizontal, también con un error largo y con nombres largos; y
   sin conexión, con la app ya abierta una vez (el CSS está en el precaché). (principio V; SC-001)
-- [ ] T-85 [US1] Escribir las pruebas (deben fallar) en `backend/tests/integration/test_registrar_tratamiento.py` e implementar la
+- [X] T-85 [US1] Escribir las pruebas (deben fallar) en `backend/tests/integration/test_registrar_tratamiento.py` e implementar la
   tolerancia del reloj de R14 en `servicios/tratamientos.py`, con los 5 minutos en una constante: `registradoEn` 5 minutos por
   delante de la hora del servidor → 201, guardado como llega, y su reintento → 200; 5 minutos y 1 segundo → 422; a las 23:58 de
   Madrid, uno que cae en el día siguiente → 201 con `fecha_registro` de hoy; una `fecha` de mañana sigue dando 422 (REQ-04). Ajustar

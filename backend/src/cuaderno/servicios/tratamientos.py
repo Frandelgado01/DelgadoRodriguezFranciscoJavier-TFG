@@ -7,7 +7,7 @@ y el cambio `creacion` del historial con la instantánea completa.
 import uuid
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -28,6 +28,9 @@ from cuaderno.esquemas.tratamiento import (
     TratamientoNuevo,
 )
 from cuaderno.modelos.maestro import DatoMaestro
+
+# Lo que puede ir adelantado el reloj del dispositivo respecto al del servidor (R14).
+TOLERANCIA_RELOJ = timedelta(minutes=5)
 
 
 def _de_la_explotacion[T: DatoMaestro](
@@ -97,8 +100,8 @@ def _errores_de_la_base(
 def _errores_de_registro(
     registrado_en: datetime, fecha_registro: date, fecha: date, ahora: datetime
 ) -> list[ErrorRegla]:
-    """El momento del guardado no puede ser futuro ni anterior a la fecha (R14)."""
-    if registrado_en > ahora:
+    """El momento del guardado no puede ser futuro, salvo la tolerancia, ni anterior a la fecha."""
+    if registrado_en > ahora + TOLERANCIA_RELOJ:
         mensaje = "El momento en que se anotó es posterior a ahora: revisa la hora del dispositivo."
     elif fecha_registro < fecha:
         mensaje = "El momento en que se anotó es anterior a la fecha del tratamiento."
@@ -156,7 +159,8 @@ def registrar(
     parcelas = _de_la_explotacion(
         s, modelos.Parcela, [p.parcela_id for p in datos.parcelas], explotacion_id
     )
-    fecha_registro = datos.registrado_en.astimezone(ZONA_HORARIA).date()
+    # Un reloj adelantado no cambia el día en que se anotó (R14).
+    fecha_registro = min(datos.registrado_en, ahora).astimezone(ZONA_HORARIA).date()
     errores = validar_tratamiento(
         datos.model_dump(mode="json", by_alias=True),
         hoy=ahora.astimezone(ZONA_HORARIA).date(),

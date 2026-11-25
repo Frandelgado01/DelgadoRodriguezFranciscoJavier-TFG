@@ -471,7 +471,7 @@ def test_req09_la_fecha_de_registro_es_la_de_registrado_en_en_madrid(
 @pytest.mark.parametrize(
     "registrado_en",
     [
-        pytest.param("2026-03-15T11:00:01Z", id="futuro"),
+        pytest.param("2026-03-15T11:05:01Z", id="futuro-fuera-de-la-tolerancia"),
         pytest.param("2026-03-14T22:59:00Z", id="anterior-a-la-fecha"),
     ],
 )
@@ -481,6 +481,61 @@ def test_req09_registrado_en_futuro_o_anterior_a_la_fecha_responde_422(
     m = preparar(cliente)
     errores = errores_de(registrar(cliente, tratamiento_valido(m, registradoEn=registrado_en)))
     assert set(errores) == {"registradoEn"}
+    assert contar(bd, "tratamiento") == 0
+
+
+# --- Tolerancia del reloj del dispositivo (T-85; R14) ---
+
+
+def test_req06_registrado_en_5_minutos_por_delante_se_guarda_como_llega(
+    cliente: TestClient, bd: Engine
+) -> None:
+    m = preparar(cliente)
+    datos = tratamiento_valido(m, registradoEn="2026-03-15T11:05:00Z")  # el servidor: 11:00:00
+    respuesta = registrar(cliente, datos)
+    assert respuesta.status_code == 201, respuesta.text
+    assert respuesta.json()["registradoEn"] == "2026-03-15T11:05:00Z"
+    reintento = registrar(cliente, datos)
+    assert reintento.status_code == 200, reintento.text
+    (t,) = consultar(bd, "SELECT registrado_en FROM tratamiento")
+    assert t.registrado_en == datetime(2026, 3, 15, 11, 5, tzinfo=UTC)
+    (cambio,) = consultar(bd, "SELECT realizado_en FROM cambio")
+    assert cambio.realizado_en == t.registrado_en
+
+
+def test_req09_registrado_en_5_minutos_y_1_segundo_por_delante_responde_422(
+    cliente: TestClient, bd: Engine
+) -> None:
+    m = preparar(cliente)
+    datos = tratamiento_valido(m, registradoEn="2026-03-15T11:05:01Z")
+    errores = errores_de(registrar(cliente, datos))
+    assert set(errores) == {"registradoEn"}
+    assert errores["registradoEn"]["req"] == "REQ-09"
+    assert contar(bd, "tratamiento") == 0
+
+
+def test_req09_un_reloj_adelantado_no_cambia_la_fecha_de_registro_al_dia_siguiente(
+    cliente: TestClient, bd: Engine, reloj: RelojFijo
+) -> None:
+    m = preparar(cliente)
+    reloj.fijar(datetime(2026, 3, 15, 22, 58, tzinfo=UTC))  # las 23:58 en Madrid
+    datos = tratamiento_valido(m, registradoEn="2026-03-16T00:01:00+01:00")
+    respuesta = registrar(cliente, datos)
+    assert respuesta.status_code == 201, respuesta.text
+    (t,) = consultar(bd, "SELECT registrado_en, fecha_registro FROM tratamiento")
+    assert t.fecha_registro == HOY
+    assert t.registrado_en == datetime(2026, 3, 15, 23, 1, tzinfo=UTC)
+
+
+def test_req04_la_fecha_del_tratamiento_no_tiene_tolerancia(
+    cliente: TestClient, bd: Engine, reloj: RelojFijo
+) -> None:
+    m = preparar(cliente)
+    reloj.fijar(datetime(2026, 3, 15, 22, 58, tzinfo=UTC))
+    datos = tratamiento_valido(m, fecha="2026-03-16", registradoEn="2026-03-16T00:01:00+01:00")
+    errores = errores_de(registrar(cliente, datos))
+    assert set(errores) == {"fecha"}
+    assert errores["fecha"]["req"] == "REQ-04"
     assert contar(bd, "tratamiento") == 0
 
 

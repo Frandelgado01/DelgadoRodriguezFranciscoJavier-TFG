@@ -30,7 +30,8 @@ class Tratamiento(SQLModel, table=True):
     eficacia: str | None = None  # B.j: buena, regular o mala
     observaciones: str | None = None  # B.k, ≤ 2000 car.
     registrado_en: datetime = Field(sa_column=_instante())  # guardado en el dispositivo (R14)
-    fecha_registro: date  # fecha de registrado_en en Europe/Madrid; la calcula la API
+    # Fecha en Europe/Madrid del menor de registrado_en y recibido_en; la calcula la API (R14).
+    fecha_registro: date
     anulado: bool = False
     version: int = 1
     en_conflicto: bool = False
