@@ -9,8 +9,10 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
+import { Cuaderno } from "../../src/paginas/cuaderno/Cuaderno";
 import type { BaseLocal } from "../../src/db/esquema";
 import { Explotacion } from "../../src/paginas/explotacion/Explotacion";
+import { Tratamiento } from "../../src/paginas/tratamiento/Tratamiento";
 import { guardarSesion } from "../../src/sesion";
 import { prepararBase } from "../ayudas";
 
@@ -281,7 +283,7 @@ describe("parcelas (REQ-14)", () => {
 
     await waitFor(() => expect(seccion("Parcelas").queryByText("Parcela 1 · Viña Grande")).toBeNull());
     expect(servidor.cambios()).toEqual([{ metodo: "POST", ruta: `/parcelas/${PARCELA.id}/baja`, cuerpo: undefined }]);
-    expect(await base.parcelas.count()).toBe(0);
+    expect(await base.parcelas.where("estado").equals("activa").count()).toBe(0);
   });
 });
 
@@ -402,6 +404,94 @@ describe("reintento del alta de un producto (REQ-16, REQ-06; R4)", () => {
     }
     expect(new Set(ids()).size).toBe(2);
   });
+});
+
+describe("dar de baja sin alterar los tratamientos anteriores (REQ-17, historia 4, escenario 4)", () => {
+  const activa = { estado: "activa", fechaBaja: null } as const;
+  const APLICADOR: Elemento = { id: "per-1", nombre: "Juan Pérez", tipo: "aplicador", numeroCarne: "CM-1", ...activa };
+  const EQUIPO: Elemento = {
+    id: "equ-1",
+    descripcion: "Pulverizador",
+    fechaAdquisicionOInspeccion: "2025-05-20",
+    numeroRoma: null,
+    ...activa,
+  };
+  const PRODUCTO: Elemento = { id: "pro-1", nombreComercial: "Cobre", numeroRegistro: "ES-1", ...activa };
+
+  async function sembrar() {
+    servidor.datos = {
+      parcelas: [{ ...PARCELA }],
+      personas: [{ ...APLICADOR }],
+      equipos: [{ ...EQUIPO }],
+      productos: [{ ...PRODUCTO }],
+    };
+    await base.parcelas.put({ ...PARCELA, estado: "activa" });
+    await base.personas.put({ ...APLICADOR, estado: "activa" });
+    await base.equipos.put({ ...EQUIPO, estado: "activa" });
+    await base.productos.put({ ...PRODUCTO, estado: "activa" });
+    await base.tratamientos.put({
+      id: "t1",
+      registradoEn: "2026-03-15T10:30:00Z",
+      fecha: "2026-03-15",
+      problema: "Mildiu",
+      aplicadorId: APLICADOR.id,
+      asesorId: null,
+      equipoId: EQUIPO.id,
+      parcelas: [
+        {
+          parcelaId: PARCELA.id,
+          superficieTratada: 3.5,
+          cultivoEspecie: "Vitis vinifera",
+          cultivoVariedad: "Airén",
+          productoSemilla: null,
+        },
+      ],
+      productos: [{ productoId: PRODUCTO.id, cantidad: 2, unidadMedida: "kg" }],
+      eficacia: null,
+      observaciones: null,
+      estadoSincronizacion: "sincronizado",
+      parcelaIds: [PARCELA.id],
+      productoIds: [PRODUCTO.id],
+    });
+  }
+
+  async function darDeBaja(region: string, nombre: string) {
+    render(<Explotacion />);
+    await seccion(region).findByText(nombre);
+    const item = elemento(region, nombre);
+    await userEvent.click(item.getByRole("button", { name: "Dar de baja" }));
+    await userEvent.click(item.getByRole("button", { name: "Sí, dar de baja" }));
+    await waitFor(() => expect(seccion(region).queryByText(nombre)).toBeNull());
+    cleanup();
+    servidor.sinConexion = true; // sin descargar nada
+  }
+
+  it.each([
+    ["Parcelas", "Parcela 1 · Viña Grande", "Parcela 1 · Viña Grande", "Parcela"],
+    ["Aplicadores y asesores", "Juan Pérez", "Juan Pérez (carné CM-1)", "Aplicador"],
+    ["Equipos de aplicación", "Pulverizador", "Pulverizador", "Equipo de aplicación"],
+    ["Productos fitosanitarios", "Cobre", "Cobre (nº de registro ES-1)", "Producto"],
+  ])(
+    "REQ-17: %s, el detalle de un tratamiento anterior lo sigue mostrando y no se ofrece en tratamientos nuevos",
+    async (region, nombre, enDetalle, etiqueta) => {
+      await sembrar();
+      await darDeBaja(region, nombre);
+
+      render(<Cuaderno />);
+      await userEvent.click(await screen.findByRole("button", { name: "Ver el detalle" }));
+      expect(screen.getByText(etiqueta).nextElementSibling?.textContent).toBe(enDetalle);
+      cleanup();
+
+      render(<Tratamiento />);
+      const lista = (await screen.findByLabelText(etiqueta)) as HTMLSelectElement;
+      expect([...lista.options]).toHaveLength(1); // solo "Elige…"
+      cleanup();
+
+      render(<Explotacion />);
+      await seccion(region).findByText(/Sin conexión/);
+      expect(seccion(region).queryByText(nombre)).toBeNull();
+    },
+  );
 });
 
 describe("sin conexión", () => {

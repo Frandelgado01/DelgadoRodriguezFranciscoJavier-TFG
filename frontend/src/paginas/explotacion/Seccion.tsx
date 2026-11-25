@@ -136,8 +136,9 @@ export function Seccion<T extends Maestro>({ definicion }: { definicion: Definic
       setEstadoLista((actual) => ({ ...actual, aviso: mensajeGeneral(resultado) }));
       return;
     }
-    // La copia del dispositivo solo guarda los activos: el dado de baja ya no se ofrece al registrar.
-    await base[almacen].delete(elemento.id);
+    // La copia se conserva con estado "baja": ya no se ofrece al registrar, pero los tratamientos anteriores la
+    // siguen mostrando (REQ-17).
+    await base[almacen].put(resultado.datos);
     await recargar();
   }
 
