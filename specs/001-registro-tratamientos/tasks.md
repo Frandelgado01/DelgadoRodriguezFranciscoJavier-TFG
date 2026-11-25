@@ -437,7 +437,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
 **Reloj y aspecto**, añadidas el 2026-11-25 tras la revisión de H4 (decisiones del alumno). Se hacen después de las
 correcciones de la revisión: primero T-85 y después T-84.
 
-- [ ] T-84 [US1] Dar a la PWA una hoja de estilos mínima, `frontend/src/estilos.css`, importada en `main.tsx`: sin librerías, sin
+- [X] T-84 [US1] Dar a la PWA una hoja de estilos mínima, `frontend/src/estilos.css`, importada en `main.tsx`: sin librerías, sin
   fuentes ni recursos externos y sin cambiar textos, roles, rutas ni comportamiento (todas las pruebas siguen pasando sin
   modificarlas; si hace falta alguna clase, las mínimas). Pensada para el móvil: una columna, con un ancho máximo legible en
   pantallas grandes; letra de 16 px o más; formularios con la etiqueta encima del campo a todo el ancho; botones y campos de 44 px

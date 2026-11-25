@@ -27,7 +27,7 @@ function Elemento({ tratamiento: t, datos }: { tratamiento: TratamientoCuaderno;
       <h3>
         {fechaCorta(t.fecha)} · {t.problema}
       </h3>
-      <p>{ESTADOS[t.estadoSincronizacion]}</p>
+      <p className={`estado estado-${t.estadoSincronizacion}`}>{ESTADOS[t.estadoSincronizacion]}</p>
       {motivos.map(({ campo, mensaje }) => (
         <p key={`${campo} ${mensaje}`} role="alert">
           {mensaje}
