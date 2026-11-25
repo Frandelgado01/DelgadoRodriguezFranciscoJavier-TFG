@@ -1,7 +1,7 @@
 # Plan de implementación: Consultas normativas con citas
 
 **Rama**: `002-consultas-normativas` | **Fecha**: 2026-11-25 | **Spec**: [spec.md](spec.md) (aprobada por el alumno el 2026-11-25;
-pendiente del visto bueno del tutor, obligatorio antes de implementar)
+plan aprobado por el alumno el 2026-11-25; visto bueno del tutor pendiente, obligatorio antes de implementar)
 
 **Entrada**: spec de la 002, módulo 06 (`docs/conceptos/06-rag.md`), plan de la 001 (arquitectura y sesión) y constitución v2.0.0.
 
