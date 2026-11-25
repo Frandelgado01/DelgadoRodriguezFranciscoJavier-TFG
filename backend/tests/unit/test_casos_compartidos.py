@@ -12,6 +12,7 @@ Formato de cada caso: `req` (requisito que verifica), `regla` (nombre de la regl
 import json
 import re
 from collections.abc import Callable
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,9 @@ CAMPOS_CASO = {"req", "regla", "descripcion", "entrada", "esperado"}
 REGLAS: dict[str, Callable[[Any], Any]] = {
     "contrasena": validacion.validar_contrasena,
     "correo": validacion.validar_correo,
+    "tratamiento": lambda e: validacion.validar_tratamiento(
+        e["datos"], date.fromisoformat(e["hoy"]), e["superficies"]
+    ),
 }
 
 

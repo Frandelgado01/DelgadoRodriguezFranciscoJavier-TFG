@@ -294,7 +294,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   observaciones opcionales; superficie tratada ≤ 0, con más de 2 decimales o mayor que la de la parcela (5 ha en
   una de 4,2 → "La superficie tratada (5 ha) es mayor que la de la parcela (4,2 ha).") → error; cantidad ≤ 0 →
   error; unidad distinta de `kg` o `L` → error; fecha posterior a hoy → error. (REQ-02, REQ-04)
-- [ ] T-31 [P] [US1] Implementar las reglas de T-30 en `backend/src/cuaderno/dominio/validacion.py`. Pasan los
+- [X] T-31 [P] [US1] Implementar las reglas de T-30 en `backend/src/cuaderno/dominio/validacion.py`. Pasan los
   casos en pytest. (REQ-02, REQ-04)
 - [ ] T-32 [P] [US1] Implementar las reglas de T-30 en `frontend/src/dominio/validacion.ts`. Pasan los casos en
   Vitest. (REQ-02, REQ-04)
