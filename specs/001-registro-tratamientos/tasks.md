@@ -288,7 +288,7 @@ conexión.
 **Prueba independiente**: con una parcela, un aplicador y un equipo dados de alta, registrar un tratamiento y
 comprobar que aparece en el cuaderno con todos los campos de la sección B (spec, historia 1).
 
-- [ ] T-30 [P] [US1] Añadir a `compartido/casos-validacion.json` los casos de REQ-02 y REQ-04 (deben fallar en
+- [X] T-30 [P] [US1] Añadir a `compartido/casos-validacion.json` los casos de REQ-02 y REQ-04 (deben fallar en
   pytest y Vitest): faltan fecha, parcelas, problema, aplicador, especie o variedad, superficie, producto, equipo
   o cantidad → error con el campo y un mensaje llano; asesor, ROMA, producto de la semilla, eficacia y
   observaciones opcionales; superficie tratada ≤ 0, con más de 2 decimales o mayor que la de la parcela (5 ha en
