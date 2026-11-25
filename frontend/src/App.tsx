@@ -4,10 +4,9 @@
 // conexión: así el cuaderno se abre sin cobertura (REQ-06, REQ-20). Sin sesión, se muestra Entrar. Con ellas se
 // pone en marcha el envío de la cola y se ve siempre cuánto queda por enviar (T-40; R3).
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { Enlace } from "./componentes/Enlace";
 import { EstadoCola } from "./componentes/EstadoCola";
 import { esPublica, resolverRuta, type Destino, type Pagina } from "./navegacion";
-import { CerrarSesion } from "./paginas/cuenta/CerrarSesion";
+import { Cuaderno } from "./paginas/cuaderno/Cuaderno";
 import { CrearCuenta } from "./paginas/cuenta/CrearCuenta";
 import { Entrar } from "./paginas/cuenta/Entrar";
 import { Recuperar } from "./paginas/cuenta/Recuperar";
@@ -26,18 +25,6 @@ function caminoActual(): string {
   return window.location.pathname;
 }
 
-// Páginas que llegan en los hitos siguientes (H4 a H6).
-const TITULOS: Record<Pagina, string> = {
-  cuaderno: "Cuaderno",
-  entrar: "Entrar",
-  "crear-cuenta": "Crear cuenta",
-  recuperar: "He olvidado mi contraseña",
-  restablecer: "Nueva contraseña",
-  tratamiento: "Registrar un tratamiento",
-  explotacion: "Datos de la explotación",
-  historial: "Historial del tratamiento",
-};
-
 function PaginaPublica({ pagina }: { pagina: Pagina }) {
   switch (pagina) {
     case "crear-cuenta":
@@ -54,14 +41,11 @@ function PaginaPublica({ pagina }: { pagina: Pagina }) {
 function PaginaPrivada({ pagina, id }: Destino) {
   if (pagina === "explotacion") return <Explotacion />;
   if (pagina === "tratamiento") return <Tratamiento id={id} />;
+  if (pagina === "cuaderno") return <Cuaderno />;
+  // El historial llega en H6.
   return (
     <main>
-      <h1>{TITULOS[pagina]}</h1>
-      <nav>
-        <Enlace a="/tratamiento/nuevo">Registrar un tratamiento</Enlace>{" "}
-        <Enlace a="/explotacion">Datos de la explotación</Enlace>
-      </nav>
-      <CerrarSesion />
+      <h1>Historial del tratamiento</h1>
     </main>
   );
 }

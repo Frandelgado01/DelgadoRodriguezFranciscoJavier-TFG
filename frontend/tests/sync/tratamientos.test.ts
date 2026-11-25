@@ -244,6 +244,16 @@ describe("descarga de los tratamientos (REQ-06)", () => {
     expect(await screen.findByText("Aún no has dado de alta a nadie que aplique o asesore.")).toBeTruthy();
   });
 
+  it("escenario 9: guarda también la parcela de baja de un registro rechazado, para poder mostrarlo", async () => {
+    await base.parcelas.put(PARCELA);
+    await ponerLocal("t1", "rechazado");
+    await encolar("crear_tratamiento", nuevo("t1"), "rechazada");
+    servidor.maestros["parcelas"] = [{ ...PARCELA, estado: "baja" }]; // dada de baja desde otro dispositivo
+    await descargarMaestros();
+    await descargarTratamientos();
+    expect(await base.parcelas.toArray()).toMatchObject([{ id: PARCELA.id, numeroOrden: 1, estado: "baja" }]);
+  });
+
   it("si todo está en el dispositivo no pide los elementos de baja", async () => {
     servidor.tratamientos = [delServidor("t1")];
     await descargarMaestros();

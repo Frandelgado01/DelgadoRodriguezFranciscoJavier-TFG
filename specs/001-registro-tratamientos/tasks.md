@@ -366,7 +366,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   registro) sin salir del formulario y sin conexión, con aviso si ya hay uno con el mismo número de registro;
   mensajes llanos de `validacion.ts` antes de guardar; guarda en local y encola. Abre un registro rechazado con sus datos y los
   errores junto a su campo, y al guardarlo lo vuelve a encolar (escenario 10). (REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-06, REQ-16; R16)
-- [ ] T-42 [US1] Implementar la vista básica del cuaderno en `frontend/src/paginas/cuaderno/` (lista de
+- [X] T-42 [US1] Implementar la vista básica del cuaderno en `frontend/src/paginas/cuaderno/` (lista de
   tratamientos locales y sincronizados, ordenados por fecha, con su estado de sincronización y el detalle con
   todos los campos de la sección B; cada parcela tratada se muestra por su número de orden), con pruebas de componentes escritas antes en
   `frontend/tests/paginas/cuaderno.test.tsx`. Los registros rechazados muestran su motivo y se pueden corregir (T-41) o descartar con

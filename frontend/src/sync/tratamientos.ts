@@ -6,7 +6,7 @@
 import { llamar, type Esquemas, type Resultado } from "../api/cliente";
 import { baseActual } from "../db/base";
 import type { BaseLocal, Maestro } from "../db/esquema";
-import { aLocal } from "./cola";
+import { aLocal, type TratamientoNuevo } from "./cola";
 import { ALMACENES } from "./maestros";
 import { idsEnCola } from "./pendientes";
 
@@ -31,7 +31,7 @@ async function pedirTodos(): Promise<Tratamiento[] | Resultado<unknown>> {
 }
 
 /** Ids de los datos maestros que usan los tratamientos, por almacén. */
-function usados(tratamientos: Tratamiento[]): Record<Almacen, Set<string>> {
+function usados(tratamientos: TratamientoNuevo[]): Record<Almacen, Set<string>> {
   return {
     parcelas: new Set(tratamientos.flatMap((t) => t.parcelas.map((linea) => linea.parcelaId))),
     personas: new Set(tratamientos.flatMap((t) => (t.asesorId ? [t.aplicadorId, t.asesorId] : [t.aplicadorId]))),
@@ -40,13 +40,14 @@ function usados(tratamientos: Tratamiento[]): Record<Almacen, Set<string>> {
   };
 }
 
-/** Guarda los elementos usados que no están en el dispositivo, porque se dieron de baja. */
-async function completarBajas(base: BaseLocal, tratamientos: Tratamiento[]): Promise<void> {
-  const porAlmacen = usados(tratamientos);
+/** Guarda los elementos que usan los tratamientos del dispositivo y no están en él, porque se dieron de baja. */
+async function completarBajas(base: BaseLocal): Promise<void> {
+  const locales = (await base.tratamientos.toArray()) as unknown as TratamientoNuevo[];
+  const porAlmacen = usados(locales);
   for (const almacen of ALMACENES) {
     const tabla = base[almacen];
-    const locales = new Set(await tabla.toCollection().primaryKeys());
-    const faltan = new Set([...porAlmacen[almacen]].filter((id) => !locales.has(id)));
+    const presentes = new Set(await tabla.toCollection().primaryKeys());
+    const faltan = new Set([...porAlmacen[almacen]].filter((id) => !presentes.has(id)));
     if (faltan.size === 0) continue;
     const resultado = await llamar<Maestro[]>("GET", `/${almacen}?incluir_bajas=true`);
     if (resultado.ok) await tabla.bulkPut(resultado.datos.filter(({ id }) => faltan.has(id)));
@@ -68,6 +69,6 @@ export async function descargarTratamientos(): Promise<ResultadoTratamientos> {
       recibidos.filter(({ id }) => !protegidos.has(id)).map((t) => aLocal(t, "sincronizado")),
     );
   });
-  await completarBajas(base, recibidos);
+  await completarBajas(base);
   return { estado: "descargados" };
 }
