@@ -197,7 +197,9 @@ obligación legal. Pendiente: verificar las obligaciones de trazabilidad del Reg
 6. Qué campos ofrece la base de datos del Registro de Productos Fitosanitarios (usos, dosis, plazo de seguridad) y
    si hay datos descargables. **Resuelto en parte (2026-11-24):** hay un listado oficial de productos autorizados
    para el cuaderno de explotación en JSON, con un documento que describe sus campos (https://servicio.mapa.gob.es/regfiweb,
-   «Resúmenes»). Falta abrir esa descripción y ver si incluye el plazo de seguridad (módulo 06, § 2.1).
+   «Resúmenes»). El listado **incluye el plazo de
+   seguridad** por cultivo y plaga (comprobado el 2026-11-25; spec de la 002). Falta su descripción oficial, cuya descarga falla,
+   y sus condiciones de reutilización.
 7. Trazabilidad: Reglamento (CE) 178/2002, art. 18.
 
 ## Preguntas de autocomprobación
