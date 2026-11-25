@@ -6,13 +6,14 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Enlace } from "./componentes/Enlace";
 import { EstadoCola } from "./componentes/EstadoCola";
-import { esPublica, resolverRuta, type Pagina } from "./navegacion";
+import { esPublica, resolverRuta, type Destino, type Pagina } from "./navegacion";
 import { CerrarSesion } from "./paginas/cuenta/CerrarSesion";
 import { CrearCuenta } from "./paginas/cuenta/CrearCuenta";
 import { Entrar } from "./paginas/cuenta/Entrar";
 import { Recuperar } from "./paginas/cuenta/Recuperar";
 import { Restablecer } from "./paginas/cuenta/Restablecer";
 import { Explotacion } from "./paginas/explotacion/Explotacion";
+import { Tratamiento } from "./paginas/tratamiento/Tratamiento";
 import { leerSesion, type SesionLocal } from "./sesion";
 import { iniciarSincronizacion } from "./sync/vaciado";
 
@@ -50,12 +51,14 @@ function PaginaPublica({ pagina }: { pagina: Pagina }) {
   }
 }
 
-function PaginaPrivada({ pagina }: { pagina: Pagina }) {
+function PaginaPrivada({ pagina, id }: Destino) {
   if (pagina === "explotacion") return <Explotacion />;
+  if (pagina === "tratamiento") return <Tratamiento id={id} />;
   return (
     <main>
       <h1>{TITULOS[pagina]}</h1>
       <nav>
+        <Enlace a="/tratamiento/nuevo">Registrar un tratamiento</Enlace>{" "}
         <Enlace a="/explotacion">Datos de la explotación</Enlace>
       </nav>
       <CerrarSesion />
@@ -91,7 +94,7 @@ export function App() {
   return (
     <>
       <EstadoCola />
-      <PaginaPrivada pagina={destino.pagina} />
+      <PaginaPrivada key={camino} {...destino} />
     </>
   );
 }

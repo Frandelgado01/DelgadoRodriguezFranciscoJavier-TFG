@@ -25,6 +25,8 @@ export const RUTAS: Ruta[] = [
   { pagina: "recuperar", patron: /^\/recuperar\/?$/, publica: true },
   { pagina: "restablecer", patron: /^\/restablecer\/?$/, publica: true },
   { pagina: "tratamiento", patron: /^\/tratamiento\/nuevo\/?$/, publica: false },
+  // Corregir un registro rechazado (T-41; R16).
+  { pagina: "tratamiento", patron: /^\/tratamiento\/(?<id>[^/]+)\/corregir\/?$/, publica: false },
   { pagina: "explotacion", patron: /^\/explotacion\/?$/, publica: false },
   { pagina: "historial", patron: /^\/historial\/(?<id>[^/]+)\/?$/, publica: false },
 ];

@@ -357,7 +357,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   (operaciones `crear_producto` y `crear_tratamiento`; disparadores de R3; estado `sincronizado`, `pendiente`,
   `conflicto` o `rechazado`; comprobación de la cuenta, clasificación de respuestas, corregir y descartar de R16), la petición de `navigator.storage.persist()` y el contador de operaciones pendientes, siempre
   visible. Pasan las pruebas de T-39. (REQ-06; R3, R16)
-- [ ] T-41 [US1] Escribir las pruebas de componentes (deben fallar) del formulario en
+- [X] T-41 [US1] Escribir las pruebas de componentes (deben fallar) del formulario en
   `frontend/tests/paginas/tratamiento.test.tsx` y después implementarlo en
   `frontend/src/paginas/tratamiento/`: fecha, parcelas con superficie tratada, problema, aplicador y asesor,
   productos con cantidad y unidad, equipo, eficacia (buena, regular, mala) y observaciones; elección de
