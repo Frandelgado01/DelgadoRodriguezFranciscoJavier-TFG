@@ -4,7 +4,7 @@
 
 Resuelve las decisiones técnicas abiertas del plan y las preguntas del apartado 6 del módulo 05
 (`docs/conceptos/05-arquitectura-web.md`). Cada decisión sigue el formato Decisión / Motivo / Alternativas.
-Las fuentes se consultaron el 2026-10-27 (R15, el 2026-11-14) y se citan en APA al final. Lo que no se ha podido verificar se marca
+Las fuentes se consultaron el 2026-10-27 (R15, el 2026-11-14; R16, sin fuentes nuevas, el 2026-11-25) y se citan en APA al final. Lo que no se ha podido verificar se marca
 como **pendiente**.
 
 ---
@@ -47,14 +47,16 @@ como **pendiente**.
      - `parcelas`, `personas`, `equipos`, `productos`: copia de los datos maestros activos, para elegir de la
        lista y validar la superficie sin conexión.
      - `tratamientos`: los tratamientos de la explotación (incluidos los locales sin sincronizar), con
-       `estadoSincronizacion` (`sincronizado` | `pendiente` | `conflicto`).
+       `estadoSincronizacion` (`sincronizado` | `pendiente` | `conflicto` | `rechazado`).
      - `cola`: **cola de operaciones pendientes** (*outbox*). Cada entrada tiene `idOperacion` (UUID),
        `tipo` (`crear_tratamiento`, `corregir_tratamiento`, `anular_tratamiento`, `crear_producto`,
-       `resolver_conflicto`), `entidadId`, `versionBase`, `cuerpo`, `creadaEn` e `intentos`.
+       `resolver_conflicto`), `entidadId`, `versionBase`, `cuerpo`, `creadaEn`, `intentos`, `estado` y `errores`
+       (R16). Hay una base por explotación (R16).
   2. **Vaciado de la cola** en orden FIFO, una operación cada vez, al **abrir la app**, al recibir el evento
      **`online`**, justo después de encolar si hay red y cada 60 s mientras la app está abierta y la cola no está
      vacía. Si una operación falla por red, se detiene el vaciado y se reintenta en el siguiente disparo; si
-     falla con 401, se pide iniciar sesión sin borrar la cola; si falla con 409, se marca el conflicto (R5).
+     falla con 401, se pide iniciar sesión sin borrar la cola; si falla con 409 al modificar, se marca el conflicto
+     (R5); los demás rechazos no detienen la cola (R16).
   3. **No se usa la Background Sync API.** El service worker solo se encarga de la carcasa de la app
      (precaché con `vite-plugin-pwa`, estrategia `generateSW` sobre Workbox) (Vite PWA, s. f.).
   4. **iOS**: Safari no implementa Background Sync (Can I use, s. f.), así que el mecanismo del punto 2 es el
@@ -207,7 +209,7 @@ como **pendiente**.
     cuenta y hora, y al restablecer se cierran todas las sesiones y se pide iniciar sesión de nuevo (OWASP,
     s. f.-b).
   - **Cierre de sesión en el dispositivo**: se borran los datos locales de IndexedDB solo si la cola está vacía.
-    Si no lo está, se avisa de que hay registros sin enviar.
+    Si no lo está, se avisa de que hay registros sin enviar, que solo volverá a ver y enviar la misma cuenta (R16).
 - **Motivo**: se siguen las guías de OWASP y la biblioteca que recomienda FastAPI. El token opaco en base de
   datos se puede revocar al cerrar sesión o al restablecer la contraseña, algo que un JWT sin estado no permite
   sin una lista de revocación (principio VI, con la solución más simple: principio VII).
@@ -382,6 +384,50 @@ como **pendiente**.
   de todas formas); calcularla solo en la PWA (la API y la exportación no la tendrían).
 - **Pendiente (exportación)**: comprobar en el anexo V del SIEX si el CUE tiene un campo de dosis y con qué unidad,
   al especificar la exportación (próximos pasos).
+
+## R16. Registros del dispositivo: cuenta y rechazos (REQ-06, ampliado el 2026-11-24)
+
+- **Decisión (cuentas)**:
+  1. Cada explotación tiene su **propia base IndexedDB**, `cuaderno-<explotacionId>`, con los almacenes de R3. La base
+     `cuaderno` queda solo para lo que es del dispositivo: la sesión abierta (correo y explotación). Los almacenes de
+     datos que hoy tiene esa base se eliminan en su versión 2; antes de H4 no pueden contener operaciones pendientes.
+  2. Al entrar se abre la base de esa explotación; sin sesión no hay ninguna abierta.
+  3. Al salir **sin operaciones en la cola** (pendientes o rechazadas) se elimina la base de la explotación. Si quedan
+     operaciones, se avisa y, si la persona sale igualmente, la base se conserva y solo se vuelve a abrir cuando entra
+     la misma cuenta.
+  4. Antes de enviar **cada** operación, la PWA pide `GET /cuenta/yo` y comprueba que `explotacionId` es la de la base
+     abierta. Si no coincide (otra cuenta entró en otra pestaña del mismo navegador), detiene el vaciado y pide entrar.
+- **Decisión (rechazos)**: una respuesta se clasifica así:
+
+  | Respuesta | Qué hace la cola |
+  | --- | --- |
+  | 2xx | Quita la operación |
+  | Sin red, 408, 429 o 5xx | Detiene el vaciado y lo reintenta en el siguiente disparo (R3) |
+  | 401 | Detiene el vaciado, conserva la cola y pide entrar |
+  | 409 al corregir, anular o resolver | Conflicto (R5) |
+  | 409 al crear, o cualquier otro 4xx | **Rechazada**: se guarda con sus errores y se sigue con la siguiente |
+
+  1. La operación rechazada se queda en la cola con `estado = rechazada` y `errores` (los mensajes llanos de la API), y
+     el tratamiento local pasa a `estadoSincronizacion = rechazado`.
+  2. Un tratamiento que usa un producto cuya alta está rechazada **no se envía**: sigue pendiente hasta que el alta se
+     corrige o se descarta.
+  3. **Corregir** abre el formulario con los datos y los errores junto a su campo; al guardar, la operación vuelve a
+     `pendiente` con el mismo `id`, porque el servidor nunca la aplicó. Si el rechazo fue un 409 al crear (ese `id` ya
+     existe con otro contenido), se genera un `id` nuevo.
+  4. **Descartar** pide confirmación y borra la operación y su copia local. Un producto no se puede descartar mientras lo
+     use un tratamiento sin enviar: primero se corrige o se descarta el tratamiento.
+  5. El contador siempre visible distingue pendientes y rechazados.
+- **Motivo**: separar por base hace imposible mezclar datos de dos cuentas por olvidar un filtro y permite borrar los de una
+  cuenta de una vez. Clasificar por código de respuesta distingue lo que se arregla solo (red, servidor) de lo que necesita
+  al agricultor; si un rechazo detuviera la cola, un registro no válido impediría enviar los demás (REQ-06).
+- **Límites**: queda una ventana mínima entre la comprobación de la cuenta y el envío. En ella, un tratamiento sería
+  rechazado por la API, porque sus parcelas no son de esa explotación (T-35); un producto nuevo sí podría crearse en la otra
+  cuenta. Los datos locales no se cifran: quien tenga acceso al dispositivo desbloqueado podría leerlos con herramientas del
+  navegador. Los dos límites se declaran en la memoria.
+- **Alternativas**: impedir entrar a otra cuenta mientras haya pendientes (más simple, pero deja el móvil bloqueado si la
+  primera persona no puede entrar); marcar cada fila con su explotación (un filtro olvidado mezcla datos); enviar la
+  explotación en una cabecera y comprobarla en la API (cierra la ventana, pero cambia el contrato de todas las escrituras);
+  detener la cola ante cualquier error (bloquea registros válidos).
 
 ---
 

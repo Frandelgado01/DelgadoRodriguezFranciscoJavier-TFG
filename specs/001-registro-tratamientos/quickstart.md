@@ -103,6 +103,10 @@ vinifera*, Airén, 4,2 ha.
    conexión, registrar 3 tratamientos → se ven como "pendiente de sincronizar" y el contador de pendientes
    marca 3. Recuperar la red → se sincronizan y el contador vuelve a 0. Comprobar en la API que no hay
    duplicados.
+   **Cuentas y rechazos (escenarios 8 a 10)**: con un registro sin enviar, cerrar la sesión, entrar con otra cuenta en el
+   mismo navegador y comprobar que no ve nada de la primera. Con dos registros sin enviar, dar de baja la parcela del
+   primero desde otro navegador y recuperar la red: el segundo se envía y el primero queda rechazado con su motivo;
+   corregirlo o descartarlo.
 5. **Plazo (historia 2)**: registrar un tratamiento sin eficacia con fecha de hace 25 días → "pendiente de
    completar", vence dentro de los 7 días del aviso y aparece el aviso en la app con los días que quedan. Ejecutar la revisión de plazos → Mailpit recibe un
    correo; ejecutarla otra vez → no llega un segundo. Añadir la eficacia "buena" → pasa a "completo" y el aviso

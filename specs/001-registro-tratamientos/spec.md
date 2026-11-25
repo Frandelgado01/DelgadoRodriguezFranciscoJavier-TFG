@@ -39,7 +39,7 @@
 - 2026-11-24, revisión previa a H4 (propuesta del agente, aprobada por el alumno; visto bueno del tutor comunicado el
   2026-11-25): se amplía REQ-06 con dos reglas que faltaban, la pertenencia de los registros del dispositivo a su cuenta y
   qué ocurre con un registro que el servidor rechaza, y se añaden sus casos límite. No cambia ningún dato del
-  registro ni su base normativa.
+  registro ni su base normativa. El 2026-11-25 se añaden sus escenarios 8 a 10 (principio III de la constitución).
 
 **Entrada**: descripción del alumno: "Registro de tratamientos fitosanitarios según
 docs/conceptos/04-normativa-cuaderno-de-campo.md"
@@ -109,6 +109,14 @@ anexo III.
 7. **Dado** un tratamiento sobre dos parcelas con 1,5 ha y 2 ha tratadas, con 2 kg de un producto A y 1,5 l de un
    producto B en mezcla, **cuando** se consulta en el cuaderno, **entonces** A muestra 0,57 kg/ha y B 0,43 l/ha
    (cantidad de cada producto entre las 3,5 ha tratadas en total).
+8. **Dado** un dispositivo con un registro sin enviar de una cuenta A que ha cerrado la sesión, **cuando** otra persona
+   entra en él con su cuenta B, **entonces** no ve ningún dato de A, con o sin conexión, y el registro de A no se envía
+   hasta que A vuelve a entrar.
+9. **Dado** dos registros guardados sin conexión, el primero con una parcela que se dio de baja desde otro dispositivo,
+   **cuando** se recupera la conexión, **entonces** el segundo se envía y el primero se conserva en el dispositivo como
+   rechazado, con el motivo en lenguaje llano.
+10. **Dado** un registro rechazado, **cuando** el agricultor lo corrige, **entonces** se vuelve a enviar; y **cuando** lo
+    descarta y lo confirma, **entonces** desaparece del dispositivo y nunca llega al servidor.
 
 ---
 

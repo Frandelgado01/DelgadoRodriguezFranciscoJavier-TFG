@@ -21,7 +21,19 @@ diferencias con el SIEX se aplazan a la 007.
 | ¿Se guarda en la base de datos o se calcula al mostrarla? | **Se calcula** cada vez a partir de la cantidad y de la suma de superficies tratadas. No se guarda: depende de filas de dos tablas y se desincronizaría tras una corrección o un conflicto. Aritmética exacta (sin coma flotante) para que las dos capas redondeen igual |
 | ¿Cómo sale en la exportación? | La 001 no tiene exportación (spec, Supuestos). La API devuelve la dosis en las respuestas (`dosisPorHectarea` y `unidadDosis`, de solo lectura) y la exportación reutilizará `dominio/dosis.py` cuando se especifique; queda pendiente comprobar el campo de dosis del anexo V del SIEX |
 
-**Artefactos de esta fase**: [research.md](research.md) (decisiones R1–R15 con fuentes) ·
+**Cambio del 2026-11-25 (REQ-06, antes de H4)**: la spec amplía REQ-06 con dos reglas, con el visto bueno del tutor.
+Respuestas del plan, con el detalle en R16:
+
+| Pregunta | Decisión |
+| --- | --- |
+| ¿Cómo se separan las cuentas en un dispositivo? | Una base IndexedDB **por explotación** (`cuaderno-<explotacionId>`); la base `cuaderno` solo guarda qué sesión está abierta |
+| ¿Cómo se evita enviar con la sesión de otra cuenta? | Antes de enviar **cada** operación, `GET /cuenta/yo` debe devolver la explotación de la base abierta; si no, se detiene el vaciado |
+| ¿Qué pasa si el servidor rechaza una operación? | Se queda en la cola con estado `rechazada` y sus errores, el tratamiento pasa a `rechazado` y se sigue con las demás que no dependan de ella |
+| ¿Y si falla el servidor (5xx)? | Como una falta de red: se detiene el vaciado y se reintenta |
+
+Además, el contrato recoge el `409` de `PUT /parcelas/{id}` que la API ya devuelve desde T-21 (desviación de H3).
+
+**Artefactos de esta fase**: [research.md](research.md) (decisiones R1–R16 con fuentes) ·
 [data-model.md](data-model.md) · [contracts/openapi.yaml](contracts/openapi.yaml) ·
 [quickstart.md](quickstart.md)
 
@@ -90,7 +102,7 @@ resuelto por la funcionalidad 006.
 | # | Pregunta | Respuesta | Detalle |
 | --- | --- | --- | --- |
 | 1 | Estructura del repositorio | Monorrepositorio: `backend/`, `frontend/`, `compartido/`, `e2e/`, `rendimiento/`, `despliegue/`, `compose.yaml` en la raíz | R2 y [Estructura del proyecto](#estructura-del-proyecto) |
-| 2 | Sin conexión e iOS | Dexie/IndexedDB con copias de los datos maestros, los tratamientos y una cola FIFO de operaciones. La cola se vacía al abrir la app, con el evento `online`, al encolar y cada 60 s. Sin Background Sync, así que iOS se comportaría igual que Android; `storage.persist()` y aviso de pendientes. Referencia: Chrome para Android; iOS compatible por diseño, no verificado | R3 |
+| 2 | Sin conexión e iOS | Dexie/IndexedDB con copias de los datos maestros, los tratamientos y una cola FIFO de operaciones. La cola se vacía al abrir la app, con el evento `online`, al encolar y cada 60 s. Sin Background Sync, así que iOS se comportaría igual que Android; `storage.persist()` y aviso de pendientes. Una base local por explotación y operaciones rechazadas que no bloquean la cola. Referencia: Chrome para Android; iOS compatible por diseño, no verificado | R3, R16 |
 | 3 | Idempotencia | UUID generados en el cliente para tratamientos, productos y operaciones. Un reintento de creación devuelve 200; `cambio.id = idOperacion` evita aplicar dos veces una modificación y el reintento repite la respuesta original (200 si se aplicó, 409 si quedó en conflicto) | R4 |
 | 4 | Conflictos | `version` en el tratamiento. Si llega un cambio con una versión antigua, se guarda como `conflicto` en el historial, se responde 409 con las dos versiones y el agricultor elige (`resolucion_conflicto`) | R5 |
 | 5 | Modelo de datos | Claves foráneas `RESTRICT`, `CHECK`, bajas lógicas, historial con instantáneas JSONB, disparador que impide borrar antes de 3 años y nombres del anexo V del SIEX | R6, [data-model.md](data-model.md) |
@@ -205,4 +217,5 @@ la tabla justifica, según el principio VII, las piezas que van más allá del m
 | Vitest | Probar sin navegador la cola sin conexión y las reglas de la PWA, y ejecutar los casos compartidos | Solo Playwright: lento y poco preciso para la lógica pura |
 | Dexie | Índices para filtrar sin conexión y versionado del esquema local | IndexedDB sin envoltorio: más código propio y más errores |
 | Cola de operaciones y conflictos | Exigidos por REQ-06, SC-003 y el caso límite de conflicto | No hay alternativa más simple que cumpla la spec |
+| Base local por explotación y estado `rechazado` | Exigidos por REQ-06 (ampliado el 2026-11-24) y REQ-20 | Impedir entrar a otra cuenta puede dejar un móvil bloqueado; marcar cada fila con su cuenta obliga a filtrar en todas las consultas |
 | Casos de validación compartidos | Garantizan que la PWA y la API aplican las mismas reglas (pregunta 7) | Confiar en la revisión manual: las divergencias pasarían desapercibidas |

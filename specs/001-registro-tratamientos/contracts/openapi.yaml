@@ -160,6 +160,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Parcela' }
         '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { description: 'Otra parcela activa tiene esa referencia SIGPAC' }
         '422': { $ref: '#/components/responses/Validacion' }
   /parcelas/{id}/baja:
     parameters: [{ $ref: '#/components/parameters/Id' }]

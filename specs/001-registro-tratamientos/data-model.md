@@ -308,17 +308,20 @@ La vista "qué se cambió" (dato, valor anterior y nuevo) se calcula comparando 
 
 La clave primaria garantiza un solo correo de cada tipo por tratamiento.
 
-## Almacenamiento local de la PWA (IndexedDB con Dexie, R3)
+## Almacenamiento local de la PWA (IndexedDB con Dexie, R3 y R16)
+
+Base `cuaderno` (del dispositivo): almacén `meta` con la sesión abierta. Base `cuaderno-<explotacionId>` (una por
+explotación):
 
 | Almacén | Clave | Índices | Contenido |
 | --- | --- | --- | --- |
 | `parcelas`, `personas`, `equipos`, `productos` | `id` | `estado` | Copia de los datos maestros |
-| `tratamientos` | `id` | `fecha`, `estadoSincronizacion`, `*parcelaIds`, `*productoIds` | Tratamientos con la misma forma que la API, más `estadoSincronizacion` |
-| `cola` | `++orden` | `idOperacion` (único), `entidadId` | Operaciones pendientes en orden FIFO |
-| `meta` | `clave` | | Última sincronización, explotación de la sesión |
+| `tratamientos` | `id` | `fecha`, `estadoSincronizacion`, `*parcelaIds`, `*productoIds` | Tratamientos con la misma forma que la API, más `estadoSincronizacion` (`sincronizado`, `pendiente`, `conflicto`, `rechazado`) |
+| `cola` | `++orden` | `idOperacion` (único), `entidadId`, `estado` | Operaciones sin aplicar en orden FIFO, con `estado` (`pendiente`, `rechazada`) y `errores` (mensajes de la API si está rechazada) |
+| `meta` | `clave` | | Última sincronización |
 
 Al iniciar sesión y tras vaciar la cola, la PWA descarga los datos maestros y los tratamientos (paginados) y
-sustituye las copias locales, excepto los tratamientos con operaciones pendientes en la cola.
+sustituye las copias locales, excepto los tratamientos con operaciones en la cola (pendientes o rechazadas).
 
 ## Correspondencia con los requisitos
 
@@ -328,7 +331,7 @@ sustituye las copias locales, excepto los tratamientos con operaciones pendiente
 | REQ-03 | Tablas intermedias `tratamiento_parcela` y `tratamiento_producto` |
 | REQ-04 | CHECK > 0; superficie ≤ parcela y fecha ≤ hoy en la API y la PWA (casos compartidos) |
 | REQ-05 | Copia del cultivo en `tratamiento_parcela` |
-| REQ-06 | Almacenes `tratamientos` y `cola`; UUID del cliente; `cambio.id` idempotente |
+| REQ-06 | Almacenes `tratamientos` y `cola` en una base por explotación; `estado` y `errores` de cada operación (R16); UUID del cliente; `cambio.id` idempotente |
 | REQ-07, REQ-09 | `fecha_vencimiento` y las marcas (generadas); `fecha_registro` y `fecha_completado` (API) |
 | REQ-08 | `aviso_correo`; aviso en la app calculado en el cliente con `fecha_vencimiento` |
 | REQ-10 | Índices (`explotacion_id`, `fecha`), (`parcela_id`) y (`producto_id`) |
