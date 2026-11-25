@@ -5,7 +5,7 @@
 // regla divergen, falla la prueba de una de ellas. Cada caso es una prueba con su REQ-xx en el nombre.
 import { describe, expect, it } from "vitest";
 import datos from "../../compartido/casos-validacion.json";
-import { validarContrasena, validarCorreo } from "../src/dominio/validacion";
+import { validarContrasena, validarCorreo, validarTratamiento } from "../src/dominio/validacion";
 
 interface Caso {
   req: string;
@@ -20,6 +20,7 @@ interface Caso {
 const reglas: Record<string, (entrada: never) => unknown> = {
   contrasena: validarContrasena,
   correo: validarCorreo,
+  tratamiento: validarTratamiento,
 };
 
 const casos = (datos as { casos: Caso[] }).casos;

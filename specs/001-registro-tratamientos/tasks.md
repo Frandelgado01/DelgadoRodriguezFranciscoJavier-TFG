@@ -296,7 +296,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   error; unidad distinta de `kg` o `L` → error; fecha posterior a hoy → error. (REQ-02, REQ-04)
 - [X] T-31 [P] [US1] Implementar las reglas de T-30 en `backend/src/cuaderno/dominio/validacion.py`. Pasan los
   casos en pytest. (REQ-02, REQ-04)
-- [ ] T-32 [P] [US1] Implementar las reglas de T-30 en `frontend/src/dominio/validacion.ts`. Pasan los casos en
+- [X] T-32 [P] [US1] Implementar las reglas de T-30 en `frontend/src/dominio/validacion.ts`. Pasan los casos en
   Vitest. (REQ-02, REQ-04)
 - [ ] T-33 [US1] Escribir las pruebas del esquema de tratamientos (deben fallar) en
   `backend/tests/integration/test_esquema_tratamiento.py`: CHECK `superficie_tratada` > 0 con NUMERIC(10,2);
