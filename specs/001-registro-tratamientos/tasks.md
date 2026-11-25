@@ -317,7 +317,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   `version_resultante` NULL; `datos_anteriores` JSONB NULL; `datos_nuevos` JSONB NOT NULL; `motivo` TEXT;
   `realizado_en` y `recibido_en` TIMESTAMPTZ NOT NULL). Las columnas de plazo se añaden en T-47. Pasan las
   pruebas de T-33. (REQ-01, REQ-03, REQ-04)
-- [ ] T-35 [US1] Escribir las pruebas de registro (deben fallar) en
+- [X] T-35 [US1] Escribir las pruebas de registro (deben fallar) en
   `backend/tests/integration/test_registrar_tratamiento.py` y `backend/tests/contract/test_contrato_tratamientos.py`
   con los escenarios de la historia 1: escenario 1 (viñedo Airén de 4,2 ha, mildiu, 3,5 ha, 2 kg, equipo con
   ROMA) → 201 y `GET /tratamientos/{id}` devuelve todos los datos introducidos, con el `numeroOrden` de cada
