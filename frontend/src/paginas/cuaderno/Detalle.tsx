@@ -1,6 +1,8 @@
 // Detalle de un tratamiento con todos los datos de la sección B del anexo III (T-42; REQ-01). Cada parcela se
-// identifica por su número de orden (B.b).
+// identifica por su número de orden (B.b). La dosis por hectárea se calcula aquí con los datos del tratamiento, así
+// que se ve igual antes de sincronizarlo (T-77; REQ-23; R15).
 import type { Esquemas } from "../../api/cliente";
+import { calcularDosis } from "../../dominio/dosis";
 import { enEspanol } from "../../dominio/validacion";
 import { fechaCorta } from "../explotacion/formato";
 import { nombreParcela } from "../explotacion/parcelas";
@@ -38,6 +40,10 @@ function producto(p: Esquemas["Producto"] | undefined): string {
 }
 
 export function Detalle({ tratamiento: t, datos }: { tratamiento: TratamientoCuaderno; datos: DatosCuaderno }) {
+  const dosis = calcularDosis({
+    productos: t.productos,
+    superficiesTratadas: t.parcelas.map((linea) => linea.superficieTratada),
+  });
   return (
     <div>
       <dl>
@@ -57,10 +63,11 @@ export function Detalle({ tratamiento: t, datos }: { tratamiento: TratamientoCua
           {linea.productoSemilla && <Dato nombre="Semilla tratada con">{linea.productoSemilla}</Dato>}
         </dl>
       ))}
-      {t.productos.map((linea) => (
+      {t.productos.map((linea, i) => (
         <dl key={linea.productoId}>
           <Dato nombre="Producto">{producto(datos.productos.get(linea.productoId))}</Dato>
           <Dato nombre="Cantidad">{`${enEspanol(linea.cantidad)} ${linea.unidadMedida}`}</Dato>
+          <Dato nombre="Dosis">{`${dosis[i]?.dosisPorHectarea} ${dosis[i]?.unidadDosis}`}</Dato>
         </dl>
       ))}
     </div>

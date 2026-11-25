@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-// Pruebas de componentes del cuaderno (T-42; REQ-01 y REQ-06, escenarios 9 y 10; research R16).
+// Pruebas de componentes del cuaderno (T-42 y T-77; REQ-01, REQ-06 y REQ-23, escenarios 6, 7, 9 y 10; research R15
+// y R16).
 import "fake-indexeddb/auto";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -269,6 +270,46 @@ describe("detalle con los datos de la sección B (REQ-01)", () => {
     const item = await abrirDetalle("15/03/2026 · Mildiu");
     await userEvent.click(item.getByRole("button", { name: "Ocultar el detalle" }));
     expect(item.queryByText("Aplicador")).toBeNull();
+  });
+});
+
+describe("dosis por hectárea (REQ-23; R15)", () => {
+  const linea = tratamiento().parcelas[0] as TratamientoNuevo["parcelas"][number];
+  const MEZCLA: Partial<TratamientoNuevo> = {
+    parcelas: [
+      { ...linea, superficieTratada: 1.5 },
+      { ...linea, parcelaId: "par-2", superficieTratada: 2 },
+    ],
+    productos: [
+      { productoId: "pro-1", cantidad: 2, unidadMedida: "kg" },
+      { productoId: "pro-2", cantidad: 1.5, unidadMedida: "L" },
+    ],
+  };
+
+  it.each(["pendiente", "sincronizado", "rechazado"] as const)(
+    "escenario 6: 2 kg en 3,5 ha son 0,57 kg/ha, también sin conexión (%s)",
+    async (estado) => {
+      await poner(tratamiento(), estado);
+      render(<Cuaderno />);
+      const item = await abrirDetalle("15/03/2026 · Mildiu");
+      expect(dato(item, "Cantidad")).toEqual(["2 kg"]);
+      expect(dato(item, "Dosis")).toEqual(["0,57 kg/ha"]);
+    },
+  );
+
+  it("escenario 7: cada producto de la mezcla con la superficie tratada total", async () => {
+    await poner(tratamiento(MEZCLA), "pendiente");
+    render(<Cuaderno />);
+    const item = await abrirDetalle("15/03/2026 · Mildiu");
+    expect(dato(item, "Dosis")).toEqual(["0,57 kg/ha", "0,43 L/ha"]);
+  });
+
+  it("se calcula a partir de los datos: no usa una dosis guardada", async () => {
+    const productos = [{ productoId: "pro-1", cantidad: 3.5, unidadMedida: "kg" as const, dosisPorHectarea: 9 }];
+    await poner(tratamiento({ productos }), "sincronizado");
+    render(<Cuaderno />);
+    const item = await abrirDetalle("15/03/2026 · Mildiu");
+    expect(dato(item, "Dosis")).toEqual(["1,00 kg/ha"]);
   });
 });
 

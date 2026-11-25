@@ -402,7 +402,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
   y `servicios/tratamientos.py`: campos calculados de solo lectura con `dominio/dosis.py` a partir de las
   cantidades y las superficies tratadas del tratamiento; las instantáneas del historial siguen sin la dosis;
   regenerar `frontend/src/api/openapi.json` y los tipos (T-15). Pasan las pruebas de T-75. (REQ-23; R15)
-- [ ] T-77 [US1] Escribir las pruebas de componentes (deben fallar) en `frontend/tests/paginas/cuaderno.test.tsx`
+- [X] T-77 [US1] Escribir las pruebas de componentes (deben fallar) en `frontend/tests/paginas/cuaderno.test.tsx`
   y después mostrar la dosis en el detalle del tratamiento del cuaderno (`frontend/src/paginas/cuaderno/`): junto
   a la cantidad de cada producto, su dosis calculada con `dominio/dosis.ts` ("0,57 kg/ha"), también para los
   tratamientos guardados sin conexión y aún no sincronizados; el formulario de registro no tiene ningún campo de
