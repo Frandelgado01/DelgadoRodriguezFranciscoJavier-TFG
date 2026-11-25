@@ -1,18 +1,19 @@
-"""Registro de tratamientos fitosanitarios (REQ-01 a REQ-05, REQ-17; research R4, R14).
+"""Registro y lista de tratamientos fitosanitarios (REQ-01 a REQ-06, REQ-10, REQ-17; R4, R14).
 
 Cada registro se guarda en una sola transacción: tratamiento, parcelas tratadas, productos aplicados
 y el cambio `creacion` del historial con la instantánea completa.
 """
 
 import uuid
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
 from fastapi import HTTPException, status
 from sqlalchemy.dialects.postgresql import insert
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, func, select
 
 from cuaderno import modelos
 from cuaderno.config import ZONA_HORARIA
@@ -20,6 +21,7 @@ from cuaderno.dominio.dosis import calcular_dosis
 from cuaderno.dominio.validacion import DatosNoValidos, ErrorRegla, validar_tratamiento
 from cuaderno.esquemas.tratamiento import (
     DatosTratamiento,
+    PaginaTratamientos,
     ParcelaTratada,
     ProductoAplicado,
     Tratamiento,
@@ -210,32 +212,26 @@ def registrar(
 
 
 def a_esquema(s: Session, t: modelos.Tratamiento) -> Tratamiento:
-    """Tratamiento con sus líneas: parcelas por número de orden y productos por nombre."""
-    parcelas = s.exec(
+    return a_esquemas(s, [t])[0]
+
+
+def a_esquemas(s: Session, filas: Sequence[modelos.Tratamiento]) -> list[Tratamiento]:
+    """Tratamientos con sus líneas: parcelas por número de orden y productos por nombre.
+
+    Las líneas de todos se leen con dos consultas, para que una página no haga una por tratamiento.
+    """
+    ids = [t.id for t in filas]
+    parcelas: dict[uuid.UUID, list[ParcelaTratada]] = {id_: [] for id_ in ids}
+    lineas_parcela = s.exec(
         select(modelos.TratamientoParcela, modelos.Parcela.numero_orden)
         .join(modelos.Parcela)
-        .where(col(modelos.TratamientoParcela.tratamiento_id) == t.id)
+        .where(col(modelos.TratamientoParcela.tratamiento_id).in_(ids))
         .order_by(col(modelos.Parcela.numero_orden))
-    ).all()
-    productos = s.exec(
-        select(modelos.TratamientoProducto)
-        .join(modelos.Producto)
-        .where(col(modelos.TratamientoProducto.tratamiento_id) == t.id)
-        .order_by(col(modelos.Producto.nombre_comercial), col(modelos.Producto.id))
-    ).all()
-    dosis = calcular_dosis(
-        [(linea.cantidad, linea.unidad_medida) for linea in productos],
-        [linea.superficie_tratada for linea, _ in parcelas],
     )
-    return Tratamiento(
-        id=t.id,
-        registrado_en=t.registrado_en.astimezone(UTC),
-        fecha=t.fecha,
-        problema=t.problema,
-        aplicador_id=t.aplicador_id,
-        asesor_id=t.asesor_id,
-        equipo_id=t.equipo_id,
-        parcelas=[
+    superficies: dict[uuid.UUID, list[Decimal]] = {id_: [] for id_ in ids}
+    for linea, numero_orden in lineas_parcela:
+        superficies[linea.tratamiento_id].append(linea.superficie_tratada)
+        parcelas[linea.tratamiento_id].append(
             ParcelaTratada(
                 parcela_id=linea.parcela_id,
                 numero_orden=numero_orden,
@@ -244,20 +240,83 @@ def a_esquema(s: Session, t: modelos.Tratamiento) -> Tratamiento:
                 cultivo_variedad=linea.cultivo_variedad,
                 producto_semilla=linea.producto_semilla,
             )
-            for linea, numero_orden in parcelas
-        ],
-        productos=[
-            ProductoAplicado(
-                producto_id=linea.producto_id,
-                cantidad=float(linea.cantidad),
-                unidad_medida=linea.unidad_medida,  # type: ignore[arg-type]
-                dosis_por_hectarea=float(calculada.por_hectarea),
-                unidad_dosis=calculada.unidad,  # type: ignore[arg-type]
-            )
-            for linea, calculada in zip(productos, dosis, strict=True)
-        ],
-        eficacia=t.eficacia,  # type: ignore[arg-type]
-        observaciones=t.observaciones,
-        version=t.version,
-        en_conflicto=t.en_conflicto,
+        )
+    productos: dict[uuid.UUID, list[ProductoAplicado]] = {id_: [] for id_ in ids}
+    lineas_producto = s.exec(
+        select(modelos.TratamientoProducto)
+        .join(modelos.Producto)
+        .where(col(modelos.TratamientoProducto.tratamiento_id).in_(ids))
+        .order_by(col(modelos.Producto.nombre_comercial), col(modelos.Producto.id))
     )
+    for aplicado in lineas_producto:
+        (dosis,) = calcular_dosis(
+            [(aplicado.cantidad, aplicado.unidad_medida)], superficies[aplicado.tratamiento_id]
+        )
+        productos[aplicado.tratamiento_id].append(
+            ProductoAplicado(
+                producto_id=aplicado.producto_id,
+                cantidad=float(aplicado.cantidad),
+                unidad_medida=aplicado.unidad_medida,  # type: ignore[arg-type]
+                dosis_por_hectarea=float(dosis.por_hectarea),
+                unidad_dosis=dosis.unidad,  # type: ignore[arg-type]
+            )
+        )
+    return [
+        Tratamiento(
+            id=t.id,
+            registrado_en=t.registrado_en.astimezone(UTC),
+            fecha=t.fecha,
+            problema=t.problema,
+            aplicador_id=t.aplicador_id,
+            asesor_id=t.asesor_id,
+            equipo_id=t.equipo_id,
+            parcelas=parcelas[t.id],
+            productos=productos[t.id],
+            eficacia=t.eficacia,  # type: ignore[arg-type]
+            observaciones=t.observaciones,
+            version=t.version,
+            en_conflicto=t.en_conflicto,
+        )
+        for t in filas
+    ]
+
+
+@dataclass(frozen=True)
+class Filtros:
+    """Filtros de la lista (REQ-10). El del estado llega en T-54."""
+
+    desde: date | None = None
+    hasta: date | None = None
+    parcela_id: uuid.UUID | None = None
+    producto_id: uuid.UUID | None = None
+
+
+def listar(
+    s: Session, explotacion_id: uuid.UUID, filtros: Filtros, pagina: int, tamano: int
+) -> PaginaTratamientos:
+    """Página de tratamientos de la explotación, del más reciente al más antiguo, y el total."""
+    tabla = modelos.Tratamiento
+    condiciones = [col(tabla.explotacion_id) == explotacion_id]
+    if filtros.desde is not None:
+        condiciones.append(col(tabla.fecha) >= filtros.desde)
+    if filtros.hasta is not None:
+        condiciones.append(col(tabla.fecha) <= filtros.hasta)
+    if filtros.parcela_id is not None:
+        lineas = select(modelos.TratamientoParcela.tratamiento_id).where(
+            col(modelos.TratamientoParcela.parcela_id) == filtros.parcela_id
+        )
+        condiciones.append(col(tabla.id).in_(lineas))
+    if filtros.producto_id is not None:
+        lineas = select(modelos.TratamientoProducto.tratamiento_id).where(
+            col(modelos.TratamientoProducto.producto_id) == filtros.producto_id
+        )
+        condiciones.append(col(tabla.id).in_(lineas))
+    total = s.exec(select(func.count()).select_from(tabla).where(*condiciones)).one()
+    filas = s.exec(
+        select(tabla)
+        .where(*condiciones)
+        .order_by(col(tabla.fecha).desc(), col(tabla.registrado_en).desc(), col(tabla.id))
+        .offset((pagina - 1) * tamano)
+        .limit(tamano)
+    ).all()
+    return PaginaTratamientos(elementos=a_esquemas(s, filas), total=total)

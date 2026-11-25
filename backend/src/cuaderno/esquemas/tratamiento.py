@@ -82,3 +82,8 @@ class Tratamiento(TratamientoNuevo):
     productos: list[ProductoAplicado]  # type: ignore[assignment]
     version: int = Field(ge=1)
     en_conflicto: bool
+
+
+class PaginaTratamientos(Esquema):
+    elementos: list[Tratamiento]
+    total: int = Field(ge=0)

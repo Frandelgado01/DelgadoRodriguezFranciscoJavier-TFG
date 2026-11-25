@@ -1129,6 +1129,134 @@
       }
     },
     "/tratamientos": {
+      "get": {
+        "tags": [
+          "tratamientos"
+        ],
+        "summary": "Consultar tratamientos ordenados por fecha, con filtros (REQ-10)",
+        "operationId": "listar_tratamientos_tratamientos_get",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Desde"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Hasta"
+            }
+          },
+          {
+            "name": "parcela_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Parcela Id"
+            }
+          },
+          {
+            "name": "producto_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Producto Id"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000000,
+              "minimum": 1,
+              "default": 1,
+              "title": "Pagina"
+            }
+          },
+          {
+            "name": "tamano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Tamano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaTratamientos"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorValidacion"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "tratamientos"
@@ -1136,15 +1264,20 @@
         "summary": "Registrar un tratamiento (REQ-01 a REQ-05)",
         "description": "Idempotente por `id` (UUID del cliente, REQ-06). Un reintento con el mismo contenido devuelve 200.",
         "operationId": "registrar_tratamiento_tratamientos_post",
+        "security": [
+          {
+            "cookieSesion": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TratamientoNuevo"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1187,12 +1320,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "cookieSesion": []
-          }
-        ]
+        }
       }
     },
     "/tratamientos/{id}": {
@@ -1506,6 +1634,28 @@
         ],
         "title": "Mensaje",
         "description": "Respuesta de error con un mensaje en lenguaje llano."
+      },
+      "PaginaTratamientos": {
+        "properties": {
+          "elementos": {
+            "items": {
+              "$ref": "#/components/schemas/Tratamiento"
+            },
+            "type": "array",
+            "title": "Elementos"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "elementos",
+          "total"
+        ],
+        "title": "PaginaTratamientos"
       },
       "Parcela": {
         "properties": {

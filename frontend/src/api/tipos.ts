@@ -297,7 +297,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Consultar tratamientos ordenados por fecha, con filtros (REQ-10) */
+        get: operations["listar_tratamientos_tratamientos_get"];
         put?: never;
         /**
          * Registrar un tratamiento (REQ-01 a REQ-05)
@@ -439,6 +440,13 @@ export interface components {
         Mensaje: {
             /** Mensaje */
             mensaje: string;
+        };
+        /** PaginaTratamientos */
+        PaginaTratamientos: {
+            /** Elementos */
+            elementos: components["schemas"]["Tratamiento"][];
+            /** Total */
+            total: number;
         };
         /**
          * Parcela
@@ -1633,6 +1641,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_tratamientos_tratamientos_get: {
+        parameters: {
+            query?: {
+                desde?: string | null;
+                hasta?: string | null;
+                parcela_id?: string | null;
+                producto_id?: string | null;
+                pagina?: number;
+                tamano?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaTratamientos"];
+                };
+            };
+            /** @description Datos no válidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorValidacion"];
                 };
             };
         };

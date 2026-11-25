@@ -1,17 +1,40 @@
-"""Rutas de tratamientos (contrato: /tratamientos*; REQ-01 a REQ-06)."""
+"""Rutas de tratamientos (contrato: /tratamientos*; REQ-01 a REQ-06, REQ-10)."""
 
 import uuid
+from datetime import date
+from typing import Annotated
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Query, Response, status
 
 from cuaderno import modelos
 from cuaderno.api.comun import NO_ENCONTRADO, VALIDACION, ExplotacionActual, RelojAPI, SesionBD
 from cuaderno.esquemas.base import Mensaje
-from cuaderno.esquemas.tratamiento import Tratamiento, TratamientoNuevo
+from cuaderno.esquemas.tratamiento import PaginaTratamientos, Tratamiento, TratamientoNuevo
 from cuaderno.servicios import tratamientos
 from cuaderno.servicios.sesiones import buscar_en_explotacion
 
 router = APIRouter(prefix="/tratamientos", tags=["tratamientos"])
+
+PAGINA_MAXIMA = 1_000_000  # para que el desplazamiento quepa en la base
+
+
+@router.get(
+    "",
+    summary="Consultar tratamientos ordenados por fecha, con filtros (REQ-10)",
+    responses={422: VALIDACION},
+)
+def listar_tratamientos(
+    s: SesionBD,
+    explotacion: ExplotacionActual,
+    desde: date | None = None,
+    hasta: date | None = None,
+    parcela_id: uuid.UUID | None = None,
+    producto_id: uuid.UUID | None = None,
+    pagina: Annotated[int, Query(ge=1, le=PAGINA_MAXIMA)] = 1,
+    tamano: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> PaginaTratamientos:
+    filtros = tratamientos.Filtros(desde, hasta, parcela_id, producto_id)
+    return tratamientos.listar(s, explotacion.id, filtros, pagina, tamano)
 
 
 @router.post(

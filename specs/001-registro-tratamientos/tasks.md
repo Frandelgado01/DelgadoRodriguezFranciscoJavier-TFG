@@ -423,7 +423,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
   `backend/tests/integration/test_lista_tratamientos.py` y ampliar el contrato con `GET /tratamientos`: filtros `desde`, `hasta`,
   `parcela_id` y `producto_id`; orden por fecha, del más reciente al más antiguo; paginación (`tamano` máx. 200, `total`); sin sesión, 401;
   no se ven los de otra explotación. El filtro `estado` y los anulados siguen en T-53 (H6). (REQ-10, REQ-20)
-- [ ] T-81 [US1] Implementar `GET /tratamientos` con lo de T-80 en `servicios/tratamientos.py` y `api/tratamientos.py`, y los índices que
+- [X] T-81 [US1] Implementar `GET /tratamientos` con lo de T-80 en `servicios/tratamientos.py` y `api/tratamientos.py`, y los índices que
   preveía T-54. Los índices son (`explotacion_id`,
   `fecha`), (`parcela_id`) en `tratamiento_parcela` y (`producto_id`) en `tratamiento_producto`. Pasan las pruebas de T-80. (REQ-10)
 - [ ] T-82 [US1] Escribir las pruebas (deben fallar) de la descarga de los tratamientos en `frontend/tests/sync/tratamientos.test.ts`: al
