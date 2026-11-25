@@ -53,7 +53,7 @@ decisiones pasan a la tabla **Decisiones** de `registro-iteraciones.md`.
 | 22 | REQ-23 (dosis por hectárea) | Visto bueno a la spec y al plan, y al redondeo a dos decimales ampliables | | (Teams, comunicado por el alumno el 2026-11-25) **Visto bueno a todo**, también al redondeo |
 | 23 | REQ-06 antes de H4 | Registros del dispositivo por cuenta, con una base local por cuenta en el plan; registros rechazados que se conservan y se pueden corregir o descartar | | (Teams, comunicado por el alumno el 2026-11-25) **Visto bueno** a las dos reglas y al enfoque del plan |
 | 24 | Medición del proceso e índice | Objetivo 6, 4.5 y capítulo 5 solo con datos comprobables en el repositorio | | (Teams, comunicado por el alumno el 2026-11-25) **De acuerdo** |
-| 25 | Alternativas del 2.3 | Gemini CLI y Antigravity, o solo Antigravity | | (Teams, comunicado por el alumno el 2026-11-25) Lo deja a decisión del alumno (pendiente de que elija) |
+| 25 | Alternativas del 2.3 | Gemini CLI y Antigravity, o solo Antigravity | | (Teams, comunicado por el alumno el 2026-11-25) Lo deja a decisión del alumno: **solo Antigravity** (2026-11-25) |
 | 26 | Plazos | Convocatoria y fechas de entrega y defensa | | (Teams, comunicado por el alumno el 2026-11-25) **Entrega del TFG completo: 2 de diciembre como máximo.** Sin dato de la defensa |
 | 27 | Formato de la declaración de IA | ¿Exige la ESI un formato para el anexo? | | (Teams, comunicado por el alumno el 2026-11-25) No se trató; el alumno lo tratará en la próxima tutoría |
 | 28 | Revisión de H1 a H3 | Comentarios en la PR #1 y nueva invitación al repositorio | | (Teams, comunicado por el alumno el 2026-11-25) Los revisará **en la PR**; no hace falta otra invitación |

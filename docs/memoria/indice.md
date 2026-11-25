@@ -137,7 +137,7 @@ desechables durante la ideación.
 - Elementos de Claude Code usados: `CLAUDE.md`, comandos y skills (Spec Kit), subagentes revisores o de pruebas,
   hooks que lanzan pruebas y linters, y MCP (base de datos, GitHub, documentación normativa).
 - Marcos SDD: GitHub Spec Kit (fases como comandos en Claude Code); Kiro como alternativa.
-- Alternativas para la comparativa: GitHub Copilot, Cursor, Gemini CLI y Antigravity, y Codex.
+- Alternativas para la comparativa: GitHub Copilot, Cursor, Antigravity y Codex (sin Gemini CLI desde el 2026-11-25: decisión del alumno).
 - **Tecnologías del producto (tutoría anotada el 2026-11-09):** por qué se eligió cada una y no otras, con pros,
   contras y tabla comparativa: PWA con React + TypeScript frente a app nativa o multiplataforma; FastAPI frente a
   Django, Flask o Node; PostgreSQL + pgvector frente a bases documentales o vectoriales dedicadas; Claude frente a
