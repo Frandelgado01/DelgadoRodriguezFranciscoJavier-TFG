@@ -277,9 +277,12 @@ describe("cuándo se descargan (REQ-06; R3)", () => {
   });
 
   it("al crear la cuenta", async () => {
+    window.history.replaceState(null, "", "/crear-cuenta");
     render(createElement(CrearCuenta));
     await rellenar("Crear cuenta");
-    await waitFor(() => expect(servidor.llamadas).toContain("GET /tratamientos?pagina=1&tamano=200"));
+    // Se va al cuaderno al acabar la descarga: si la prueba terminara antes, seguiría con la base ya cerrada.
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    expect(servidor.llamadas).toContain("GET /tratamientos?pagina=1&tamano=200");
   });
 
   it("tras vaciar la cola", async () => {
