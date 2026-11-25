@@ -5,7 +5,7 @@
 // para consultarla. Los rechazos de la API (422) salen junto a su campo, en lenguaje llano.
 import { useEffect, useId, useState } from "react";
 import { llamar, type Resultado } from "../../api/cliente";
-import { base } from "../../db/base";
+import { baseActual } from "../../db/base";
 import type { Maestro } from "../../db/esquema";
 import { erroresDeCampo, mensajeGeneral, type Errores } from "../cuenta/comun";
 
@@ -53,7 +53,7 @@ async function leerLista<T extends Maestro>(definicion: Definicion<T>): Promise<
   const resultado = await llamar<T[]>("GET", `/${definicion.almacen}`);
   if (resultado.ok) return { lista: resultado.datos, sinConexion: false, aviso: "" };
   if (resultado.sinConexion) {
-    const locales = (await base[definicion.almacen].toArray()) as T[];
+    const locales = (await baseActual()[definicion.almacen].toArray()) as T[];
     return { lista: locales.sort(definicion.ordenar), sinConexion: true, aviso: SIN_CONEXION };
   }
   return { lista: null, sinConexion: false, aviso: mensajeGeneral(resultado) };
@@ -110,6 +110,7 @@ export function Seccion<T extends Maestro>({ definicion }: { definicion: Definic
     evento.preventDefault();
     if (!edicion) return;
     setEnviando(true);
+    const base = baseActual();
     const cuerpo = definicion.aCuerpo(valores);
     const resultado =
       edicion.modo === "nuevo"
@@ -126,6 +127,7 @@ export function Seccion<T extends Maestro>({ definicion }: { definicion: Definic
   }
 
   async function darDeBaja(elemento: T) {
+    const base = baseActual();
     const resultado = await llamar<T>("POST", `/${almacen}/${elemento.id}/baja`);
     setConfirmando(null);
     if (!resultado.ok) {

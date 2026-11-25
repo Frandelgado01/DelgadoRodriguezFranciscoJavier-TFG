@@ -7,7 +7,7 @@
 //   alta sin conexión que aún no se ha enviado. El envío de la cola llama a esta función al vaciarla.
 // - Se sustituyen las cuatro copias a la vez o ninguna: si falla alguna lista se conservan las que había.
 import { llamar, type Resultado } from "../api/cliente";
-import { base } from "../db/base";
+import { baseActual } from "../db/base";
 import type { Maestro } from "../db/esquema";
 
 export const CLAVE_DESCARGA = "maestrosDescargadosEn";
@@ -20,6 +20,8 @@ export type ResultadoDescarga =
   | { estado: "error"; resultado: Resultado<unknown> };
 
 export async function descargarMaestros(): Promise<ResultadoDescarga> {
+  // La misma base de principio a fin, aunque entre tanto cambie la sesión (R16).
+  const base = baseActual();
   if ((await base.cola.count()) > 0) return { estado: "cola-pendiente" };
 
   const resultados = await Promise.all(ALMACENES.map((almacen) => llamar<Maestro[]>("GET", `/${almacen}`)));

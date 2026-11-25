@@ -416,7 +416,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
   la cola vacía elimina la base de esa cuenta y no toca la de otra; salir con operaciones pendientes o rechazadas avisa y conserva la
   base, que se vuelve a abrir al entrar la misma cuenta; la base `cuaderno` solo guarda la sesión, y su versión 2 elimina los almacenes
   de datos. Adaptar, sin cambiar lo que comprueban, las pruebas de T-16, T-19, T-28 y T-29 que usan la base única. (REQ-06, REQ-20; R16)
-- [ ] T-79 [US1] Implementar la base local por explotación en `frontend/src/db/` y `frontend/src/sesion.ts`, y usarla en
+- [X] T-79 [US1] Implementar la base local por explotación en `frontend/src/db/` y `frontend/src/sesion.ts`, y usarla en
   `sync/maestros.ts`, `paginas/cuenta/CerrarSesion.tsx` y `paginas/explotacion/Seccion.tsx`; añadir `estado` y `errores` a la cola y el
   estado `rechazado` en `db/esquema.ts`. Pasan las pruebas de T-78. (REQ-06, REQ-20; R16)
 - [X] T-80 [US1] Escribir las pruebas (deben fallar) de la lista de tratamientos en

@@ -1,11 +1,12 @@
 // Cerrar sesión (T-19; REQ-20; research R9).
 //
-// Con la cola vacía, cierra la sesión en el servidor y borra los datos del dispositivo. Si hay registros sin
-// enviar, avisa antes: si aun así se cierra, los registros se quedan en el móvil y se envían al volver a entrar.
+// Con la cola vacía, cierra la sesión en el servidor y elimina los datos de la cuenta en el dispositivo. Si hay
+// registros sin enviar (pendientes o rechazados), avisa antes: si aun así se cierra, se quedan en el móvil y solo
+// los vuelve a ver y a enviar la misma cuenta (R16).
 import { useState } from "react";
 import { llamar } from "../../api/cliente";
 import { navegar } from "../../navegacion";
-import { borrarDatosLocales, borrarSesion, operacionesPendientes } from "../../sesion";
+import { borrarDatosLocales, borrarSesion, operacionesSinAplicar } from "../../sesion";
 import { mensajeGeneral } from "./comun";
 
 export function CerrarSesion() {
@@ -25,7 +26,7 @@ export function CerrarSesion() {
 
   async function pedirCierre() {
     setAviso("");
-    const enCola = await operacionesPendientes();
+    const enCola = await operacionesSinAplicar();
     if (enCola === 0) {
       await salir(true);
       return;
@@ -39,7 +40,7 @@ export function CerrarSesion() {
       <div role="alertdialog" aria-label="Registros sin enviar">
         <p>
           Tienes {registros}. Conéctate para enviarlos antes de salir. Si cierras la sesión ahora, se quedan en este
-          móvil y se enviarán cuando vuelvas a entrar con conexión.
+          móvil y se enviarán cuando vuelvas a entrar con esta misma cuenta y conexión.
         </p>
         {aviso && <p role="alert">{aviso}</p>}
         <button type="button" onClick={() => void salir(false)}>
