@@ -23,9 +23,22 @@ import { vaciarDispositivo } from "../ayudas";
 
 const CUENTA = { correo: "ana@example.com", explotacionId: "6d1f2a90-0000-4000-8000-000000000001" };
 const FRASE = "una frase larga de ejemplo";
-const PARCELA = { id: "par-1", numeroOrden: 1, nombre: "Viña Grande", superficie: 4.2, estado: "activa" as const };
+const SIGPAC = { provincia: 13, municipio: 53, agregado: 0, zona: 0, poligono: 12, parcela: 345, recinto: 1 };
+const PARCELA = {
+  id: "par-1",
+  numeroOrden: 1,
+  nombre: "Viña Grande",
+  sigpac: SIGPAC,
+  superficie: 4.2,
+  estado: "activa" as const,
+};
 const PERSONA = { id: "per-1", nombre: "Juan Pérez", tipo: "aplicador", numeroCarne: "CM-1", estado: "activa" as const };
-const EQUIPO = { id: "equ-1", descripcion: "Pulverizador", estado: "activa" as const };
+const EQUIPO = {
+  id: "equ-1",
+  descripcion: "Pulverizador",
+  fechaAdquisicionOInspeccion: "2025-05-20",
+  estado: "activa" as const,
+};
 const PRODUCTO = { id: "pro-1", nombreComercial: "Cobre", numeroRegistro: "ES-1", estado: "activa" as const };
 
 function json(estado: number, cuerpo: unknown) {

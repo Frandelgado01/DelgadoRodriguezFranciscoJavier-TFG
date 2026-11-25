@@ -53,7 +53,9 @@ async function leerLista<T extends Maestro>(definicion: Definicion<T>): Promise<
   const resultado = await llamar<T[]>("GET", `/${definicion.almacen}`);
   if (resultado.ok) return { lista: resultado.datos, sinConexion: false, aviso: "" };
   if (resultado.sinConexion) {
-    const locales = (await baseActual()[definicion.almacen].toArray()) as T[];
+    // Los de baja solo se guardan para mostrar los tratamientos que los usan (T-83).
+    const activos = baseActual()[definicion.almacen].where("estado").equals("activa");
+    const locales = (await activos.toArray()) as T[];
     return { lista: locales.sort(definicion.ordenar), sinConexion: true, aviso: SIN_CONEXION };
   }
   return { lista: null, sinConexion: false, aviso: mensajeGeneral(resultado) };

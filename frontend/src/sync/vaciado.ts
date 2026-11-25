@@ -7,15 +7,15 @@
 import { llamar, type Esquemas, type Resultado } from "../api/cliente";
 import { baseAbierta, explotacionAbierta } from "../db/base";
 import type { BaseLocal, ErrorOperacion, OperacionCola } from "../db/esquema";
-import { aLocal, type TratamientoNuevo } from "./cola";
+import { aLocal } from "./cola";
 import { descargarMaestros } from "./maestros";
+import { RUTAS, siguiente } from "./pendientes";
+import { descargarTratamientos } from "./tratamientos";
 
 const CADA_MS = 60_000;
 
 export type Motivo = "sin-conexion" | "servidor" | "sesion" | "otra-cuenta";
 export type ResultadoVaciado = { estado: "vacia" } | { estado: "detenida"; motivo: Motivo };
-
-const RUTAS = { crear_producto: "/productos", crear_tratamiento: "/tratamientos" } as const;
 
 // --- Estado del último vaciado, para mostrarlo siempre ---
 
@@ -70,17 +70,6 @@ async function comprobarCuenta(explotacionId: string): Promise<Motivo | null> {
 }
 
 // --- Vaciado ---
-
-/** Primera operación que se puede enviar: un tratamiento espera a que se creen sus productos (R16). */
-async function siguiente(base: BaseLocal): Promise<OperacionCola | undefined> {
-  const operaciones = await base.cola.orderBy("orden").toArray();
-  const sinCrear = new Set(operaciones.filter((o) => o.tipo === "crear_producto").map((o) => o.entidadId));
-  return operaciones.find((o) => {
-    if (o.estado !== "pendiente" || !(o.tipo in RUTAS)) return false;
-    if (o.tipo === "crear_producto") return true;
-    return !(o.cuerpo as TratamientoNuevo).productos.some((linea) => sinCrear.has(linea.productoId));
-  });
-}
 
 /** La API devuelve el registro creado; un 200 con otra cosa no demuestra que se haya guardado. */
 function traeElRegistro(datos: unknown, operacion: OperacionCola): boolean {
@@ -176,6 +165,7 @@ export async function descargarDatos(): Promise<void> {
   if (explotacionId === null || (await comprobarCuenta(explotacionId)) !== null) return;
   if (explotacionAbierta() !== explotacionId) return;
   await descargarMaestros();
+  if (explotacionAbierta() === explotacionId) await descargarTratamientos();
 }
 
 /** Vacía la cola y, si se ha enviado algo o se pide, descarga los datos del servidor. */

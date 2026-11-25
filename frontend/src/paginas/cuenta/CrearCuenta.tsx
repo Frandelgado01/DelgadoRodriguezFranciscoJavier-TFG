@@ -7,6 +7,7 @@ import { validarContrasena, validarCorreo } from "../../dominio/validacion";
 import { navegar } from "../../navegacion";
 import { guardarSesion } from "../../sesion";
 import { descargarMaestros } from "../../sync/maestros";
+import { descargarTratamientos } from "../../sync/tratamientos";
 import { AYUDA_CONTRASENA, erroresDeCampo, mensajeGeneral, type Errores } from "./comun";
 
 export function CrearCuenta() {
@@ -29,6 +30,7 @@ export function CrearCuenta() {
     if (resultado.ok) {
       await guardarSesion(resultado.datos);
       await descargarMaestros();
+      await descargarTratamientos();
       navegar("/");
       return;
     }

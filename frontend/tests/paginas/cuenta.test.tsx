@@ -90,12 +90,13 @@ describe("crear cuenta (REQ-20)", () => {
 
     await waitFor(() => expect(window.location.pathname).toBe("/"));
     expect(llamadas[0]).toEqual({ clave: "POST /api/cuenta", cuerpo: { correo: CUENTA.correo, contrasena: FRASE } });
-    // Después descarga los datos maestros (T-28); aquí fallan y no impiden abrir el cuaderno.
+    // Después descarga los datos maestros (T-28) y los tratamientos (T-83); aquí fallan y no impiden abrirlo.
     expect(llamadas.slice(1).map((l) => l.clave).sort()).toEqual([
       "GET /api/equipos",
       "GET /api/parcelas",
       "GET /api/personas",
       "GET /api/productos",
+      "GET /api/tratamientos?pagina=1&tamano=200",
     ]);
     expect(await leerSesion()).toEqual(CUENTA);
   });

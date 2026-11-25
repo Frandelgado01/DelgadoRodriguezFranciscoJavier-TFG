@@ -431,7 +431,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
   en la cola (pendientes o rechazadas); si falla una página no se toca ninguna copia; al salir y volver a entrar, el cuaderno muestra los
   tratamientos ya enviados. Una cola con **solo** operaciones rechazadas no impide descargar los datos maestros (hoy T-28 no descarga nada si
   la cola no está vacía): se conservan los productos con el alta en la cola. (REQ-06; R3, R16, data-model)
-- [ ] T-83 [US1] Implementar la descarga de T-82 en `frontend/src/sync/tratamientos.ts`, llamarla junto a `descargarMaestros()` y adaptar esta. Pasan las
+- [X] T-83 [US1] Implementar la descarga de T-82 en `frontend/src/sync/tratamientos.ts`, llamarla junto a `descargarMaestros()` y adaptar esta. Pasan las
   pruebas de T-82. (REQ-06; R3)
 
 **Punto de control (MVP)**: con la historia 4 hecha, el agricultor registra tratamientos con y sin conexión y
