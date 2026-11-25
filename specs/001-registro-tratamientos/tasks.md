@@ -335,7 +335,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   tipo de persona, misma explotación); copia del cultivo en `tratamiento_parcela`; cálculo de `fecha_registro`;
   cambio `creacion` con la instantánea completa. Pasan las pruebas de T-35. (REQ-01, REQ-02, REQ-03, REQ-04,
   REQ-05, REQ-17)
-- [ ] T-37 [US1] Escribir las pruebas de idempotencia del registro (deben fallar) en
+- [X] T-37 [US1] Escribir las pruebas de idempotencia del registro (deben fallar) en
   `backend/tests/integration/test_idempotencia_registro.py`: reintento con el mismo `id` y el mismo contenido →
   200 y un solo tratamiento; mismo `id` y otro contenido → 409; un producto nuevo y un tratamiento que lo usa,
   enviados en ese orden, se crean bien aunque se reintenten. (REQ-06)
