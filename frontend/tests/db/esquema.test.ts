@@ -57,7 +57,7 @@ describe("esquema local (Dexie)", () => {
       cola: {
         clave: "orden",
         autoincremento: true,
-        indices: [indice("entidadId"), indice("idOperacion", true)],
+        indices: [indice("entidadId"), indice("estado"), indice("idOperacion", true)],
       },
       meta: { clave: "clave", autoincremento: false, indices: [] },
     });
@@ -73,6 +73,8 @@ describe("esquema local (Dexie)", () => {
       cuerpo: {},
       creadaEn: "2026-03-15T10:00:00Z",
       intentos: 0,
+      estado: "pendiente" as const,
+      errores: [],
     });
     await local.cola.add(operacion("op-1"));
     await local.cola.add(operacion("op-2"));

@@ -9,9 +9,10 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
-import { base } from "../../src/db/base";
+import type { BaseLocal } from "../../src/db/esquema";
 import { Explotacion } from "../../src/paginas/explotacion/Explotacion";
 import { guardarSesion } from "../../src/sesion";
+import { prepararBase } from "../ayudas";
 
 type Elemento = Record<string, unknown> & { id: string; estado: string };
 type Recurso = "parcelas" | "personas" | "equipos" | "productos";
@@ -100,6 +101,7 @@ const PARCELA: Elemento = {
 };
 
 let servidor: ServidorFalso;
+let base: BaseLocal;
 
 function seccion(nombre: string) {
   return within(screen.getByRole("region", { name: nombre }));
@@ -118,8 +120,7 @@ async function escribir(etiqueta: string, texto: string, ambito: Pick<typeof scr
 }
 
 beforeEach(async () => {
-  await base.delete();
-  await base.open();
+  base = await prepararBase("6d1f2a90-0000-4000-8000-000000000001");
   servidor = new ServidorFalso();
 });
 

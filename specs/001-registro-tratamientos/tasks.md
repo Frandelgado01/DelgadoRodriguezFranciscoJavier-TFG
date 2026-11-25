@@ -411,7 +411,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
 **Cuentas en el dispositivo y lista de tratamientos (REQ-06, REQ-20)**, añadidas el 2026-11-25. Llevan números a partir de T-78
 para no renumerar; su orden dentro del hito se indica en "Dependencias y orden de ejecución".
 
-- [ ] T-78 [US1] Escribir las pruebas (deben fallar) de la base local por explotación en `frontend/tests/db/cuentas.test.ts`: entrar
+- [X] T-78 [US1] Escribir las pruebas (deben fallar) de la base local por explotación en `frontend/tests/db/cuentas.test.ts`: entrar
   abre `cuaderno-<explotacionId>`; los datos de la cuenta A no se leen con la sesión de B, con y sin conexión (escenario 8); salir con
   la cola vacía elimina la base de esa cuenta y no toca la de otra; salir con operaciones pendientes o rechazadas avisa y conserva la
   base, que se vuelve a abrir al entrar la misma cuenta; la base `cuaderno` solo guarda la sesión, y su versión 2 elimina los almacenes

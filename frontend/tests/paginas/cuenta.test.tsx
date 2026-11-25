@@ -5,16 +5,20 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
-import { base } from "../../src/db/base";
+import { abrirBase, dispositivo } from "../../src/db/base";
+import type { BaseLocal } from "../../src/db/esquema";
 import { CerrarSesion } from "../../src/paginas/cuenta/CerrarSesion";
 import { CrearCuenta } from "../../src/paginas/cuenta/CrearCuenta";
 import { Entrar } from "../../src/paginas/cuenta/Entrar";
 import { Recuperar } from "../../src/paginas/cuenta/Recuperar";
 import { Restablecer } from "../../src/paginas/cuenta/Restablecer";
 import { leerSesion } from "../../src/sesion";
+import { prepararBase } from "../ayudas";
 
 const CUENTA = { correo: "ana@example.com", explotacionId: "6d1f2a90-0000-4000-8000-000000000001" };
 const FRASE = "una frase larga de ejemplo";
+
+let base: BaseLocal;
 
 type Respuestas = Record<string, Response | Error>;
 
@@ -49,8 +53,7 @@ function irA(camino: string) {
 }
 
 beforeEach(async () => {
-  await base.delete();
-  await base.open();
+  base = await prepararBase(CUENTA.explotacionId);
   irA("/");
 });
 
@@ -233,7 +236,7 @@ describe("restablecer la contraseña (REQ-21)", () => {
 
 describe("cerrar sesión (REQ-20; R9)", () => {
   async function conDatosLocales(operacionesEnCola: number) {
-    await base.meta.put({ clave: "sesion", valor: CUENTA });
+    await dispositivo.meta.put({ clave: "sesion", valor: CUENTA });
     await base.tratamientos.add({ id: "t1", fecha: "2026-03-10", estadoSincronizacion: "sincronizado", parcelaIds: [], productoIds: [] });
     for (let i = 0; i < operacionesEnCola; i += 1) {
       await base.cola.add({
@@ -244,6 +247,8 @@ describe("cerrar sesión (REQ-20; R9)", () => {
         cuerpo: {},
         creadaEn: "2026-03-15T10:00:00Z",
         intentos: 0,
+        estado: "pendiente",
+        errores: [],
       });
     }
   }
@@ -257,7 +262,7 @@ describe("cerrar sesión (REQ-20; R9)", () => {
     await waitFor(() => expect(window.location.pathname).toBe("/entrar"));
     expect(llamadas.map((l) => l.clave)).toEqual(["DELETE /api/sesion"]);
     expect(await leerSesion()).toBeNull();
-    expect(await base.tratamientos.count()).toBe(0);
+    expect(await abrirBase(CUENTA.explotacionId).tratamientos.count()).toBe(0);
   });
 
   it("con registros sin enviar avisa y no borra nada", async () => {
@@ -280,9 +285,10 @@ describe("cerrar sesión (REQ-20; R9)", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Cerrar sesión sin borrar los registros" }));
 
     await waitFor(() => expect(window.location.pathname).toBe("/entrar"));
+    expect(await leerSesion()).toBeNull();
+    base = abrirBase(CUENTA.explotacionId);
     expect(await base.cola.count()).toBe(2);
     expect(await base.tratamientos.count()).toBe(1);
-    expect(await leerSesion()).toBeNull();
   });
 });
 
@@ -294,7 +300,7 @@ describe("acceso a las páginas (REQ-20)", () => {
   });
 
   it("con la sesión guardada el cuaderno se abre aunque no haya conexión", async () => {
-    await base.meta.put({ clave: "sesion", valor: CUENTA });
+    await dispositivo.meta.put({ clave: "sesion", valor: CUENTA });
     simularApi({});
     irA("/");
     render(<App />);

@@ -9,10 +9,11 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { base } from "../../src/db/base";
+import type { BaseLocal } from "../../src/db/esquema";
 import { CrearCuenta } from "../../src/paginas/cuenta/CrearCuenta";
 import { Entrar } from "../../src/paginas/cuenta/Entrar";
 import { CLAVE_DESCARGA, descargarMaestros } from "../../src/sync/maestros";
+import { prepararBase } from "../ayudas";
 
 const CUENTA = { correo: "ana@example.com", explotacionId: "6d1f2a90-0000-4000-8000-000000000001" };
 const FRASE = "una frase larga de ejemplo";
@@ -62,6 +63,8 @@ const PRODUCTO = {
 };
 
 const ANTIGUO = { id: "99999999-0000-4000-8000-000000000009", estado: "activa", nombre: "Ya no está" };
+
+let base: BaseLocal;
 
 type Respuestas = Record<string, Response | Error>;
 
@@ -116,8 +119,7 @@ const ANTIGUAS = { parcelas: [ANTIGUO], personas: [ANTIGUO], equipos: [ANTIGUO],
 const DEL_SERVIDOR = { parcelas: [PARCELA], personas: [PERSONA], equipos: [EQUIPO], productos: [PRODUCTO] };
 
 beforeEach(async () => {
-  await base.delete();
-  await base.open();
+  base = await prepararBase(CUENTA.explotacionId);
 });
 
 afterEach(() => {
@@ -177,6 +179,8 @@ describe("descarga de los datos maestros (REQ-14, REQ-15, REQ-16)", () => {
       cuerpo: {},
       creadaEn: "2026-03-15T10:00:00Z",
       intentos: 0,
+      estado: "pendiente",
+      errores: [],
     });
     const llamadas = simularApi(servidor());
 
