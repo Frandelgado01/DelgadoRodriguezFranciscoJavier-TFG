@@ -16,6 +16,25 @@ export async function siguiente(base: BaseLocal): Promise<OperacionCola | undefi
   });
 }
 
+/** Altas de productos rechazadas que hacen esperar a un tratamiento pendiente; vacía si no espera a ninguna. */
+export function productosQueEspera(operacion: OperacionCola, operaciones: OperacionCola[]): OperacionCola[] {
+  if (operacion.tipo !== "crear_tratamiento" || operacion.estado !== "pendiente") return [];
+  const usados = new Set((operacion.cuerpo as TratamientoNuevo).productos.map((linea) => linea.productoId));
+  return operaciones.filter((o) => o.tipo === "crear_producto" && o.estado === "rechazada" && usados.has(o.entidadId));
+}
+
+/**
+ * Operación que se puede corregir o descartar: la rechazada, o el tratamiento pendiente que espera a un producto
+ * rechazado, que no se envía hasta que alguien lo arregle (R16). Los demás pendientes se envían solos.
+ */
+export async function buscarCorregible(base: BaseLocal, entidadId: string): Promise<OperacionCola | undefined> {
+  const operaciones = await base.cola.toArray();
+  return operaciones.find(
+    (o) =>
+      o.entidadId === entidadId && (o.estado === "rechazada" || productosQueEspera(o, operaciones).length > 0),
+  );
+}
+
 /** Ids con alguna operación en la cola: su copia local manda sobre la del servidor. */
 export async function idsEnCola(base: BaseLocal): Promise<Set<string>> {
   return new Set((await base.cola.toArray()).map((o) => o.entidadId));

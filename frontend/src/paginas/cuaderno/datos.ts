@@ -2,8 +2,9 @@
 // los elementos que usan (también los de baja, REQ-17) y registros rechazados con su motivo (R16).
 import type { Esquemas } from "../../api/cliente";
 import { baseActual } from "../../db/base";
-import type { ErrorOperacion, TratamientoLocal } from "../../db/esquema";
+import type { ErrorOperacion, OperacionCola, TratamientoLocal } from "../../db/esquema";
 import type { ProductoNuevo, TratamientoNuevo } from "../../sync/cola";
+import { productosQueEspera } from "../../sync/pendientes";
 
 /** Tratamiento del dispositivo: los que vienen del servidor llevan además el número de orden de cada parcela. */
 export type TratamientoCuaderno = TratamientoNuevo &
@@ -22,7 +23,7 @@ export interface DatosCuaderno {
   personas: Map<string, Esquemas["Persona"]>;
   equipos: Map<string, Esquemas["Equipo"]>;
   productos: Map<string, Esquemas["Producto"]>;
-  /** Motivos del rechazo, por el id del tratamiento. */
+  /** Motivos por los que un tratamiento hay que corregirlo o descartarlo, por su id. */
   motivos: Map<string, ErrorOperacion[]>;
   productosRechazados: ProductoRechazado[];
 }
@@ -33,17 +34,35 @@ function masRecienteAntes(a: TratamientoCuaderno, b: TratamientoCuaderno): numbe
   return Date.parse(b.registradoEn) - Date.parse(a.registradoEn);
 }
 
+/** Motivos de los tratamientos rechazados y de los que esperan a un producto rechazado (R16). */
+function motivosDe(operaciones: OperacionCola[]): Map<string, ErrorOperacion[]> {
+  const motivos = new Map<string, ErrorOperacion[]>();
+  for (const operacion of operaciones) {
+    if (operacion.tipo !== "crear_tratamiento") continue;
+    if (operacion.estado === "rechazada") motivos.set(operacion.entidadId, operacion.errores);
+    const esperados = productosQueEspera(operacion, operaciones).map((o) => {
+      const { nombreComercial } = o.cuerpo as ProductoNuevo;
+      const mensaje =
+        `Espera a un producto rechazado: «${nombreComercial}». Corrige el producto, o corrige o descarta este ` +
+        "tratamiento.";
+      return { campo: "", mensaje };
+    });
+    if (esperados.length > 0) motivos.set(operacion.entidadId, esperados);
+  }
+  return motivos;
+}
+
 export async function leerCuaderno(): Promise<DatosCuaderno> {
   const base = baseActual();
   const porId = async <T>(almacen: "parcelas" | "personas" | "equipos" | "productos") =>
     new Map((await base[almacen].toArray()).map((fila) => [fila.id, fila as unknown as T]));
-  const [locales, parcelas, personas, equipos, productos, rechazadas] = await Promise.all([
+  const [locales, parcelas, personas, equipos, productos, operaciones] = await Promise.all([
     base.tratamientos.toArray() as Promise<unknown> as Promise<TratamientoCuaderno[]>,
     porId<Esquemas["Parcela"]>("parcelas"),
     porId<Esquemas["Persona"]>("personas"),
     porId<Esquemas["Equipo"]>("equipos"),
     porId<Esquemas["Producto"]>("productos"),
-    base.cola.where("estado").equals("rechazada").toArray(),
+    base.cola.toArray(),
   ]);
   return {
     tratamientos: locales.sort(masRecienteAntes),
@@ -51,11 +70,9 @@ export async function leerCuaderno(): Promise<DatosCuaderno> {
     personas,
     equipos,
     productos,
-    motivos: new Map(
-      rechazadas.filter((o) => o.tipo === "crear_tratamiento").map((o) => [o.entidadId, o.errores]),
-    ),
-    productosRechazados: rechazadas
-      .filter((o) => o.tipo === "crear_producto")
+    motivos: motivosDe(operaciones),
+    productosRechazados: operaciones
+      .filter((o) => o.tipo === "crear_producto" && o.estado === "rechazada")
       .map((o) => ({ producto: o.cuerpo as ProductoNuevo, errores: o.errores })),
   };
 }

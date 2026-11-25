@@ -1,10 +1,12 @@
 // Cola de operaciones sin aplicar (T-40; REQ-06; research R3, R4 y R16).
 //
 // Guardar escribe en el dispositivo y encola la operación en la misma transacción: si la app se cierra, o se ha
-// guardado todo o nada. El envío lo hace vaciado.ts. Aquí están también corregir y descartar lo rechazado.
+// guardado todo o nada. El envío lo hace vaciado.ts. Aquí están también corregir y descartar lo rechazado y lo que
+// espera a un producto rechazado.
 import type { Esquemas } from "../api/cliente";
 import { baseAbierta, baseActual } from "../db/base";
 import type { BaseLocal, EstadoSincronizacion, OperacionCola, TipoOperacion, TratamientoLocal } from "../db/esquema";
+import { buscarCorregible } from "./pendientes";
 import { sincronizar } from "./vaciado";
 
 export type ParcelaTratadaNueva = Omit<Esquemas["ParcelaTratadaNueva"], "productoSemilla"> & {
@@ -90,11 +92,6 @@ export async function guardarProducto(producto: ProductoNuevo): Promise<void> {
   enviarSiHayRed();
 }
 
-async function buscarRechazada(base: BaseLocal, entidadId: string): Promise<OperacionCola | undefined> {
-  const operaciones = await base.cola.where("entidadId").equals(entidadId).toArray();
-  return operaciones.find((o) => o.estado === "rechazada");
-}
-
 /**
  * Operación lista para volver a enviarse. Con el mismo id, porque el servidor nunca la aplicó; con uno nuevo si el
  * rechazo fue un 409 al crear, porque ese id ya existe con otro contenido (R16).
@@ -104,17 +101,17 @@ async function reencolar<T extends { id: string }>(
   entidadId: string,
   datos: Omit<T, "id">,
 ): Promise<T> {
-  const rechazada = await buscarRechazada(base, entidadId);
-  if (rechazada === undefined) throw new Error("Este registro no está rechazado.");
-  const id = rechazada.codigoRechazo === 409 ? crypto.randomUUID() : entidadId;
+  const anterior = await buscarCorregible(base, entidadId);
+  if (anterior === undefined) throw new Error("Este registro no se puede corregir.");
+  const id = anterior.codigoRechazo === 409 ? crypto.randomUUID() : entidadId;
   const cuerpo = { ...datos, id } as T;
-  const reencolada: OperacionCola = { ...rechazada, entidadId: id, cuerpo, estado: "pendiente", errores: [] };
+  const reencolada: OperacionCola = { ...anterior, entidadId: id, cuerpo, estado: "pendiente", errores: [] };
   delete reencolada.codigoRechazo;
   await base.cola.put(reencolada);
   return cuerpo;
 }
 
-/** Corrige un tratamiento rechazado y lo vuelve a encolar. Devuelve su id, que puede ser nuevo. */
+/** Corrige un tratamiento rechazado, o que espera a un producto rechazado, y lo vuelve a encolar. Devuelve su id. */
 export async function corregirTratamiento(id: string, datos: TratamientoNuevo): Promise<string> {
   const base = baseActual();
   const nuevo = await base.transaction("rw", [base.tratamientos, base.cola], async () => {
@@ -169,15 +166,18 @@ async function tratamientosQueUsan(base: BaseLocal, productoId: string): Promise
 
 export type ResultadoDescarte = { ok: true } | { ok: false; mensaje: string };
 
-/** Borra un registro rechazado y su copia local: nunca llegó al servidor (R16). La página pide confirmación. */
+/**
+ * Borra un registro rechazado, o que espera a un producto rechazado, y su copia local: nunca llegó al servidor (R16).
+ * La página pide confirmación.
+ */
 export async function descartar(entidadId: string): Promise<ResultadoDescarte> {
   const base = baseActual();
   return base.transaction("rw", [base.productos, base.tratamientos, base.cola], async () => {
-    const rechazada = await buscarRechazada(base, entidadId);
-    if (rechazada?.orden === undefined) {
-      return { ok: false, mensaje: "Solo se puede descartar un registro rechazado." };
+    const operacion = await buscarCorregible(base, entidadId);
+    if (operacion?.orden === undefined) {
+      return { ok: false, mensaje: "Solo se puede descartar un registro rechazado o que espera a un producto rechazado." };
     }
-    if (rechazada.tipo === "crear_producto") {
+    if (operacion.tipo === "crear_producto") {
       if ((await tratamientosQueUsan(base, entidadId)).length > 0) {
         return {
           ok: false,
@@ -189,7 +189,7 @@ export async function descartar(entidadId: string): Promise<ResultadoDescarte> {
     } else {
       await base.tratamientos.delete(entidadId);
     }
-    await base.cola.delete(rechazada.orden);
+    await base.cola.delete(operacion.orden);
     return { ok: true };
   });
 }

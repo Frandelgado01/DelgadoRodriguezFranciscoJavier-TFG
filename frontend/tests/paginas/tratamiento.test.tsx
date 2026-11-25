@@ -9,7 +9,7 @@ import { abrirBase } from "../../src/db/base";
 import type { BaseLocal } from "../../src/db/esquema";
 import { Tratamiento } from "../../src/paginas/tratamiento/Tratamiento";
 import { guardarSesion } from "../../src/sesion";
-import { guardarProducto, type TratamientoNuevo } from "../../src/sync/cola";
+import { guardarProducto, guardarTratamiento, type TratamientoNuevo } from "../../src/sync/cola";
 import { sincronizar } from "../../src/sync/vaciado";
 import { vaciarDispositivo } from "../ayudas";
 
@@ -418,6 +418,22 @@ describe("corregir un registro rechazado (REQ-06, escenario 10; R16)", () => {
       codigoRechazo,
     });
   }
+  async function sembrarProductoRechazado() {
+    const malo = { id: "pro-9", nombreComercial: "Sin aceptar", numeroRegistro: "X" };
+    await base.productos.put({ ...malo, ...activa });
+    await base.cola.add({
+      idOperacion: crypto.randomUUID(),
+      tipo: "crear_producto",
+      entidadId: malo.id,
+      versionBase: null,
+      cuerpo: malo,
+      creadaEn: "2026-03-01T10:00:00Z",
+      intentos: 1,
+      estado: "rechazada",
+      errores: [{ campo: "numeroRegistro", mensaje: "No es válido." }],
+      codigoRechazo: 422,
+    });
+  }
   const DE_BAJA_ERROR = { campo: "parcelas.0.parcelaId", mensaje: "Esta parcela está de baja." };
 
   it("abre el formulario con sus datos y los errores junto a su campo", async () => {
@@ -490,6 +506,27 @@ describe("corregir un registro rechazado (REQ-06, escenario 10; R16)", () => {
     await pulsar("Guardar la corrección");
     await waitFor(async () => expect((await enCola())[0]?.estado).toBe("pendiente"));
     expect((await enCola())[0]?.entidadId).not.toBe(RECHAZADO.id);
+  });
+
+  it("REQ-06: abre también un pendiente que espera a un producto rechazado, para cambiar de producto", async () => {
+    await sembrarProductoRechazado();
+    const datos = { ...RECHAZADO, parcelas: RECHAZADO.parcelas.map((p) => ({ ...p, parcelaId: "par-1" })) };
+    datos.productos = [{ productoId: "pro-9", cantidad: 1, unidadMedida: "kg" }];
+    vi.spyOn(window.navigator, "onLine", "get").mockReturnValue(false);
+    await guardarTratamiento(datos);
+    await abrir(RECHAZADO.id);
+    expect(screen.getByLabelText("Producto")).toHaveProperty("value", "pro-9");
+    await elegir("Producto", "Cobre Nordox (nº ES-00123)");
+    await pulsar("Guardar la corrección");
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+    const operacion = (await enCola()).find((o) => o.tipo === "crear_tratamiento");
+    expect(operacion).toMatchObject({ entidadId: RECHAZADO.id, estado: "pendiente" });
+    expect(await cuerpo()).toMatchObject({
+      id: RECHAZADO.id,
+      registradoEn: RECHAZADO.registradoEn,
+      productos: [{ productoId: "pro-1" }],
+    });
+    vi.restoreAllMocks();
   });
 
   it("si ya no está rechazado lo dice y no muestra el formulario", async () => {

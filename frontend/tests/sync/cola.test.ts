@@ -643,6 +643,53 @@ describe("productos rechazados (REQ-06, REQ-16; R16)", () => {
     expect(await estado(t.id)).toBe("pendiente");
   });
 
+  it("REQ-06: se descarta el tratamiento que espera al producto rechazado y después el producto", async () => {
+    const { p, t, otro } = await conAltaRechazada(mal);
+    servidor.llamadas = [];
+    expect(await descartar(t.id)).toEqual({ ok: true });
+    expect(await base.tratamientos.get(t.id)).toBeUndefined();
+    expect(await descartar(p.id)).toEqual({ ok: true });
+    expect(await base.productos.get(p.id)).toBeUndefined();
+    expect(await cola()).toEqual([]);
+    expect(servidor.envios()).toEqual([]);
+    expect([...servidor.tratamientos.keys()]).toEqual([otro.id]);
+  });
+
+  it("REQ-06: el que espera se corrige cambiando de producto, conserva su id y se envía", async () => {
+    const { p, t, otro } = await conAltaRechazada(mal);
+    const id = await corregirTratamiento(t.id, { ...tratamiento(), id: t.id, problema: "Con otro producto" });
+    expect(id).toBe(t.id);
+    await waitFor(async () => expect(await estado(t.id)).toBe("sincronizado"));
+    expect(servidor.tratamientos.get(t.id)).toMatchObject({ id: t.id, problema: "Con otro producto" });
+    expect([...servidor.tratamientos.keys()].sort()).toEqual([otro.id, t.id].sort());
+    // El producto sigue rechazado y ya se puede descartar.
+    expect(await cola()).toMatchObject([{ entidadId: p.id, estado: "rechazada" }]);
+    expect(await descartar(p.id)).toEqual({ ok: true });
+  });
+
+  it("REQ-06: al corregirlo sin cambiar de producto sigue pendiente", async () => {
+    const { p, t } = await conAltaRechazada(mal);
+    await corregirTratamiento(t.id, { ...conProducto(p), id: t.id, problema: "Oídio" });
+    await vaciarCola();
+    expect(await estado(t.id)).toBe("pendiente");
+    expect((await cola()).find((o) => o.entidadId === t.id)).toMatchObject({
+      estado: "pendiente",
+      cuerpo: { problema: "Oídio" },
+    });
+  });
+
+  it("REQ-06: el que espera a un producto solo pendiente no se puede corregir ni descartar", async () => {
+    const p = producto();
+    const t = conProducto(p);
+    await sinRed(async () => {
+      await guardarProducto(p);
+      await guardarTratamiento(t);
+    });
+    expect((await descartar(t.id)).ok).toBe(false);
+    await expect(corregirTratamiento(t.id, t)).rejects.toThrow();
+    expect(await cola()).toHaveLength(2);
+  });
+
   it("se descarta si ningún tratamiento sin enviar lo usa", async () => {
     const p = producto();
     await sinRed(() => guardarProducto(p));

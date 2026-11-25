@@ -5,6 +5,7 @@ import { baseActual } from "../../db/base";
 import type { Maestro, OperacionCola } from "../../db/esquema";
 import { fechaEnMadrid, hoyEnMadrid } from "../../dominio/fechas";
 import type { TratamientoNuevo } from "../../sync/cola";
+import { buscarCorregible } from "../../sync/pendientes";
 import { conComa, numero, texto, textoOpcional } from "../explotacion/formato";
 
 export type Parcela = Esquemas["Parcela"] & Maestro;
@@ -41,10 +42,10 @@ export async function leerCatalogos(): Promise<Catalogos> {
   };
 }
 
-/** Operación rechazada de un tratamiento, o null si ya se corrigió o se descartó. */
+/** Operación de un tratamiento rechazado o que espera a un producto rechazado; null si ya no hay que corregirlo. */
 export async function leerRechazada(id: string): Promise<OperacionCola | null> {
-  const operaciones = await baseActual().cola.where("entidadId").equals(id).toArray();
-  return operaciones.find((o) => o.estado === "rechazada" && o.tipo === "crear_tratamiento") ?? null;
+  const operacion = await buscarCorregible(baseActual(), id);
+  return operacion?.tipo === "crear_tratamiento" ? operacion : null;
 }
 
 export interface LineaParcela {

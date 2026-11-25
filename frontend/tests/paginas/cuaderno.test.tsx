@@ -415,6 +415,29 @@ describe("productos rechazados (REQ-06, REQ-16; R16)", () => {
     vi.restoreAllMocks();
   });
 
+  it("REQ-06: el tratamiento que espera al producto muestra el motivo, se puede corregir y descartar", async () => {
+    await conProductoRechazado();
+    vi.spyOn(window.navigator, "onLine", "get").mockReturnValue(false);
+    const espera = tratamiento({ productos: [{ productoId: "pro-9", cantidad: 1, unidadMedida: "kg" }] });
+    await guardarTratamiento(espera);
+    await guardarTratamiento(tratamiento({ problema: "Polilla" }));
+    render(<Cuaderno />);
+    const item = await elemento("15/03/2026 · Mildiu");
+    expect(item.getByText("Pendiente de sincronizar")).toBeTruthy();
+    expect(item.getByText(/^Espera a un producto rechazado: «Sin aceptar»/)).toBeTruthy();
+    expect(item.getByRole("link", { name: "Corregir" }).getAttribute("href")).toBe(`/tratamiento/${espera.id}/corregir`);
+    // El otro pendiente no espera a nada.
+    const otro = await elemento("15/03/2026 · Polilla");
+    expect(otro.queryByText(/Espera a un producto/)).toBeNull();
+    expect(otro.queryByRole("button", { name: "Descartar" })).toBeNull();
+
+    await userEvent.click(item.getByRole("button", { name: "Descartar" }));
+    await userEvent.click(item.getByRole("button", { name: "Sí, descartar" }));
+    await waitFor(() => expect(screen.queryByText("15/03/2026 · Mildiu")).toBeNull());
+    expect((await base.cola.toArray()).map((o) => o.tipo)).toEqual(["crear_producto", "crear_tratamiento"]);
+    vi.restoreAllMocks();
+  });
+
   it("sin productos rechazados no hay sección", async () => {
     render(<Cuaderno />);
     await screen.findByText("Aún no has registrado ningún tratamiento.");
