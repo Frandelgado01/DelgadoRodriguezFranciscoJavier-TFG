@@ -426,7 +426,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
 - [X] T-81 [US1] Implementar `GET /tratamientos` con lo de T-80 en `servicios/tratamientos.py` y `api/tratamientos.py`, y los índices que
   preveía T-54. Los índices son (`explotacion_id`,
   `fecha`), (`parcela_id`) en `tratamiento_parcela` y (`producto_id`) en `tratamiento_producto`. Pasan las pruebas de T-80. (REQ-10)
-- [ ] T-82 [US1] Escribir las pruebas (deben fallar) de la descarga de los tratamientos en `frontend/tests/sync/tratamientos.test.ts`: al
+- [X] T-82 [US1] Escribir las pruebas (deben fallar) de la descarga de los tratamientos en `frontend/tests/sync/tratamientos.test.ts`: al
   entrar y tras vaciar la cola se descargan todas las páginas y se sustituyen las copias locales, **salvo** las que tienen operaciones
   en la cola (pendientes o rechazadas); si falla una página no se toca ninguna copia; al salir y volver a entrar, el cuaderno muestra los
   tratamientos ya enviados. Una cola con **solo** operaciones rechazadas no impide descargar los datos maestros (hoy T-28 no descarga nada si
