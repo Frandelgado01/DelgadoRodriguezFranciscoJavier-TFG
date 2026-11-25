@@ -6,6 +6,10 @@
 
 **Estado**: Aprobada por el alumno (2026-11-25, «Apruebo la spec 002»); pendiente del visto bueno del tutor
 
+**Modificación tras la aprobación** (2026-11-25, decisión del alumno): entra en el corpus el RD 285/2021 (almacenamiento de
+fitosanitarios), porque suprimió el artículo 40 del RD 1311/2012 y sin él esa pregunta no tiene respuesta (REQ-42, escenario 13
+de la historia 1). El Decreto 80/2025 entra completo: su PDF oficial del DOCM tiene texto en los anexos.
+
 **Entrada**: descripción del alumno: "comienza […] spec 002", con la hoja de ruta (consultas normativas con RAG), el
 módulo 06 (`docs/conceptos/06-rag.md`) y sus decisiones del 2026-11-25: el Reglamento (UE) 2023/564 entra en el corpus;
 los datos de productos salen del listado oficial del MAPA y no de las etiquetas.
@@ -82,6 +86,8 @@ respuesta, sus citas y las abstenciones.
 11. **Dado** una pregunta sobre la normativa de otra comunidad autónoma, **cuando** la envía, **entonces** el sistema explica que solo
     trata la europea aplicable, la estatal y la de Castilla-La Mancha.
 12. **Dado** una pregunta vacía o de más de 500 caracteres, **cuando** la envía, **entonces** el sistema la rechaza explicando por qué.
+13. **Dado** el corpus con el RD 285/2021, **cuando** pregunta «¿cómo tengo que guardar los fitosanitarios en la nave?», **entonces** la
+    respuesta cita ese real decreto y nunca el artículo 40 del RD 1311/2012, que está suprimido.
 
 ---
 
@@ -164,8 +170,8 @@ corpus viejo da respuestas falsas.
 - **Normas que se contradicen o se remiten unas a otras**: se citan las dos.
 - **Normativa de otra comunidad autónoma o de otro país**: se responde que queda fuera del ámbito (REQ-34).
 - **Pregunta sobre una redacción derogada** («¿qué decía antes?»): se responde con la vigente y se dice que solo se consulta esa.
-- **Anexos y tablas**: se citan por su anexo y apartado. Si un anexo no tiene texto (imágenes del Decreto 80/2025), no se
-  consulta, y la respuesta lo dice cuando la pregunta depende de él.
+- **Anexos y tablas**: se citan por su anexo y apartado. Una tabla que no se pueda
+  extraer con fiabilidad (por ejemplo, las dosis del Decreto 80/2025) no se consulta, y figura en la cobertura de la norma.
 - **Respuesta sin ninguna cita**: no se muestra; se sustituye por la de REQ-32.
 - **Datos personales en la pregunta**: no se puede impedir que el agricultor los escriba; se le pide que no lo haga (REQ-35).
 
@@ -220,8 +226,8 @@ son propuesta del agente aceptada por el alumno (2026-11-25), sin fuente normati
 
 **Corpus** (historia 4)
 
-- **REQ-42**: El corpus MUST incluir los RD 1311/2012, 1048/2022, 1049/2022, 1051/2022 y 1054/2022, el Reglamento de Ejecución (UE) 2023/564
-  con su modificación, el Decreto 80/2025 de Castilla-La Mancha en la parte que tenga texto, y el listado de productos del MAPA. Cada carga
+- **REQ-42**: El corpus MUST incluir los RD 1311/2012, 285/2021, 1048/2022, 1049/2022, 1051/2022 y 1054/2022, el Reglamento de Ejecución (UE) 2023/564
+  con su modificación, el Decreto 80/2025 de Castilla-La Mancha y el listado de productos del MAPA. Cada carga
   MUST dejar consultable solo la redacción vigente, con sus fechas; repetirla sin cambios no altera nada, y si falla se conserva la versión
   anterior. *Fuente: normas citadas (módulo 04); constitución, principio IV.*
 
@@ -237,7 +243,7 @@ son propuesta del agente aceptada por el alumno (2026-11-25), sin fuente normati
 | Requisito | Escenarios |
 | --- | --- |
 | REQ-30 | H1: 6, 12 |
-| REQ-31 | H1: 1, 2, 3 |
+| REQ-31 | H1: 1, 2, 3, 13 |
 | REQ-32 | H1: 4 |
 | REQ-33 | H2: 1, 3 |
 | REQ-34 | H1: 5, 11 |
@@ -248,7 +254,7 @@ son propuesta del agente aceptada por el alumno (2026-11-25), sin fuente normati
 | REQ-39 | H2: 1, 2 |
 | REQ-40 | H3: 1 a 4 |
 | REQ-41 | H3: 5, 6 |
-| REQ-42 | H2: 4; H4: 1 a 3 |
+| REQ-42 | H1: 13; H2: 4; H4: 1 a 3 |
 | REQ-43 | H4: 4 |
 
 ### Entidades clave
@@ -287,6 +293,7 @@ ellas 10 sin respuesta en el corpus. Con ese tamaño, cada pregunta con respuest
 - **Etiquetas**: no se incluyen sus textos. El listado del MAPA no sustituye a la etiqueta, y la pantalla lo dice.
 - **Relación con la 001**: no cambia sus requisitos. Que el listado sea descargable permitiría comprobar el producto al registrar (REQ-16);
   queda para próximos pasos.
-- **Decreto 80/2025**: si no se encuentra una fuente con texto reutilizable antes de planificar, sale del corpus y se declara como limitación.
+- **Decreto 80/2025**: se usa el PDF oficial del DOCM (n.º 201, 17/10/2025). Sus condiciones de reutilización no se han encontrado; se cita la
+  fuente y se enlaza.
 - **Recorte del 2026-11-25**: si falta tiempo, lo primero que se aplaza es la historia 3 y después el Decreto 80/2025. Las historias 1 y 2 y la
   evaluación no se recortan.

@@ -1,7 +1,7 @@
 # Plan de implementación: Consultas normativas con citas
 
 **Rama**: `002-consultas-normativas` | **Fecha**: 2026-11-25 | **Spec**: [spec.md](spec.md) (aprobada por el alumno el 2026-11-25;
-plan aprobado por el alumno el 2026-11-25; visto bueno del tutor pendiente, obligatorio antes de implementar)
+plan aprobado por el alumno el 2026-11-25; visto bueno del tutor comunicado por el alumno ese día)
 
 **Entrada**: spec de la 002, módulo 06 (`docs/conceptos/06-rag.md`), plan de la 001 (arquitectura y sesión) y constitución v2.0.0.
 
@@ -18,7 +18,7 @@ sin modelo. Una evaluación con 55 preguntas revisadas por el alumno decide si e
 ## Contexto técnico
 
 **Lenguajes**: Python 3.14 y TypeScript, como en la 001.
-**Dependencias nuevas**: `anthropic`, `onnxruntime`, `tokenizers`, `numpy`, `pgvector`, `defusedxml` (R30). Sin dependencias nuevas en la PWA.
+**Dependencias nuevas**: `anthropic`, `onnxruntime`, `tokenizers`, `numpy`, `pgvector`, `defusedxml` y, solo para crear la instantánea, `pypdf` (R30). Sin dependencias nuevas en la PWA.
 **Almacenamiento**: PostgreSQL 18 con pgvector (ya en la imagen) y `unaccent`.
 **Pruebas**: pytest (con un modelo y un cliente de Claude falsos), Vitest, Playwright y la evaluación de R28.
 **Plataforma**: la de la 001 (Docker Compose local, Chrome para Android).
@@ -31,7 +31,7 @@ sin modelo. Una evaluación con 55 preguntas revisadas por el alumno decide si e
 | Principio | Cómo se cumple | Antes | Después |
 | --- | --- | --- | --- |
 | I. Spec anclada | Plan derivado de la spec aprobada; el contrato se prueba como en la 001 | ✅ | ✅ |
-| II. Humano en el bucle | Aprobación del alumno de este plan y de las tareas; el tutor da su visto bueno a spec y plan **antes de implementar**; el alumno revisa las 55 preguntas | ⏳ | ⏳ |
+| II. Humano en el bucle | Aprobación del alumno de este plan y de las tareas; el tutor dio su visto bueno a spec y plan (comunicado por el alumno el 2026-11-25); el alumno revisa las 55 preguntas | ✅ | ✅ |
 | III. Pruebas primero | Cada REQ tiene escenarios (tabla de la spec). Lo determinista se prueba sin modelo; lo que depende del modelo, con propiedades y con la evaluación | ✅ | ✅ |
 | IV. Conformidad con fuente | Toda afirmación con cita o no se muestra (R25); fuentes oficiales con fecha (R20); plazos literales (R27). Los umbrales y límites son propuesta aceptada por el alumno | ✅ | ✅ |
 | V. Centrado en el agricultor | Lenguaje llano; preguntas con sus palabras. Las consultas necesitan conexión: el principio solo exige sin conexión el registro | ✅ | ✅ |
@@ -39,7 +39,7 @@ sin modelo. Una evaluación con 55 preguntas revisadas por el alumno decide si e
 | VII. Simplicidad | Sin marco de RAG, sin índice vectorial, sin reordenación, sin conversación; las mejoras se añaden solo si la evaluación las pide | ✅ | ✅ |
 | Restricciones técnicas | Haiku para generar; embeddings locales; PostgreSQL + pgvector. **Desviación menor**: el juez de la evaluación es Sonnet, que no forma parte del producto | ✅ | ✅ justificada en R28 |
 
-**Resultado**: se supera la puerta de diseño. La de implementación queda cerrada hasta el visto bueno del tutor.
+**Resultado**: se supera la puerta de diseño y la de implementación, con el visto bueno del tutor comunicado por el alumno.
 
 ## Respuestas a las preguntas del módulo 06 (§ 9)
 
@@ -100,9 +100,9 @@ H4 esté cerrado.
 
 ## Pendientes
 
-1. Visto bueno del tutor a la spec y al plan.
-2. PDF del Decreto 80/2025: si los anexos tienen texto (R20).
-3. RD 285/2021 (almacenamiento): decidir si entra en el corpus (R20).
+1. ~~Visto bueno del tutor a la spec y al plan~~: comunicado por el alumno el 2026-11-25, antes de añadir el RD 285/2021.
+2. Tablas de los anejos del Decreto 80/2025: revisión a mano al crear la instantánea (R20).
+3. Condiciones de reutilización del DOCM (R20).
 4. Descripción oficial y condiciones de reutilización del listado del MAPA (R27).
 5. RGPD y lugar de procesamiento, para un uso real (R26).
 

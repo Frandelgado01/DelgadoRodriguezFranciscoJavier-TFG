@@ -8,7 +8,7 @@ description: "Tareas de implementación de la funcionalidad 002: consultas norma
 [research.md](research.md) (R20–R30), [data-model.md](data-model.md), [contracts/openapi.yaml](contracts/openapi.yaml),
 [quickstart.md](quickstart.md) y constitución v2.0.0.
 
-> **No se empieza ninguna tarea sin el visto bueno del tutor a la spec y al plan** (principio II).
+> Aprobadas por el alumno el 2026-11-25. Visto bueno del tutor a la spec y al plan comunicado por el alumno ese día (principio II).
 
 **Numeración**: de T-100 a T-138, para que cada `T-xx` sea único en el proyecto (la 001 llega a T-83).
 
@@ -39,7 +39,7 @@ Si falta tiempo se recorta H10 entero y después el Decreto 80/2025 (spec, Supue
 - [ ] T-101 Escribir las pruebas (deben fallar) de la lectura de fuentes en `backend/tests/unit/test_fuentes.py`, con XML de muestra en
   `backend/tests/datos/corpus/`: se toma la versión con mayor vigencia no posterior a la fecha dada y no una futura; se descartan preámbulo,
   firma, notas iniciales y **notas editoriales** (el artículo 40 suprimido del RD 1311/2012 no da texto, aunque su nota lleve la redacción
-  anterior); se leen las tablas por filas; se leen el formato del BOE y el del DOUE; un XML con entidades externas se rechaza. (REQ-42; R20)
+  anterior); se leen las tablas por filas; se leen el formato del BOE, el del DOUE y el PDF del DOCM sin sus cabeceras de página; un XML con entidades externas se rechaza. (REQ-42; R20)
 - [ ] T-102 Implementar `consultas/fuentes.py`. Pasan las pruebas de T-101. (REQ-42; R20)
 - [ ] T-103 Escribir las pruebas (deben fallar) de la fragmentación en `backend/tests/unit/test_fragmentar.py`: un artículo corto da un
   fragmento con su unidad y su texto **literal**; uno de más de 220 palabras se parte por apartados con su número; un apartado mayor, por
@@ -57,10 +57,12 @@ Si falta tiempo se recorta H10 entero y después el Decreto 80/2025 (spec, Supue
   Pasan las pruebas de T-107. (REQ-42)
 - [ ] T-109 Escribir `scripts/crear_instantanea.py` y generar `corpus/` con las normas de REQ-42 que tengan texto; anotar en `corpus/normas.json` la
   fuente, la fecha, la huella y la cobertura de cada una. Comprobar a mano cinco artículos contra el texto oficial, entre ellos el 16 y el
-  anexo III del RD 1311/2012. (REQ-42; R20)
+  anexo III del RD 1311/2012, el 7 del RD 285/2021 y el apartado 4.3.1 del anexo I del Decreto 80/2025, y todas las tablas de sus anejos
+  que se carguen. (REQ-42; R20)
 - [ ] T-110 Escribir las pruebas (deben fallar) de la búsqueda en `backend/tests/integration/test_buscar.py`: exacta por vectores; por texto, con las
   palabras unidas con «o» y en español; RRF con k = 60 sobre dos listas conocidas; 20 resultados como mucho y sin repetidos; empates en orden
-  estable; una pregunta sin ninguna palabra en común devuelve igualmente los de los vectores. (REQ-31; R23)
+  estable; el artículo 40 suprimido no aparece nunca (H1-13);
+  una pregunta sin ninguna palabra en común devuelve igualmente los de los vectores. (REQ-31; R23)
 - [ ] T-111 Implementar `consultas/buscar.py` y una orden de consola que muestre los fragmentos de una pregunta. Pasan las pruebas de T-110.
   (REQ-31; R23)
 - [ ] T-112 Redactar `evaluacion/preguntas.yaml`: 15 de ajuste y 40 finales (30 con respuesta y 10 sin ella), con el artículo esperado y lenguaje de

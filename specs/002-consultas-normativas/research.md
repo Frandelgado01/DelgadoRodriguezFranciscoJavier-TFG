@@ -15,10 +15,10 @@ evaluación de REQ-43**, y esas preguntas no formarán parte del conjunto final.
 
   | Norma | Fuente | Formato |
   | --- | --- | --- |
-  | RD 1311/2012, 1048/2022, 1049/2022, 1051/2022 y 1054/2022 | API de legislación consolidada del BOE (`/id/{id}/metadatos` y `/texto`) | XML por bloques, con versiones y fecha de vigencia |
+  | RD 1311/2012, 285/2021 (`BOE-A-2021-7689`), 1048/2022, 1049/2022, 1051/2022 y 1054/2022 | API de legislación consolidada del BOE (`/id/{id}/metadatos` y `/texto`) | XML por bloques, con versiones y fecha de vigencia |
   | Reglamento (UE) 2023/564 | XML del BOE, `DOUE-L-2023-80367` | XML con 14 tablas, sin imágenes |
   | Su modificación, Reglamento (UE) 2025/2203 | XML del BOE, `DOUE-L-2025-81626` | XML |
-  | Decreto 80/2025 de Castilla-La Mancha | HTML oficial del DOCM (n.º 201, 17/10/2025) | Solo el articulado tiene texto |
+  | Decreto 80/2025 de Castilla-La Mancha | PDF oficial del DOCM (n.º 201, 17/10/2025; 27 páginas) | Texto, también en los anexos (unas 12 600 palabras) |
 
   1. De cada bloque se toma la versión con la **mayor fecha de vigencia que no sea posterior a hoy**.
   2. Se descartan preámbulos, firmas, notas iniciales y **las notas editoriales** (`blockquote`).
@@ -27,10 +27,12 @@ evaluación de REQ-43**, y esas preguntas no formarán parte del conjunto final.
   **toda la redacción anterior**, derogada en 2021 por el RD 285/2021; indexarla daría por vigente un texto derogado (REQ-42).
 - **Reproducibilidad**: los fragmentos y sus vectores se versionan como una **instantánea** (`corpus/`, con la fecha y la huella de cada
   fuente). Las pruebas y la evaluación usan siempre la misma, y cargar el corpus no exige red ni calcular vectores.
-- **Pendiente**: si el PDF oficial del Decreto 80/2025 tiene texto en sus anexos. Si no, se carga solo el articulado y se declara; según
-  la spec es lo segundo que se recorta.
-- **Hueco detectado**: el almacenamiento de fitosanitarios lo regula hoy el RD 285/2021, que no está en el corpus. Se propone al alumno
-  decidir si entra; mientras, esa pregunta debe terminar en «no lo he encontrado».
+- **PDF del Decreto 80/2025** (comprobado el 2026-11-25): la versión HTML remite al PDF como la oficial y auténtica, y este tiene texto. Se
+  extrae con `pypdf`, solo al crear la instantánea, quitando las cabeceras de página. La prosa de los anexos se carga; las tablas de los
+  anejos I a V se cargan solo si la extracción coincide con el PDF en una revisión a mano y, si no, se declaran en `nota_cobertura`: una
+  dosis leída en la columna equivocada es peor que no tenerla.
+- **Hueco detectado y resuelto**: el almacenamiento de fitosanitarios lo regula hoy el RD 285/2021, cuyo artículo 7 trata de las
+  explotaciones agrarias. El alumno decidió incluirlo el 2026-11-25. La medición de R22 se hizo sin él.
 - **Alternativas**: descargar el PDF del BOE (pierde la estructura); cargar el corpus en cada arranque (depende de la red y cambia los
   resultados entre ejecuciones).
 
