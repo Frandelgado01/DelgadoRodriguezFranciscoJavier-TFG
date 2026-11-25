@@ -383,7 +383,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
   "0,43" L/ha); empate (1,13 kg en 2 ha = 0,565 → "0,57"); caso que falla con coma flotante (0,57 kg en 2 ha =
   0,285 → "0,29"); dosis muy pequeña (0,02 L en 5 ha → "0,004" L/ha); resultado exacto (3,5 kg en 3,5 ha →
   "1,00"); la unidad sigue a la cantidad (`kg` → `kg/ha`, `L` → `L/ha`). (REQ-23; R8, R15)
-- [ ] T-73 [P] [US1] Implementar el cálculo de T-72 en `backend/src/cuaderno/dominio/dosis.py`: función pura que
+- [X] T-73 [P] [US1] Implementar el cálculo de T-72 en `backend/src/cuaderno/dominio/dosis.py`: función pura que
   recibe las cantidades con su unidad y las superficies tratadas y devuelve la dosis de cada producto, con
   `Decimal` (sin `float`), la suma de las superficies como divisor y el redondeo de REQ-23 (al más próximo,
   empates hacia arriba, dos decimales o hasta la primera cifra distinta de cero). Pasan los casos en pytest.

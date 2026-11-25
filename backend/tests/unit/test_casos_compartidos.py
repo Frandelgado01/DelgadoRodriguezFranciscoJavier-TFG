@@ -13,15 +13,32 @@ import json
 import re
 from collections.abc import Callable
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from cuaderno.dominio import validacion
+from cuaderno.dominio import dosis, validacion
 
 FICHERO_CASOS = Path(__file__).resolve().parents[3] / "compartido" / "casos-validacion.json"
 CAMPOS_CASO = {"req", "regla", "descripcion", "entrada", "esperado"}
+
+
+def _dosis(entrada: dict[str, Any]) -> list[dict[str, str]]:
+    """Dosis con sus decimales en texto, como la muestra la PWA (REQ-23)."""
+    calculadas = dosis.calcular_dosis(
+        [(Decimal(str(p["cantidad"])), p["unidadMedida"]) for p in entrada["productos"]],
+        [Decimal(str(s)) for s in entrada["superficiesTratadas"]],
+    )
+    return [
+        {
+            "dosisPorHectarea": format(d.por_hectarea, "f").replace(".", ","),
+            "unidadDosis": d.unidad,
+        }
+        for d in calculadas
+    ]
+
 
 # Regla del fichero de casos → función del dominio que la implementa. Se amplía con cada regla nueva
 # (contraseña y correo en T-17; REQ-02 y REQ-04 en T-31; plazos en T-44; dosis en T-73).
@@ -31,6 +48,7 @@ REGLAS: dict[str, Callable[[Any], Any]] = {
     "tratamiento": lambda e: validacion.validar_tratamiento(
         e["datos"], date.fromisoformat(e["hoy"]), e["superficies"]
     ),
+    "dosis": _dosis,
 }
 
 
