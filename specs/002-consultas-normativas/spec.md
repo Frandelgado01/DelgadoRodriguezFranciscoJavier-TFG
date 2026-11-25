@@ -4,7 +4,7 @@
 
 **Creada**: 2026-11-25
 
-**Estado**: Clarificada (2026-11-25); pendiente de la aprobación del alumno y del visto bueno del tutor
+**Estado**: Aprobada por el alumno (2026-11-25, «Apruebo la spec 002»); pendiente del visto bueno del tutor
 
 **Entrada**: descripción del alumno: "comienza […] spec 002", con la hoja de ruta (consultas normativas con RAG), el
 módulo 06 (`docs/conceptos/06-rag.md`) y sus decisiones del 2026-11-25: el Reglamento (UE) 2023/564 entra en el corpus;

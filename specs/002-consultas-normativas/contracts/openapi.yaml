@@ -1,0 +1,243 @@
+openapi: 3.1.0
+info:
+  title: Cuaderno de Campo - Consultas normativas (002)
+  version: 0.1.0
+  description: >-
+    Amplía la API de la 001 con la misma sesión (cookie __Host-sesion) y el mismo formato de errores.
+    Ninguna ruta guarda la pregunta ni la respuesta (REQ-35).
+servers:
+  - url: /api
+security:
+  - sesion: []
+tags:
+  - name: consultas
+  - name: productos-autorizados
+
+paths:
+  /consultas:
+    post:
+      tags: [consultas]
+      summary: Preguntar una duda normativa (REQ-30 a REQ-39)
+      description: >-
+        Cuenta para el límite diario, salvo si responde 422 o 503. Las respuestas sin cita válida, o con cifras
+        sin cita, no se devuelven; en su lugar, estado sin_respaldo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Pregunta' }
+      responses:
+        '200':
+          description: Respuesta, o explicación de por qué no la hay
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Respuesta' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+        '429':
+          description: Se ha llegado al límite diario (REQ-36)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LimiteAlcanzado' }
+        '503': { $ref: '#/components/responses/NoDisponible' }
+  /consultas/limite:
+    get:
+      tags: [consultas]
+      summary: Consultas que quedan hoy (REQ-36)
+      responses:
+        '200':
+          description: Uso de hoy
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Limite' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+  /normas:
+    get:
+      tags: [consultas]
+      summary: Normas incluidas y su fecha de actualización (REQ-33, REQ-42)
+      responses:
+        '200':
+          description: Normas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Norma' } }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+  /productos-autorizados:
+    get:
+      tags: [productos-autorizados]
+      summary: Buscar productos por número de registro o nombre (REQ-40, REQ-41)
+      parameters:
+        - { name: busqueda, in: query, required: true, schema: { type: string, minLength: 2, maxLength: 100 } }
+      responses:
+        '200':
+          description: Hasta 20 productos; vacío si no figura ninguno
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ProductoAutorizado' } }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+  /productos-autorizados/{numeroRegistro}:
+    parameters:
+      - { name: numeroRegistro, in: path, required: true, schema: { type: string, minLength: 1, maxLength: 30 } }
+    get:
+      tags: [productos-autorizados]
+      summary: Producto y cultivos en que está autorizado (REQ-40, REQ-41)
+      responses:
+        '200':
+          description: Producto
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductoConCultivos' }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /productos-autorizados/{numeroRegistro}/usos:
+    parameters:
+      - { name: numeroRegistro, in: path, required: true, schema: { type: string, minLength: 1, maxLength: 30 } }
+    get:
+      tags: [productos-autorizados]
+      summary: Usos de un producto en un cultivo, con su plazo de seguridad literal (REQ-40)
+      parameters:
+        - { name: codigo_cultivo, in: query, required: true, schema: { type: string, minLength: 1, maxLength: 30 } }
+      responses:
+        '200':
+          description: Todos los usos; vacío si no está autorizado en ese cultivo
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/UsoAutorizado' } }
+        '401': { $ref: '#/components/responses/NoAutenticado' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '422': { $ref: '#/components/responses/Validacion' }
+
+components:
+  securitySchemes:
+    sesion: { type: apiKey, in: cookie, name: __Host-sesion }
+  responses:
+    NoAutenticado:
+      description: Sin sesión
+      content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
+    NoEncontrado:
+      description: El producto no figura en el listado
+      content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
+    Validacion:
+      description: Datos no válidos
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorValidacion' } } }
+    NoDisponible:
+      description: No se ha podido buscar o redactar la respuesta; se puede reintentar (REQ-37)
+      content: { application/json: { schema: { $ref: '#/components/schemas/Mensaje' } } }
+  schemas:
+    Mensaje:
+      type: object
+      required: [mensaje]
+      properties: { mensaje: { type: string } }
+    ErrorValidacion:
+      type: object
+      required: [errores]
+      properties:
+        errores:
+          type: array
+          items:
+            type: object
+            required: [campo, mensaje]
+            properties:
+              campo: { type: string }
+              mensaje: { type: string }
+              req: { type: [string, 'null'] }
+    Pregunta:
+      type: object
+      required: [pregunta]
+      properties:
+        pregunta: { type: string, minLength: 1, maxLength: 500 }
+    Respuesta:
+      type: object
+      required: [estado, bloques, citas, aviso, restantes]
+      properties:
+        estado:
+          type: string
+          enum: [respondida, parcial, sin_respaldo, fuera_de_ambito]
+        bloques:
+          type: array
+          description: Texto de la respuesta; en sin_respaldo y fuera_de_ambito, un mensaje fijo sin citas
+          items:
+            type: object
+            required: [texto, citas]
+            properties:
+              texto: { type: string }
+              citas: { type: array, items: { type: integer, minimum: 0 }, description: Posiciones en `citas` }
+        citas: { type: array, items: { $ref: '#/components/schemas/Cita' } }
+        aviso: { type: string, description: 'Carácter informativo y fuente de los textos (REQ-33)' }
+        restantes: { type: integer, minimum: 0, maximum: 20 }
+    Cita:
+      type: object
+      required: [norma, unidad, extracto, texto, fechaActualizacion, organismo, urlOficial]
+      properties:
+        norma: { type: string, description: 'RD 1311/2012' }
+        unidad: { type: string, description: 'artículo 16' }
+        apartado: { type: [string, 'null'] }
+        extracto: { type: string, description: Literal, dentro de `texto` }
+        texto: { type: string, description: Fragmento literal completo }
+        fechaActualizacion: { type: string, format: date }
+        organismo: { type: string }
+        urlOficial: { type: string, format: uri }
+    LimiteAlcanzado:
+      type: object
+      required: [mensaje, disponibleEn]
+      properties:
+        mensaje: { type: string }
+        disponibleEn: { type: string, format: date-time }
+    Limite:
+      type: object
+      required: [usadas, maximo]
+      properties:
+        usadas: { type: integer, minimum: 0 }
+        maximo: { type: integer, const: 20 }
+    Norma:
+      type: object
+      required: [id, tituloCorto, titulo, ambito, organismo, urlOficial, fechaActualizacion]
+      properties:
+        id: { type: string }
+        tituloCorto: { type: string }
+        titulo: { type: string }
+        ambito: { type: string, enum: [europeo, estatal, autonomico] }
+        organismo: { type: string }
+        urlOficial: { type: string, format: uri }
+        fechaActualizacion: { type: string, format: date }
+        notaCobertura: { type: [string, 'null'] }
+    ProductoAutorizado:
+      type: object
+      required: [numeroRegistro, nombre, estado, caducado, fechaListado]
+      properties:
+        numeroRegistro: { type: string }
+        nombre: { type: string }
+        titular: { type: [string, 'null'] }
+        formulado: { type: [string, 'null'] }
+        estado: { type: string, description: Literal del listado }
+        fechaCaducidad: { type: [string, 'null'], format: date }
+        caducado: { type: boolean, description: 'Fecha de caducidad anterior a hoy en Europe/Madrid' }
+        fechaListado: { type: string, format: date }
+    ProductoConCultivos:
+      allOf:
+        - $ref: '#/components/schemas/ProductoAutorizado'
+        - type: object
+          required: [cultivos]
+          properties:
+            condicionamiento: { type: [string, 'null'] }
+            cultivos:
+              type: array
+              items:
+                type: object
+                required: [codigo, nombre]
+                properties:
+                  codigo: { type: string }
+                  nombre: { type: string }
+    UsoAutorizado:
+      type: object
+      required: [cultivo, plazoSeguridad, consultarEtiqueta]
+      properties:
+        cultivo: { type: string }
+        agente: { type: [string, 'null'] }
+        plazoSeguridad: { type: string, description: 'Literal del listado; puede estar vacío' }
+        consultarEtiqueta: { type: boolean, description: 'Verdadero si el plazo no es solo un número' }
+        condicionamiento: { type: [string, 'null'] }
+        sistemaCultivo: { type: [string, 'null'] }
+        ambito: { type: [string, 'null'] }
+        tipoUsuario: { type: [string, 'null'] }
