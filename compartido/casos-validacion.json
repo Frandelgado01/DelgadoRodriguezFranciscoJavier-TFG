@@ -2318,6 +2318,280 @@
           "req": "REQ-04"
         }
       ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "escenario 6, 2 kg en 3,5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "escenario 7, mezcla de 2 kg y 1,5 L en 1,5 + 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "kg"
+          },
+          {
+            "cantidad": 1.5,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          1.5,
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        },
+        {
+          "dosisPorHectarea": "0,43",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate hacia arriba, 1,13 kg en 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 1.13,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate que falla con coma flotante, 0,57 kg en 2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.57,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,29",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "empate de 0,005 hacia arriba",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.01,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,01",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña, 0,02 L en 5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.02,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,004",
+          "unidadDosis": "L/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña que se redondea en el tercer decimal",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.001,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          1.04
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,001",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis muy pequeña en una superficie grande",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.001,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          12000
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,0000001",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "resultado exacto, 3,5 kg en 3,5 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 3.5,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "1,00",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "dosis de más de 1 000",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 999999999.999,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          0.01
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "99999999999,90",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "suma de superficies sin error binario, 0,1 + 0,2 ha",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 0.3,
+            "unidadMedida": "kg"
+          }
+        ],
+        "superficiesTratadas": [
+          0.1,
+          0.2
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "1,00",
+          "unidadDosis": "kg/ha"
+        }
+      ]
+    },
+    {
+      "req": "REQ-23",
+      "regla": "dosis",
+      "descripcion": "la unidad sigue a la cantidad en litros",
+      "entrada": {
+        "productos": [
+          {
+            "cantidad": 2,
+            "unidadMedida": "L"
+          }
+        ],
+        "superficiesTratadas": [
+          3.5
+        ]
+      },
+      "esperado": [
+        {
+          "dosisPorHectarea": "0,57",
+          "unidadDosis": "L/ha"
+        }
+      ]
     }
   ]
 }

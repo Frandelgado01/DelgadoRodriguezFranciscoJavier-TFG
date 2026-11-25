@@ -376,7 +376,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
 números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentro del hito se indica en
 "Dependencias y orden de ejecución".
 
-- [ ] T-72 [P] [US1] Añadir a `compartido/casos-validacion.json` los casos del cálculo de REQ-23 (deben fallar en
+- [X] T-72 [P] [US1] Añadir a `compartido/casos-validacion.json` los casos del cálculo de REQ-23 (deben fallar en
   pytest y Vitest), con la entrada `{productos: [{cantidad, unidadMedida}], superficiesTratadas: [ha]}` y la
   salida esperada por producto (`dosisPorHectarea` como texto con sus decimales y `unidadDosis`): escenario 6
   (2 kg en 3,5 ha → "0,57" kg/ha); escenario 7 (2 kg de A y 1,5 L de B en 1,5 + 2 ha → "0,57" kg/ha y
