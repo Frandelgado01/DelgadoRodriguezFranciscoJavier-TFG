@@ -56,6 +56,13 @@ describe("cliente de la API", () => {
     expect(resultado.cabeceras.get("Retry-After")).toBe("900");
   });
 
+  it("un cuerpo cortado a medias cuenta como falta de conexión, sin lanzar excepciones", async () => {
+    const cortada = new Response('{"correo": "a', { status: 200, headers: { "Content-Type": "application/json" } });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(cortada));
+
+    expect(await llamar("GET", "/cuenta/yo")).toMatchObject({ ok: false, estado: 0, sinConexion: true });
+  });
+
   it("distingue la falta de conexión (estado 0) de un error de la API", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
 

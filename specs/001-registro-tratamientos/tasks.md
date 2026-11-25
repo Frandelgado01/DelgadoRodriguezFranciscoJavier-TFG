@@ -353,7 +353,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   que usa un producto con el alta rechazada no se envía; corregir vuelve a `pendiente` con el mismo `id`, o con uno nuevo si el rechazo
   fue un 409 al crear; descartar borra la operación y su copia local, y no se permite con un producto que use un tratamiento sin enviar;
   el contador distingue pendientes y rechazados. (REQ-06, REQ-20; R16)
-- [ ] T-40 [US1] Implementar la cola en `frontend/src/sync/cola.ts` y `frontend/src/sync/vaciado.ts`
+- [X] T-40 [US1] Implementar la cola en `frontend/src/sync/cola.ts` y `frontend/src/sync/vaciado.ts`
   (operaciones `crear_producto` y `crear_tratamiento`; disparadores de R3; estado `sincronizado`, `pendiente`,
   `conflicto` o `rechazado`; comprobación de la cuenta, clasificación de respuestas, corregir y descartar de R16), la petición de `navigator.storage.persist()` y el contador de operaciones pendientes, siempre
   visible. Pasan las pruebas de T-39. (REQ-06; R3, R16)

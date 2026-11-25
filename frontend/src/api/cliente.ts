@@ -41,8 +41,10 @@ export async function llamar<T = unknown>(metodo: Metodo, ruta: string, cuerpo?:
     credentials: "same-origin",
   };
   let respuesta: Response;
+  let datos: unknown;
   try {
     respuesta = await fetch(`${BASE}${ruta}`, opciones);
+    datos = await leerCuerpo(respuesta); // también falla si la conexión se corta a medias
   } catch {
     return {
       ok: false,
@@ -52,7 +54,6 @@ export async function llamar<T = unknown>(metodo: Metodo, ruta: string, cuerpo?:
       error: { mensaje: "No hay conexión. Inténtalo cuando tengas cobertura." },
     };
   }
-  const datos = await leerCuerpo(respuesta);
   if (respuesta.ok) return { ok: true, estado: respuesta.status, datos: datos as T };
   return {
     ok: false,

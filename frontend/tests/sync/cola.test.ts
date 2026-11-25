@@ -258,6 +258,19 @@ describe("vaciado en orden (REQ-06; R3)", () => {
     expect(await estado(t.id)).toBe("sincronizado");
   });
 
+  it.each([
+    ["una página web", () => new Response("<html></html>", { headers: { "Content-Type": "text/html" } })],
+    ["otro registro", () => json(200, { id: "otro" })],
+    ["un cuerpo cortado", () => new Response('{"id": "', { status: 201, headers: { "Content-Type": "application/json" } })],
+  ])("una respuesta correcta que no trae el registro (%s) no se da por aplicada", async (_caso, respuesta) => {
+    const t = tratamiento();
+    await sinRed(() => guardarTratamiento(t));
+    servidor.antes = respuesta;
+    expect((await vaciarCola()).estado).toBe("detenida");
+    expect(await estado(t.id)).toBe("pendiente");
+    expect(await cola()).toMatchObject([{ entidadId: t.id, estado: "pendiente" }]);
+  });
+
   it("un 401 conserva la cola y pide iniciar sesión", async () => {
     const t = tratamiento();
     await sinRed(() => guardarTratamiento(t));

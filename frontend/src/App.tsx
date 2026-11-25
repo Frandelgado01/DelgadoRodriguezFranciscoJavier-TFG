@@ -1,9 +1,11 @@
 // Carcasa de la app (T-18 y T-19): elige la página según la ruta y la cambia sin recargar.
 //
 // Las páginas que no son de cuenta piden la sesión guardada en el dispositivo (sesion.ts), que no necesita
-// conexión: así el cuaderno se abre sin cobertura (REQ-06, REQ-20). Sin sesión, se muestra Entrar.
+// conexión: así el cuaderno se abre sin cobertura (REQ-06, REQ-20). Sin sesión, se muestra Entrar. Con ellas se
+// pone en marcha el envío de la cola y se ve siempre cuánto queda por enviar (T-40; R3).
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Enlace } from "./componentes/Enlace";
+import { EstadoCola } from "./componentes/EstadoCola";
 import { esPublica, resolverRuta, type Pagina } from "./navegacion";
 import { CerrarSesion } from "./paginas/cuenta/CerrarSesion";
 import { CrearCuenta } from "./paginas/cuenta/CrearCuenta";
@@ -12,6 +14,7 @@ import { Recuperar } from "./paginas/cuenta/Recuperar";
 import { Restablecer } from "./paginas/cuenta/Restablecer";
 import { Explotacion } from "./paginas/explotacion/Explotacion";
 import { leerSesion, type SesionLocal } from "./sesion";
+import { iniciarSincronizacion } from "./sync/vaciado";
 
 function suscribir(aviso: () => void): () => void {
   window.addEventListener("popstate", aviso);
@@ -76,8 +79,19 @@ export function App() {
     };
   }, [camino]);
 
+  // Se mantiene al cambiar entre páginas privadas y se detiene en las de cuenta (salir o entrar con otra).
+  const explotacionId = esPublica(destino.pagina) ? undefined : sesion?.valor?.explotacionId;
+  useEffect(() => {
+    if (explotacionId !== undefined) return iniciarSincronizacion();
+  }, [explotacionId]);
+
   if (esPublica(destino.pagina)) return <PaginaPublica pagina={destino.pagina} />;
   if (sesion === undefined || sesion.camino !== camino) return null;
   if (sesion.valor === null) return <Entrar />;
-  return <PaginaPrivada pagina={destino.pagina} />;
+  return (
+    <>
+      <EstadoCola />
+      <PaginaPrivada pagina={destino.pagina} />
+    </>
+  );
 }
