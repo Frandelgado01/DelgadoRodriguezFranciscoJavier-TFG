@@ -388,7 +388,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
   `Decimal` (sin `float`), la suma de las superficies como divisor y el redondeo de REQ-23 (al más próximo,
   empates hacia arriba, dos decimales o hasta la primera cifra distinta de cero). Pasan los casos en pytest.
   (REQ-23; R15)
-- [ ] T-74 [P] [US1] Implementar el mismo cálculo en `frontend/src/dominio/dosis.ts`, con aritmética entera
+- [X] T-74 [P] [US1] Implementar el mismo cálculo en `frontend/src/dominio/dosis.ts`, con aritmética entera
   (`BigInt`, milésimas de kg o L y centésimas de ha), sin `number` en la división ni en el redondeo. Pasan los
   casos en Vitest. (REQ-23; R15)
 - [ ] T-75 [US1] Escribir las pruebas de la dosis en la API (deben fallar) en
