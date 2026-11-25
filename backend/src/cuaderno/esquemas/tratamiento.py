@@ -8,13 +8,14 @@ Los campos de plazo del contrato (estado, vencimiento y marcas) llegan con REQ-0
 """
 
 import uuid
-from datetime import date
+from datetime import UTC, date, datetime
 from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, BeforeValidator, Field
+from pydantic import AfterValidator, AwareDatetime, BeforeValidator, Field
 
+from cuaderno.config import ZONA_HORARIA
 from cuaderno.dominio import validacion
-from cuaderno.esquemas.base import Esquema
+from cuaderno.esquemas.base import DatoNoValido, Esquema
 from cuaderno.esquemas.maestro import Texto, en_blanco_a_nulo
 
 
@@ -70,9 +71,24 @@ class DatosTratamiento(Esquema):
     ] = None
 
 
+def _cabe_en_utc_y_en_madrid(valor: datetime) -> datetime:
+    """Un momento de los límites del calendario (años 1 y 9999) no se puede pasar a otra zona."""
+    try:
+        valor.astimezone(UTC)
+        valor.astimezone(ZONA_HORARIA)
+    except OverflowError as error:
+        raise DatoNoValido(
+            "El momento en que se anotó no es válido: revisa la fecha y la hora del dispositivo.",
+            "REQ-04",
+        ) from error
+    return valor
+
+
 class TratamientoNuevo(DatosTratamiento):
     id: uuid.UUID = Field(description="Generado por el cliente (R4)")
-    registrado_en: AwareDatetime = Field(description="Momento del guardado en el dispositivo (R14)")
+    registrado_en: Annotated[AwareDatetime, AfterValidator(_cabe_en_utc_y_en_madrid)] = Field(
+        description="Momento del guardado en el dispositivo (R14)"
+    )
 
 
 class Tratamiento(TratamientoNuevo):

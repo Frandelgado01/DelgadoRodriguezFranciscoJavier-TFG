@@ -484,6 +484,29 @@ def test_req09_registrado_en_futuro_o_anterior_a_la_fecha_responde_422(
     assert contar(bd, "tratamiento") == 0
 
 
+@pytest.mark.parametrize("ya_registrado", [False, True])
+@pytest.mark.parametrize(
+    "registrado_en",
+    [
+        "0001-01-01T00:00:00+14:00",  # en UTC sería anterior al año 1
+        "9999-12-31T23:59:59Z",  # en Madrid sería posterior al año 9999
+        "9999-12-31T23:59:59-12:00",
+    ],
+)
+def test_req04_registrado_en_que_no_cabe_en_otra_zona_responde_422(
+    cliente: TestClient, bd: Engine, registrado_en: str, ya_registrado: bool
+) -> None:
+    m = preparar(cliente)
+    datos = tratamiento_valido(m)
+    if ya_registrado:
+        assert registrar(cliente, datos).status_code == 201
+    errores = errores_de(registrar(cliente, datos | {"registradoEn": registrado_en}))
+    assert set(errores) == {"registradoEn"}
+    assert errores["registradoEn"]["mensaje"] not in ("", GENERICO)
+    assert errores["registradoEn"]["req"] == "REQ-04"
+    assert contar(bd, "tratamiento") == int(ya_registrado)
+
+
 def test_req01_si_algo_falla_no_se_guarda_nada(cliente: TestClient, bd: Engine) -> None:
     """Todo en una transacción: ni tratamiento, ni líneas, ni historial a medias."""
     m = preparar(cliente)
