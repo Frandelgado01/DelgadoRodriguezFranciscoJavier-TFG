@@ -391,7 +391,7 @@ números a partir de T-72 para no renumerar las tareas aprobadas; su orden dentr
 - [X] T-74 [P] [US1] Implementar el mismo cálculo en `frontend/src/dominio/dosis.ts`, con aritmética entera
   (`BigInt`, milésimas de kg o L y centésimas de ha), sin `number` en la división ni en el redondeo. Pasan los
   casos en Vitest. (REQ-23; R15)
-- [ ] T-75 [US1] Escribir las pruebas de la dosis en la API (deben fallar) en
+- [X] T-75 [US1] Escribir las pruebas de la dosis en la API (deben fallar) en
   `backend/tests/integration/test_dosis_tratamiento.py` y ampliar `test_contrato_tratamientos.py` con los campos
   de solo lectura `dosisPorHectarea` y `unidadDosis` de `ProductoAplicado`: tras registrar el tratamiento del
   escenario 6, `GET /tratamientos/{id}` devuelve 0,57 y `kg/ha`; con el del escenario 7, 0,57 `kg/ha` para A y
