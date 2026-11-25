@@ -419,7 +419,7 @@ para no renumerar; su orden dentro del hito se indica en "Dependencias y orden d
 - [ ] T-79 [US1] Implementar la base local por explotación en `frontend/src/db/` y `frontend/src/sesion.ts`, y usarla en
   `sync/maestros.ts`, `paginas/cuenta/CerrarSesion.tsx` y `paginas/explotacion/Seccion.tsx`; añadir `estado` y `errores` a la cola y el
   estado `rechazado` en `db/esquema.ts`. Pasan las pruebas de T-78. (REQ-06, REQ-20; R16)
-- [ ] T-80 [US1] Escribir las pruebas (deben fallar) de la lista de tratamientos en
+- [X] T-80 [US1] Escribir las pruebas (deben fallar) de la lista de tratamientos en
   `backend/tests/integration/test_lista_tratamientos.py` y ampliar el contrato con `GET /tratamientos`: filtros `desde`, `hasta`,
   `parcela_id` y `producto_id`; orden por fecha, del más reciente al más antiguo; paginación (`tamano` máx. 200, `total`); sin sesión, 401;
   no se ven los de otra explotación. El filtro `estado` y los anulados siguen en T-53 (H6). (REQ-10, REQ-20)

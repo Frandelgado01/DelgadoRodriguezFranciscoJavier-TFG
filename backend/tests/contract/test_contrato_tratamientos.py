@@ -31,3 +31,7 @@ def test_req23_la_dosis_es_un_campo_de_solo_lectura_de_la_respuesta() -> None:
         assert propiedades["unidadDosis"]["enum"] == ["kg/ha", "L/ha"]
         assert propiedades["unidadDosis"]["readOnly"] is True
     assert "dosisPorHectarea" not in producto(registrar["requestBody"])
+
+
+def test_req10_la_lista_de_tratamientos_cumple_el_contrato() -> None:
+    assert comprobar_operaciones(openapi_generado(), [("GET", "/tratamientos")]) == []
