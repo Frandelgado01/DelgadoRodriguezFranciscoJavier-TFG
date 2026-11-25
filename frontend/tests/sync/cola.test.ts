@@ -589,6 +589,73 @@ describe("rechazos (REQ-06, escenarios 9 y 10; R16)", () => {
   });
 });
 
+describe("otra pestaña cambia la cola durante el envío (REQ-06, escenario 10)", () => {
+  /** Hace algo mientras la petición está en curso, como lo haría otra pestaña, y después responde. */
+  function durante(clave: string, accion: () => Promise<unknown>) {
+    const atender = globalThis.fetch;
+    let hecho = false;
+    vi.stubGlobal("fetch", async (url: string, opciones: RequestInit) => {
+      if (!hecho && `${opciones.method} ${url}` === clave) {
+        hecho = true;
+        await accion();
+      }
+      return atender(url, opciones);
+    });
+  }
+
+  async function encolada() {
+    const t = tratamiento();
+    await sinRed(() => guardarTratamiento(t));
+    return t;
+  }
+
+  it("REQ-06: si la quita mientras se comprueba la cuenta, no se envía ni se vuelve a crear", async () => {
+    await encolada();
+    durante("GET /api/cuenta/yo", () => base.cola.clear());
+    expect(await vaciarCola()).toEqual({ estado: "vacia" });
+    expect(servidor.envios()).toEqual([]);
+    expect(await cola()).toEqual([]);
+  });
+
+  it("REQ-06: si la rechaza mientras se comprueba la cuenta, no se envía y conserva su rechazo", async () => {
+    await encolada();
+    const errores = [{ campo: "fecha", mensaje: "La fecha no es válida." }];
+    durante("GET /api/cuenta/yo", () => base.cola.toCollection().modify({ estado: "rechazada", errores }));
+    expect(await vaciarCola()).toEqual({ estado: "vacia" });
+    expect(servidor.envios()).toEqual([]);
+    expect(await cola()).toMatchObject([{ estado: "rechazada", errores }]);
+  });
+
+  it("REQ-06: si la cambia mientras se comprueba la cuenta, se envía lo que hay ahora", async () => {
+    const t = await encolada();
+    const cambiado = { ...t, problema: "Oídio" };
+    durante("GET /api/cuenta/yo", () => base.cola.toCollection().modify({ cuerpo: cambiado }));
+    await vaciarCola();
+    expect(servidor.envios()).toEqual([{ clave: "POST /tratamientos", cuerpo: cambiado }]);
+  });
+
+  it("REQ-06: si la quita durante el envío, un rechazo no la vuelve a crear", async () => {
+    const t = await encolada();
+    servidor.antes = () => rechazo422("fecha", "La fecha no es válida.");
+    durante("POST /api/tratamientos", async () => {
+      await base.cola.clear();
+      await base.tratamientos.update(t.id, { estadoSincronizacion: "sincronizado" });
+    });
+    expect(await vaciarCola()).toEqual({ estado: "vacia" });
+    expect(await cola()).toEqual([]);
+    expect(await estado(t.id)).toBe("sincronizado");
+  });
+
+  it("REQ-06: si otra pestaña ya la marcó rechazada durante el envío, se conserva aquel rechazo", async () => {
+    await encolada();
+    const errores = [{ campo: "problema", mensaje: "El de la otra pestaña." }];
+    servidor.antes = () => rechazo422("fecha", "La fecha no es válida.");
+    durante("POST /api/tratamientos", () => base.cola.toCollection().modify({ estado: "rechazada", errores }));
+    await vaciarCola();
+    expect(await cola()).toMatchObject([{ estado: "rechazada", errores }]);
+  });
+});
+
 describe("productos rechazados (REQ-06, REQ-16; R16)", () => {
   async function conAltaRechazada(respuesta: () => Response) {
     const p = producto();

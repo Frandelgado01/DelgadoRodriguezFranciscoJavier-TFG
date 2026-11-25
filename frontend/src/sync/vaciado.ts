@@ -89,8 +89,11 @@ async function aplicar(base: BaseLocal, operacion: OperacionCola, datos: unknown
 
 async function rechazar(base: BaseLocal, operacion: OperacionCola, resultado: Resultado<unknown>): Promise<void> {
   await base.transaction("rw", [base.cola, base.tratamientos], async () => {
+    // Otra pestaña pudo quitarla o marcarla durante el envío: no se vuelve a crear.
+    const actual = await base.cola.get(operacion.orden as number);
+    if (actual?.estado !== "pendiente") return;
     await base.cola.put({
-      ...operacion,
+      ...actual,
       estado: "rechazada",
       errores: erroresDe(resultado),
       codigoRechazo: resultado.estado,
@@ -98,6 +101,17 @@ async function rechazar(base: BaseLocal, operacion: OperacionCola, resultado: Re
     if (operacion.tipo === "crear_tratamiento") {
       await base.tratamientos.update(operacion.entidadId, { estadoSincronizacion: "rechazado" });
     }
+  });
+}
+
+/** Anota el intento de envío; null si otra pestaña la ha quitado o ya no está pendiente. */
+async function anotarIntento(base: BaseLocal, orden: number): Promise<OperacionCola | null> {
+  return base.transaction("rw", base.cola, async () => {
+    const actual = await base.cola.get(orden);
+    if (actual?.estado !== "pendiente") return null;
+    const enviada = { ...actual, intentos: actual.intentos + 1 };
+    await base.cola.put(enviada);
+    return enviada;
   });
 }
 
@@ -112,8 +126,8 @@ async function vaciar(): Promise<ResultadoVaciado> {
   for (let operacion = await siguiente(base); operacion; operacion = await siguiente(base)) {
     const motivo = await comprobarCuenta(explotacionId);
     if (motivo !== null) return { estado: "detenida", motivo };
-    const enviada = { ...operacion, intentos: operacion.intentos + 1 };
-    await base.cola.put(enviada);
+    const enviada = await anotarIntento(base, operacion.orden as number);
+    if (enviada === null) continue;
     const ruta = RUTAS[enviada.tipo as keyof typeof RUTAS];
     const resultado = await llamar("POST", ruta, enviada.cuerpo);
     const clase = clasificar(resultado);
