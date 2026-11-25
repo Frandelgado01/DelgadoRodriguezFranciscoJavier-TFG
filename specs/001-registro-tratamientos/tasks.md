@@ -302,7 +302,7 @@ comprobar que aparece en el cuaderno con todos los campos de la sección B (spec
   `backend/tests/integration/test_esquema_tratamiento.py`: CHECK `superficie_tratada` > 0 con NUMERIC(10,2);
   `cantidad` > 0; `unidad_medida` IN (`kg`, `L`); `eficacia` NULL o IN (`buena`, `regular`, `mala`);
   `fecha_registro >= fecha`; `version` ≥ 1; claves foráneas `RESTRICT`. (REQ-01, REQ-03, REQ-04)
-- [ ] T-34 [US1] Escribir la migración y los modelos de tratamientos en `backend/alembic/versions/` y
+- [X] T-34 [US1] Escribir la migración y los modelos de tratamientos en `backend/alembic/versions/` y
   `backend/src/cuaderno/modelos/tratamiento.py`: `tratamiento` (`id` UUID PK del cliente; `explotacion_id` FK
   NOT NULL; `fecha` DATE NOT NULL; `problema` TEXT NOT NULL, 1–200 car.; `aplicador_id` FK → `persona` NOT
   NULL; `asesor_id` FK → `persona` NULL; `equipo_id` FK → `equipo` NOT NULL; `eficacia` TEXT NULL, CHECK IN
